@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulu Coffee | Coffee & Beverage</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 基礎設定 --- */
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --accent-color: #c5a367; /* 金色點綴 */
+            --nav-bg: rgba(0, 0, 0, 0.9);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        a:hover { color: var(--accent-color); }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* --- 導航欄 (Header) --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px; /* Logo 高度 */
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav a {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 手機版導航調整 */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 10px; }
+            nav ul { gap: 15px; font-size: 0.8rem; }
+        }
+
+        /* --- 通用區塊設定 --- */
+        section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Hero 區塊 (主視覺) --- */
+        .hero {
+            position: relative;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 80px; /* 避開 navbar */
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6); /* 讓圖片暗一點，凸顯文字 */
+        }
+
+        .hero-text {
+            position: absolute;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .hero-text h3 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* --- 關於我們 (About) --- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            text-align: left;
+            margin-top: 40px;
+        }
+
+        .about-text h2 { color: var(--accent-color); font-size: 2rem; margin-bottom: 15px; }
+        .about-text h3 { font-size: 1rem; margin-bottom: 20px; color: #ccc; }
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            border: 1px solid var(--text-color);
+            margin-top: 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        @media (max-width: 768px) {
+            .about-grid { grid-template-columns: 1fr; text-align: center; }
+        }
+
+        /* --- 圖片畫廊 (Gallery) --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .gallery-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 4px;
+            transition: transform 0.3s;
+        }
+        .gallery-grid img:hover { transform: scale(1.02); }
+
+        /* --- 客戶列表 (Clients) --- */
+        .clients-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .clients-grid img {
+            max-width: 150px;
+            filter: grayscale(100%); /* 黑白風格 */
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+        .clients-grid img:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* --- 頁尾 (Footer) --- */
+        footer {
+            background: #000;
+            padding: 40px 20px;
+            font-size: 0.9rem;
+            margin-top: 60px;
+        }
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .social-links {
+            margin-top: 15px;
+        }
+        .social-links a { margin: 0 10px; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1582081097801-103Y22RKMEHM3SVSNSJ6/Original+Logo.png?format=1500w" alt="Bulu Coffee Logo">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1612762783922-94UFSA67PKJCQC67AOTO/%25E8%259E%25A2%25E5%25B9%2595%25E6%2588%25AA%25E5%259C%2596%2B2021-02-08%2B%25E4%25B8%258B%25E5%258D%25881.26.34.jpg" alt="Coffee Brewing" class="hero-img">
+        <div class="hero-text">
+            <h1>Welcome To Bulu Coffee</h1>
+            <h3>We offer an incredible Coffee & Beverage experience</h3>
+        </div>
+    </div>
+
+    <section id="about">
+        <div class="about-grid">
+            <div class="about-img">
+                <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1612758860029-XDYQTBJLTMZPQV3USU1T/E561E8FB-516B-420C-9C9C-0FF5A24C77B0.jpeg?format=1000w" alt="Barista at work">
+            </div>
+            <div class="about-text">
+                <h2>About Bulu</h2>
+                <h3>Coffee . Beverage . Sustainability . Creativity . Passion</h3>
+                <p>Anything about coffee & beverage you can find it here!</p>
+                <br>
+                <p>Bulu Coffee is a Hong Kong based company with an ambition to spread the Art of Beverages. We provide our services to anyone with an interest in creating beverages and who is looking for a hands-on approach.</p>
+                <a href="#" class="btn">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2>Our Services</h2>
+        <p style="margin-top: 15px; color: #aaa;">
+            Looking for a creative workshop? Starting a cafe with no experience?<br>
+            Trying to develop a new beverage? We are here to help!
+        </p>
+        
+        <div class="gallery-grid">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1664264538234-XSA4KWUL604Q9IOUYRTN/2062A29E-DDC4-4896-AA1C-87E38564A348.jpeg" alt="Coffee 1">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1578928160045-VA4LRF8RHZ10G88FJ11S/latte+art+-+swan.jpg" alt="Latte Art">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1578928156235-IDOPM5AUAMWMQ9H1KN19/chemex.jpg" alt="Chemex">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1664254449361-JC9CFJS568UEW30QAI4Q/2004F6BB-9042-4116-B25B-226854784AA5.jpeg" alt="Beans">
+        </div>
+        <a href="#shop" class="btn">Shop Now</a>
+    </section>
+
+    <section id="clients">
+        <h2 style="margin-bottom: 30px;">Our Clients</h2>
+        <div class="clients-grid">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/6539c1b9-68f4-4d4c-846e-1a7084ab8e46/Fonterra-may-pull-out-of-Beingmate-China-deal-following-disastrous-results-announcement.jpeg" alt="Client 1">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/90ca14a8-3bc5-46af-8fdb-83c4717f6960/VW+Vegan.jpeg" alt="Client 2">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/e8870aca-2828-4e39-bb22-8f74d2e26c81/04D69712-F5F5-45B3-9F4E-E47273612BEA.png" alt="Client 3">
+            <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/07c703fc-1125-4d22-b008-81d10a44deb3/logo-orasi.png" alt="Orasi">
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <h2>Bulu Coffee Co.</h2>
+            <p>Kowloon, Hong Kong</p>
+            <p>Tel: 5919 9723 | Email: bulucoffee@gmail.com</p>
+            <div class="social-links">
+                <a href="https://instagram.com/bulucoffee" target="_blank">Instagram</a>
+                <a href="https://facebook.com/bulucoffee" target="_blank">Facebook</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #666;">&copy; 2024 Bulu Coffee. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
