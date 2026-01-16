@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulu Coffee | 極簡手沖咖啡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* CSS 變數設定 */
+        :root {
+            --bg-color: #1a1a1a;       /* 深炭灰 */
+            --accent-color: #c5a367;   /* 質感金 */
+            --text-color: #e0e0e0;     /* 淺灰白 */
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Noto Sans TC', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* 導航欄 */
+        nav {
+            position: fixed;
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.9);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--accent-color); }
+
+        /* Hero 區塊 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2000'); /* 預設背景圖 */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        /* 內容區塊通用樣式 */
+        section { padding: 100px 10%; max-width: 1200px; margin: 0 auto; }
+
+        h2 {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--accent-color);
+        }
+
+        /* 關於我們 */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-img {
+            width: 100%;
+            height: 400px;
+            background: url('https://images.unsplash.com/photo-1442410346700-276696ae5079?auto=format&fit=crop&q=80&w=800') center/cover;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* 菜單區塊 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-item {
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .menu-item h3 { font-size: 1.1rem; font-weight: 400; }
+        .price { color: var(--accent-color); font-family: var(--font-serif); }
+
+        /* 頁尾 */
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* 手機版優化 */
+        @media (max-width: 768px) {
+            .about-content { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } /* 簡化手機版導航 */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">BULU COFFEE</a>
+        <div class="nav-links">
+            <a href="#about">故事</a>
+            <a href="#menu">菜單</a>
+            <a href="#contact">聯絡</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>喚醒純粹的味蕾</h1>
+        <p>一杯好咖啡，值得您靜心等待</p>
+    </section>
+
+    <section id="about">
+        <h2>OUR STORY</h2>
+        <div class="about-content">
+            <div class="about-img"></div>
+            <div class="about-text">
+                <p>我們深信咖啡不只是一杯飲品，它是連結土地與生活的媒介。從嚴選莊園生豆到細緻的手工烘焙，Bulu Coffee 堅持呈現豆子最原始的風土風味。</p>
+                <br>
+                <p>在簡約的空間裡，聽著磨豆機的聲響，感受手沖壺緩慢注水的節奏。這是我們對咖啡的敬意，也是給您的生活儀式感。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="menu">
+        <h2>MENU</h2>
+        <div class="menu-grid">
+            <div class="menu-category">
+                <div class="menu-item">
+                    <h3>衣索比亞 耶加雪菲 (手沖)</h3>
+                    <span class="price">$180</span>
+                </div>
+                <div class="menu-item">
+                    <h3>哥倫比亞 聖徒 (手沖)</h3>
+                    <span class="price">$200</span>
+                </div>
+                <div class="menu-item">
+                    <h3>經典美式</h3>
+                    <span class="price">$120</span>
+                </div>
+                <div class="menu-item">
+                    <h3>燕麥牛奶拿鐵</h3>
+                    <span class="price">$160</span>
+                </div>
+            </div>
+            <div class="menu-category">
+                <div class="menu-item">
+                    <h3>焦糖肉桂捲</h3>
+                    <span class="price">$110</span>
+                </div>
+                <div class="menu-item">
+                    <h3>手工巴斯克蛋糕</h3>
+                    <span class="price">$140</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>VISIT US</h2>
+        <div style="text-align: center;">
+            <p>台北市某某區某某路 123 號</p>
+            <p>Mon - Sun | 10:00 - 18:00</p>
+            <br>
+            <p style="color: var(--accent-color);">Instagram / @bulucoffee_tw</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 BULU COFFEE. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
