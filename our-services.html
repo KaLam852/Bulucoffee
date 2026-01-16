@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
-        /* --- 全局設定 --- */
+        /* --- 全局設定 (與 About/Index 頁面完全一致) --- */
         :root {
             --bg-color: #111111;
             --text-color: #e0e0e0;
@@ -84,7 +84,7 @@
 
         .service-row:last-child { border-bottom: none; } /* 最後一個不要線 */
 
-        .service-text h3 { font-size: 2rem; margin-bottom: 20px; color: #fff; }
+        .service-text h3 { font-size: 2rem; margin-bottom: 20px; color: #fff; border-left: 3px solid var(--accent-color); padding-left: 15px; }
         .service-text p { margin-bottom: 20px; color: #ccc; font-size: 1rem; text-align: justify; }
 
         /* 圖片效果 */
@@ -95,10 +95,10 @@
             height: 400px; /* 固定高度保持整齊 */
             object-fit: cover;
         }
-        .service-img img:hover { filter: brightness(1.1); }
+        .service-img img:hover { filter: brightness(1.1); transform: translateY(-5px); }
 
         /* --- 交錯排版邏輯 --- */
-        /* 偶數行 (2, 4...) 文字在左，圖片在右 */
+        /* 偶數行 (Reverse) 文字在左，圖片在右 */
         .service-row.reverse .service-text { order: 1; }
         .service-row.reverse .service-img { order: 2; }
 
@@ -113,6 +113,8 @@
             /* 手機版統一順序：圖在上，文在下 */
             .service-row.reverse .service-text { order: 2; }
             .service-row.reverse .service-img { order: 1; }
+            
+            .page-header h1 { font-size: 2.5rem; }
         }
 
         /* --- Footer SVG 圖標樣式 --- */
@@ -158,7 +160,7 @@
         </div>
         <nav>
             <ul>
-                <li><a href="about.html">About</a></li>
+                <li><a href="about.html">About</a></li> 
                 <li><a href="services.html" style="color: var(--accent-color);">Services</a></li>
                 <li><a href="index.html#clients">Clients</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -181,7 +183,7 @@
                 <p>Are you looking for a Coffee & Beverages Workshop which incorporates sustainability, are eco-friendly and highly creative?</p>
                 <p>At Bulu! we hold various workshops, including coffee brewing and bartending, for corporates, schools, bars and cafes.</p>
                 <p>We offer the best quality workshops and are committed to only using sustainable ingredients in the hope to build environmental awareness and to embed a social conscience in everyone who joins us.</p>
-                <p style="color: var(--accent-color);">Call us today to find out more about our tailor-made packages!</p>
+                <p style="color: var(--accent-color); font-weight: 500;">Call us today to find out more about our tailor-made packages!</p>
             </div>
         </div>
 
@@ -190,7 +192,7 @@
                 <h3>Beverage R&D Service</h3>
                 <p>We are not just coffee specialists! We also design unique recipes for other beverages. We play with textures, colours, balances of flavours, astringency versus sweetness and so on.</p>
                 <p>We are not showmen, we simply are the experts at cooking drinks. We have created recipes for Cafés, Bars, Plant Milk and Syrup companies around Hong Kong.</p>
-                <p style="color: var(--accent-color);">Contact us today to create your new beverage formula!</p>
+                <p style="color: var(--accent-color); font-weight: 500;">Contact us today to create your new beverage formula!</p>
             </div>
             <div class="service-img">
                 <img src="https://images.squarespace-cdn.com/content/v1/5dea1be01d07bc193c90c8fa/1578927403113-DSNMJ3ZS6MDDHGRTW14O/jasmine+orange.jpg?format=1500w" alt="Beverage R&D">
@@ -205,7 +207,7 @@
                 <h3>Cafe Consultation</h3>
                 <p>For those who wish to open a cafe but need that little bit of extra help to kick start your journey. Or for those who really want to understand the practical skills and gain experience to get off to a good start.</p>
                 <p>No worries! This is where we can guide you and provide you with step-by-step support. We can help you set up your cafe and provide you with the basic working ground you need.</p>
-                <p>Learn from others' mistakes! <span style="color: var(--accent-color);">Let's start with your first consultation!</span></p>
+                <p>Learn from others' mistakes! <span style="color: var(--accent-color); font-weight: 500;">Let's start with your first consultation!</span></p>
             </div>
         </div>
 
