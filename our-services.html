@@ -13,7 +13,7 @@
             --bg-color: #1a1a1a;
             --text-color: #f0f0f0;
             --accent-color: #c5a367; /* 金色點綴 */
-            --nav-bg: rgba(0, 0, 0, 0.9);
+            --nav-bg: rgba(17, 17, 17, 0.95)
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,14 +22,15 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Noto Sans TC', sans-serif;
-            line-height: 1.6;
-            text-align: center;
-        }
+            line-height: 1.8;
+            overflow-x: hidden;
 
         h1, h2, h3 {
             font-family: 'Cormorant Garamond', serif;
             font-weight: 600;
             letter-spacing: 1px;
+            color: var(--accent-color);
+            text-transform: uppercase;        
         }
         a { text-decoration: none; color: inherit; transition: 0.3s; }
         a:hover { color: var(--accent-color); }
