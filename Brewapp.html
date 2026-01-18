@@ -678,8 +678,8 @@
         };
 
         const langInstruction = currentLang === 'zh' 
-            ? `OUTPUT: Traditional Chinese (Taiwan style). ${proTerms.zh} Tone: Scientific.`
-            : `OUTPUT: English. ${proTerms.en} Tone: Scientific.`;
+            ? `OUTPUT: Traditional Chinese (Taiwan style). ${proTerms.zh} Tone: Scientific, Detailed, Analytical, Precise.`,
+            : `OUTPUT: English. ${proTerms.en} Tone: Scientific, Detailed, Analytical, Precise.`;
 
         try {
             // Upload to Supabase first
@@ -697,17 +697,27 @@
             Image: Extract origin/roast/process/date.
 
             【LOGIC KERNEL】
-            1. **${langInstruction}**
-            2. **Strategy**: If Dark Roast -> Lower Temp (88-90), Low Agitation. If Light Roast -> High Temp (93-96).
-            3. **Freshness**: If <10 days -> High turbulence. If >60 days -> Gentle.
-
+            1. **${lang}** (Strict).
+            2. **Physics**: 
+            - **High Density (Africa/Light)**: High Temp (93-96), High Agitation.
+            - **Low Density (Brazil/Dark)**: Low Temp (88-90), Low Agitation.
+            - **Natural/Honey**: Coarser grind, steady flow (avoid clogging).
+            - **Washed**: Finer grind, pulse pour.
+            3. **Freshness**: 
+            - <10 days: High turbulence (degas). 
+            - >60 days: Low temp, gentle pour. *Tone: Use "Extended Resting" (positive), never "Expired".*
+            4. **Gear**:
+            - Flat Bottom/Switch: Immersion/Hybrid logic.
+            - Cone/Chemex: Flow restriction logic.
+            - Adjust grind specific to ${grinder}.
             【OUTPUT JSON ONLY】
             {
                 "bean": { "origin": "Txt", "roast_date": "YYYY-MM-DD", "days_old": "Num", "tags": ["Tag1","Tag2"] },
-                "strategy": "Analysis summary (80 words).",
+                "strategy": "80-word pro analysis. Why this path?",
                 "prep": { "grind": "Setting for ${grinder}", "temp": "XX°C", "water_total": "${targetWater}g", "time_total": "Time" },
                 "steps": [
-                    { "time": "0:00", "action": "Step Name", "weight": "Target g", "detail": "Technique", "tip": "Why?" }
+                    { "time": "0:00", "action": "Step Name", "weight": "Target g", "detail": "Technique", "tip": "Coffee Theory tip" }
+                ] }
                 ]
             }`;
 
