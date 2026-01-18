@@ -8,18 +8,32 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        :root {
-            /* Bulu Coffee 品牌色系：自然、工藝、可持續 */
-            --brand-primary: #2C4A3B; /* 森林綠 */
-            --brand-secondary: #D4C5B0; /* 暖沙色 */
-            --brand-accent: #E67E22;  /* 活力橘 (用於強調) */
-            --bg-color: #F9F9F7;      /* 米白紙質感 */
-            --text-main: #2D2D2D;
-            --text-light: #888888;
-            --card-bg: #FFFFFF;
-            --radius: 12px;
-            --shadow: 0 4px 12px rgba(44, 74, 59, 0.08);
-        }
+  :root {
+    /* --- Bulu Coffee 專屬配色 (源自 Logo) --- */
+    --brand-primary: #5468AA; /* Logo 的長春花藍色 (文字與線條) */
+    --brand-secondary: #F0F2F9; /* 極淡的藍色背景，比純白更有質感 */
+    --brand-accent: #FFA07A;  /* 臉頰的珊瑚橘 (用於按鈕亮點或強調) */
+    
+    /* --- 介面基礎設定 --- */
+    --bg-color: #FAFAFC;      /* 乾淨、明亮的紙質感背景 */
+    --text-main: #2D3436;     /* 深灰色文字 (比純黑柔和) */
+    --text-light: #636E72;
+    --card-bg: #FFFFFF;
+    --radius: 20px;           /* 更圓潤的導角，呼應 Logo 的圓弧線條 */
+    --shadow: 0 8px 24px rgba(84, 104, 170, 0.12); /* 帶有品牌藍色調的柔和陰影 */
+}
+
+/* 額外優化：讓按鈕變成品牌藍，並帶有圓潤感 */
+.btn-brand {
+    background: var(--brand-primary);
+    box-shadow: 0 4px 12px rgba(84, 104, 170, 0.4);
+    border-radius: 50px; /* 全圓角按鈕，更親切 */
+}
+
+/* 讓載入動畫也配合品牌色 */
+.loading-pulse {
+    background: var(--brand-accent); /* 改用橘色，讓等待時更有活力 */
+}
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
