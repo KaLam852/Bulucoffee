@@ -563,62 +563,130 @@
                 ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
                 : "OUTPUT LANGUAGE: English.";
 
+ // ---------------------------------------------------------
+    // 👑 究極完全體 v7：豆性知識庫 + 器材物理引擎 + 全變數矩陣
+    // ---------------------------------------------------------
+    async function startAnalysis() {
+        const dose = els.inputDose.value;
+        const grinder = document.getElementById('inputGrinder').value || "Generic";
+        const paper = document.getElementById('inputPaper').value || "Standard";
+        
+        // 1. UI 切換
+        els.viewUpload.classList.add('hidden');
+        els.viewLoading.classList.remove('hidden');
+        
+        // 動態載入文字
+        els.loadingText.innerText = currentLang === 'zh' 
+            ? `正在交叉比對產區密度、處理法結構與 ${grinder} 物理特性...` 
+            : `Cross-referencing Origin Density, Process Structure & ${grinder} Physics...`;
+
+        try {
+            // 2. 上傳圖片
+            const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
+            console.log("Image uploaded:", hostedImageUrl);
+
+            // 3. 系統參數
+            const targetWater = Math.round(dose * 15); // 預設 1:15
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 語言設定
+            const langInstruction = currentLang === 'zh' 
+                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
+                : "OUTPUT LANGUAGE: English.";
+
             // 4. 定義「全知全能」Prompt
             const prompt = `
             You are the **Head of Coffee Science**. 
-            Generate a recipe that adapts to the **Roast Date**, **Grinder Physics**, and **Dripper Dynamics**.
+            Generate a recipe by synthesizing **Bean Knowledge** (Phase 1) with **Gear Physics** (Phase 2).
 
             【SYSTEM CONSTRAINTS】
             1. **${langInstruction}**
             2. **Target Water**: ${targetWater}g.
             3. **Current Date**: ${today}.
 
-            【PHASE 1: BEAN & DATE DIAGNOSIS (Crucial)】
-            - **OCR SCAN**: Look for YYYY/MM/DD or "Roasted on". 
-            - **CALCULATION**: Days Old = [${today} - Roast Date].
-            - **Logic**: 
-               - If <10 days (Fresh): High CO2 -> Needs long bloom.
-               - If >60 days (Aged): Oxidized -> Needs lower temp, gentle pour.
-            - **Origin/Process**: Ethiopia (Dense) vs Brazil (Porous).
+            【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
+            Analyze the bean image based on these STRICT rules:
 
-            【PHASE 2: GEAR & GRINDER PHYSICS】
-            - **Comandante C40**: Output "Clicks" (e.g. 24).
-            - **1Zpresso K-Ultra**: Output "Number" (e.g. 7.5).
-            - **Niche Zero**: Output "Mark" (e.g. 45). Go slightly coarser due to fines.
-            - **Fellow Ode**: Output "Dial" (e.g. 5.0).
-            - **EK43**: Output "Dial" (e.g. 9.5).
-            - **Chemex Filter**: Thick paper -> Coarser grind + High Temp.
-            - **Sibarist Filter**: Fast flow -> Finer grind.
-            - **Hario Switch**: Immersion -> Finer grind + Steep time.
+            👉 **A. PROCESSING METHOD RULES**:
+               - **Washed (水洗)**: Clean structure. Needs **High Agitation** & Finer Grind to extract complex acidity.
+               - **Natural (日曬)**: High fines, heavy body. Needs **Coarser Grind** & Controlled Flow to prevent clogging.
+               - **Honey (蜜處理)**: Balance. Treat as hybrid (Medium grind, steady pour).
+               - **Anaerobic/Infused (厭氧/特殊)**: Volatile compounds. Risk of "funkiness". Strategy: **Lower Temp (90-92°C)** & **Low Agitation**.
+               - **Wet-Hulled (濕剝)**: Earthy, low acid. Strategy: **Coarser grind, Pulse pour**.
 
-            【PHASE 3: RECIPE LOGIC】
-            - Combine [Age] + [Density] + [Gear] to determine the protocol.
-            - E.g. Aged Bean + V60 -> "Rescue Protocol" (Low agitation).
+            👉 **B. ORIGIN & DENSITY RULES**:
+               - **Africa (Kenya/Ethiopia)**: EXTREME High Density. Hard to extract. **Needs 93°C - 96°C** + High Turbulence.
+               - **South America (Colombia)**: High Density. Standard 92°C - 94°C.
+               - **Brazil/Island**: Low Density (Soft). Easy to over-extract. **Needs 88°C - 90°C**.
+               - **Panama (Geisha)**: Delicate florals. Needs **Gentle extraction** (90-92°C).
+
+            👉 **C. ROAST LEVEL & FRESHNESS**:
+               - **Light**: High Temp, Finer Grind.
+               - **Dark**: Low Temp (85-88°C), Coarser Grind, Center pour.
+               - **Age**: Fresh (<14 days) = High Gas. Aged (>60 days) = Oxidized. >60 days (Stale), drop temp by 2°C and grind slightly finer (to resist flow).
+
+
+            【PHASE 2: GEAR PHYSICS ENGINE (Variable Isolation)】
+
+            ### PART A: GRINDER PHYSICS (Input: "${grinder}")
+            Determine Base Setting:
+            - **Comandante C40**: "Clicks" (22-28).
+            - **1Zpresso K-Ultra**: "Numbers" (7.0-8.5).
+            - **Niche Zero**: "Mark" (40-55). *Conical high fines.*
+            - **Fellow Ode**: "Dial" (4.0-6.0). *Flat low fines.*
+            - **EK43**: "Dial" (9.0-11.5).
+            - **Generic/Other**: "Desc". *Assume High Fines.*
+
+            ### PART B: FILTER MEDIA PHYSICS (Input: "${paper}")
+            Adjust Grind based on Flow Resistance:
+            - **Chemex Bonded**: EXTREME THICKNESS. **Action: Coarsen Grind (+5 clicks) & High Temp.**
+            - **Sibarist FAST**: ZERO RESISTANCE. **Action: Fine Grind (-4 clicks) & Fast Pour.**
+            - **Cafec Abaca**: FAST FLOW (Osmotic). **Action: Fine Grind (-2 clicks).**
+            - **Cafec T-92**: MEDIUM-SLOW (Density). **Action: Standard/Coarse (+1 click).**
+            - **Hario V60 Standard**: NEUTRAL. **Action: Base Setting.**
+            - **Kalita Wave**: RESTRICTED GEOMETRY. **Action: Coarsen (+1 click).**
+            - **Other**: UNKNOWN. **Action: Safety Coarsen (+1 click).**
+
+            ### PART C: DRIPPER GEOMETRY (Input: "${selectedGear}")
+            Determine Pouring Protocol:
+            - **Hario Switch**: HYBRID/IMMERSION. **Strategy: "Steep & Release" (2:00 hold).**
+            - **Chemex**: DEEP BED/AIRLOCK RISK. **Strategy: "Pulse Pouring" (Lift filter).**
+            - **Kalita Wave**: FLAT BOTTOM/CLOG RISK. **Strategy: "Gentle Center Pour" (Don't swirl).**
+            - **Origami V**: DEEP GROOVES/HIGH BYPASS. **Strategy: "Center + Circle Pours" (Fast flow).**
+            - **Hario V60**: CONICAL/RIBS. **Strategy: "Spiral Pour" (Standard).**
+            - **Other**: GENERIC. **Strategy: "Standard Spiral".**
+
+            【PHASE 3: RECIPE SYNTHESIS (The Logic Gate)】
+            Combine [Bean Rules] + [Gear Physics]. Resolve conflicts using **Priority Logic**:
+            
+            1. **The "Natural" Clog Rule**: If Bean is **Natural** AND Grinder is **Generic/Niche**, PRIORITY = FLOW. **Coarsen Grind** significantly.
+            2. **The "Density" Heat Rule**: If Bean is **Kenya** (High Density) BUT Roast is **Dark**, PRIORITY = ROAST. **Low Temp (88°C)** to avoid ashiness.
+            3. **The "Age" Rescue**: If Bean Age > 60 Days, PRIORITY = STRUCTURE. **Gentle Pours** regardless of dripper type.
 
             【PHASE 4: RECIPE GENERATION (JSON)】
-            Output valid JSON only. Ensure 'roast_date' is extracted.
+            Output valid JSON only.
 
             {
                 "bean": { 
                     "origin": "Detected Origin", 
-                    "roast_date": "Detected Date (e.g. 2023/10/05) or 'Unknown'",
-                    "days_old": "Calculated Number (e.g. 45)",
-                    "tags": ["Roast Level", "Process", "Age: X days", "Paper/Gear Type"] 
+                    "roast_date": "Detected Date",
+                    "days_old": "Calculated Days",
+                    "tags": ["Roast", "Process", "Density Tag", "Freshness Tag"] 
                 },
-                "strategy": "Professional 80-word analysis. MUST START WITH: 'Detected roast date [Date] (X days old)...' Then explain why the specific [Grind Setting] and [Temp] were chosen for this [Gear].",
+                "strategy": "Professional 80-word analysis. MUST EXPLAIN: 'Detected [Origin/Process] which implies [Density/Structure]. Combined with [Grinder/Gear], we recommend [Settings] to balance [Acidity/Body].'",
                 "prep": { 
-                    "grind": "EXACT SETTING for ${grinder}. (e.g. 'C40: 24 Clicks').", 
+                    "grind": "FINAL ADJUSTED SETTING (e.g. 'C40: 26 Clicks - Coarsened for Natural Process').", 
                     "temp": "Specific °C",
                     "water_total": "${targetWater}g",
-                    "time_total": "e.g. '2:45 - 3:00'"
+                    "time_total": "e.g. '2:30 - 3:00'"
                 },
                 "steps": [
                     { 
                         "time": "0:00", 
-                        "action": "悶蒸 (Bloom)", 
-                        "weight": "Target: ${dose * 2}g", 
-                        "detail": "Technique (Center/Spiral)...", 
-                        "tip": "Physics: Why this duration based on bean age?" 
+                        "action": "Step Name", 
+                        "weight": "Target: ...g", 
+                        "detail": "Technique (Spiral/Center)...", 
+                        "tip": "Physics..." 
                     },
                     { 
                         "time": "...", 
