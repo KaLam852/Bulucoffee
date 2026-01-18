@@ -536,10 +536,14 @@
     // 👑 究極完全體 v7：豆性知識庫 + 器材物理引擎 + 全變數矩陣
     // ---------------------------------------------------------
     async function startAnalysis() {
+    // 語言設定
+       const langInstruction = currentLang === 'zh' 
+                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style). Use terms: '4:6法', '滲透壓', '擾動', 'TDS', '梅納反應', '厭氧', '濕剝法'."
+                : "OUTPUT LANGUAGE: English. Use terms: '4:6 Method', 'Osmotic Flow', 'Agitation', 'TDS', 'Anaerobic', 'Wet-Hulled'.";
         const dose = els.inputDose.value;
         const grinder = document.getElementById('inputGrinder').value || "Generic";
         const paper = document.getElementById('inputPaper').value || "Standard";
-        
+           
         // 1. UI 切換
         els.viewUpload.classList.add('hidden');
         els.viewLoading.classList.remove('hidden');
@@ -558,28 +562,27 @@
             const targetWater = Math.round(dose * 15); // 預設 1:15
             const today = new Date().toISOString().split('T')[0];
             
-            // 語言設定
-            const langInstruction = currentLang === 'zh' 
-                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
-                : "OUTPUT LANGUAGE: English.";
-
+      
             // 4. 定義「全知全能」Prompt
             const prompt = `
-            You are the **Head of Coffee Science**. 
-            Generate a recipe by synthesizing **Bean Knowledge** (Phase 1) with **Gear Physics** (Phase 2).
+            You are the **World Barista Champion & Head Scientist** at Bulu Coffee. 
+            Generate **Ultimate Brewing Recipe** by cross-referencing and synthesizing **Bean Knowledge** (Phase 1) with **Gear Physics** (Phase 2).
            
             【INPUT VARIABLES】
             - Dose: ${dose}g
             - Dripper: ${selectedGear}
             - Grinder: ${grinder} 
             - Paper: ${paper}
+            - Image: Extract ALL text (Origin, Roast, Varietal, Process, Altitude, Roast Date).
             
             
             【SYSTEM CONSTRAINTS】
             1. **${langInstruction}** (CRITICAL).
             2. **Target Water**: ${targetWater}g.
             3. **Current Date**: ${today}.
-            4. **Strict Step Logic**: You MUST output at least 4 distinct steps (Bloom -> Pour 1 -> Pour 2 -> Drawdown).
+            4. **Target Yield**: Ratio 1:15 ~ 1:16.6 (Auto-calc water: ${dose} * 15).
+            5. **Water Target Check**: The weight in the final step MUST match the calculated Total Water (${targetWater}g).
+            6. **Completeness**: Do not summarize. Write out every single pour clearly.
 
             【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
                Analyze the bean image based on these STRICT rules:
@@ -637,6 +640,43 @@
             - **Hario V60**: CONICAL/RIBS. **Strategy: "Spiral Pour" (Standard).**
             - **Other**: GENERIC. **Strategy: "Standard Spiral".**
 
+           Based on the Gear + Bean + Roast combination, select the BEST Path:
+
+            👉 **PATH A: The "Complexity" (Light Roast + V60 / Origami)**
+               - **Trigger**: Light Roast + Conical Dripper.
+               - **Structure**: Bloom + 3 Aggressive Pours (4:6 Method style).
+               - **Goal**: High agitation to extract acidity and floral notes.
+
+            👉 **PATH B: The "Sweetness" (Medium/Dark Roast + V60 / Kalita)**
+               - **Trigger**: Medium/Dark Roast + Any Dripper.
+               - **Structure**: Bloom + 1 Steady Continuous Center Pour (Osmotic Flow).
+               - **Goal**: Minimize agitation to keep fines in the bed, reducing astringency and boosting sweetness.
+
+            👉 **PATH C: The "Hybrid" (Hario Switch / Clever)**
+               - **Trigger**: Gear is Switch or Clever.
+               - **Structure**: Bloom -> Pour All Water -> **Close Switch/Steep 2:00** -> Release.
+               - **Goal**: High body, 100% consistent extraction.
+
+            👉 **PATH D: The "Rescue" (Aged Beans > 60 Days)**
+               - **Trigger**: Calculated Age > 60 days.
+               - **Structure**: Short Bloom -> Lower Temp (88-90°C) -> Gentle Center Pours.
+               - **Goal**: Avoid extracting oxidized lipids (rancid flavors).
+
+            👉 **PATH E: The "Stability" (Light Roast + Kalita / Orea / Flat Bottom)**
+               - **Trigger**: Light Roast + Flat Bottom Dripper.
+               - **Structure**: Bloom + 2 Spiral Pours (Gentle).
+               - **Physics**: Flat bottoms stall easily. Do NOT use high agitation. Keep the bed flat to ensure even water distribution.
+
+            👉 **PATH F: The "Deep Bed" (Chemex)**
+               - **Trigger**: Gear is Chemex.
+               - **Structure**: Bloom + 4 Pulse Pours (Keep water level high).
+               - **Physics**: Thick paper requires **High Thermal Mass** (High water level) to push water through. Grind COARSE.
+
+            👉 **PATH G: The "Standard" (Generic / Other)**
+               - **Trigger**: Gear is "Other" or Unknown.
+               - **Structure**: Bloom + 2 Equal Pours (1:1).
+               - **Goal**: The safest method that works for any cone or flat dripper.
+               
             【PHASE 3: RECIPE SYNTHESIS (The Logic Gate)】
             Combine [Bean Rules] + [Gear Physics]. Resolve conflicts using **Priority Logic**:
             
@@ -652,26 +692,26 @@
                     "origin": "Detected Origin", 
                     "roast_date": "Detected Date",
                     "days_old": "Calculated Days",
-                    "tags": ["Roast", "Process", "Density Tag", "Freshness Tag"] 
+                    "tags": ["Roast Level", "Process", "Calculated Age", "Density Estimate"] 
                 },
-                "strategy": "Professional 80-word analysis. MUST EXPLAIN: 'Detected [Origin/Process] which implies [Density/Structure]. Combined with [Grinder/Gear], we recommend [Settings] to balance [Acidity/Body].'",
+                "strategy": "Professional analysis (~80 words). Explain WHY you chose Path [A-G] and how specific variables (Grinder/Paper) influenced the decision.",
                 "prep": { 
-                    "grind": "FINAL ADJUSTED SETTING (e.g. 'C40: 26 Clicks - Coarsened for Natural Process').", 
-                    "temp": "Specific °C",
+                    "grind": "Final Setting (e.g. 'C40: 24 Clicks - Coarsened for Natural')", 
+                    "temp": "XX°C",
                     "water_total": "${targetWater}g",
-                    "time_total": "e.g. '2:30 - 3:00'"
+                    "time_total": "e.g. 2:30"
                 },
                 "steps": [
                     { 
                         "time": "0:00", 
-                        "action": "Step Name", 
-                        "weight": "Target: ...g", 
-                        "detail": "Technique (Spiral/Center)...", 
-                        "tip": "Physics..." 
+                        "action": "Bloom", 
+                        "weight": "Target g", 
+                        "detail": "Technique explanation", 
+                        "tip": "Physics tip" 
                     },
                     { 
                         "time": "...", 
-                        "action": "...", 
+                        "action": "Pour...", 
                         "weight": "...", 
                         "detail": "...", 
                         "tip": "..." 
@@ -736,10 +776,6 @@
     // 5. RENDER FUNCTIONS (修復版：確保 4 格 UI 正常運作)
     // ---------------------------------------------------------
     function renderResult(data) {
-                    // 語言設定
-            const langInstruction = currentLang === 'zh' 
-                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
-                : "OUTPUT LANGUAGE: English.";
         
         // 1. 填入基本資訊
         document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Origin";
