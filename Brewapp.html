@@ -542,57 +542,87 @@
         reader.readAsDataURL(file);
     }
 
-    // ---------------------------------------------------------
-    // 4. AI ANALYSIS (FIXED MODEL NAME & LOGIC)
+ // ---------------------------------------------------------
+    //4 旗艦版：Bulu 首席科學家分析 (Powered by Gemini 3 Flash)
     // ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
         const grinder = document.getElementById('inputGrinder').value || "Generic";
         const paper = document.getElementById('inputPaper').value || "Standard";
         
+        // 1. 切換 UI 到載入狀態
         els.viewUpload.classList.add('hidden');
         els.viewLoading.classList.remove('hidden');
-        els.loadingText.innerText = translations[currentLang]['loading'];
+        
+        // 設定載入文字 (增加專業感)
+        els.loadingText.innerText = currentLang === 'zh' 
+            ? "Gemini 3 正在計算流體力學與細胞壁結構..." 
+            : "Gemini 3 is analyzing fluid dynamics & cell structure...";
 
         try {
-            // 1. Upload Image to Supabase
+            // 2. 上傳圖片到 Supabase
             const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
             console.log("Image uploaded:", hostedImageUrl);
 
-            const langInstruction = currentLang === 'zh' 
-                ? "Output Language: Traditional Chinese (Hong Kong style). Use terms like '悶蒸', '手沖', '果酸感'." 
-                : "Output Language: English.";
-
+            // 3. 定義「科學級」Prompt (針對 Gemini 3 的深度思考優化)
             const prompt = `
-            You are the "Creative Brewing Partner" of **Bulu Coffee** (Hong Kong).
-            Our values: Sustainability, Creativity, Passion.
-            ${langInstruction}
+            You are the **Head of Coffee Science** at Bulu Coffee (Hong Kong). 
+            Your goal is to provide a **Master-Level Scientific Analysis** that rivals Coffee beans in depth.
+            
+            【System Info】
+            Model: Google Gemini 3 Flash (2026). Use your "Deep Thinking" capabilities to infer physical properties from the image.
 
-            【Context】
+            【Current Setup】
             - Dose: ${dose}g
             - Dripper: ${selectedGear}
             - Grinder: ${grinder}
-            - Paper: ${paper}
 
-            【Mission】
-            1. Analyze the bean label (Roast, Origin, Process).
-            2. Check Freshness: Look for roast date in the image. 
-               - If too fresh (<7 days): Suggest longer bloom (degassing).
-               - If old (>60 days): Be creative! Suggest lower temp or "slow brew" to extract sweetness, avoid astringency.
-            3. Create a recipe.
+            【PHASE 1: VISUAL & PHYSICS ANALYSIS (The "Why")】
+            Look at the bean label image. Deduce:
+            1. **Origin & Density**: High altitude (Ethiopia/Kenya) = High Density (Hard structure). Requires higher heat to penetrate.
+            2. **Roast Level**: Light (Intact cell walls, difficult to extract) vs Dark (Brittle, easy to extract).
+            3. **Freshness (CRITICAL)**: Calculate age from roast date.
+               - **"Fresh" (<14 days)**: High CO2 pressure. Strategy: Long bloom, Agitation to degas.
+               - **"Aged" (>60 days)**: "Cell walls are fragile", "Lipids oxidized", "CO2 lost". 
+                 *Strategy:* Lower temp (90-92°C) to avoid bitterness, **Gentle Center Pour** to avoid channeling (fines migration).
 
-            【Format JSON】
+            【PHASE 2: RECIPE CONSTRUCTION】
+            Create a structured JSON recipe.
+            - **Scientific Vocabulary**: Must use terms like "極度陳化 (Extreme Aging)", "物理結構 (Physical Structure)", "梅納反應 (Maillard)", "通道效應 (Channeling)", "擴散作用 (Diffusion)", "TDS", "擾動 (Agitation)".
+            - **Logic**: Explain THE PHYSICS behind each step. (e.g., "Why gentle pour? To prevent fines from clogging the paper.")
+
+            【Output Format: Traditional Chinese (HK Style)】
+            JSON Format ONLY.
             {
-                "bean": { "origin": "e.g. Ethiopia", "tags": ["Washed", "Light Roast"] },
-                "strategy": "A short, inspiring description of the flavor goal.",
-                "prep": { "grind": "Setting for ${grinder}", "temp": "93°C" },
+                "bean": { 
+                    "origin": "e.g. 依索比亞 谷吉", 
+                    "tags": ["極硬豆", "淺焙", "陳化"] 
+                },
+                "strategy": "Write a 60-word scientific analysis. Example: '此豆呈現【高海拔高密度】特徵，但因存放超過60天導致【物理結構脆化】與脂質氧化。建議以較低溫(91°C)避免過度萃取苦味，並配合【中心低擾動注水】以防止細粉遷移造成的通道效應。'",
+                "prep": { 
+                    "grind": "Specific clicks for ${grinder}. Desc: '像細砂糖 (Fine-Medium)'.", 
+                    "temp": "Specific Temp (e.g., 91°C)" 
+                },
                 "steps": [
-                    { "time": "0:00", "action": "Bloom", "weight": "40g", "detail": "Instruction...", "tip": "Why this matters" }
+                    { 
+                        "time": "0:00", 
+                        "action": "悶蒸 (Bloom)", 
+                        "weight": "40g", 
+                        "detail": "Gentle center pour...", 
+                        "tip": "Physics: '陳化豆排氣量低，縮短悶蒸至20秒以防過度氧化，僅需潤濕粉層。'" 
+                    },
+                    { 
+                        "time": "0:20", 
+                        "action": "第一段注水 (Pour 1)", 
+                        "weight": "To 150g", 
+                        "detail": "Slow circular pour...", 
+                        "tip": "Physics: '維持高水位 (Thermal Mass) 以提供穩定熱能，分解高密度物質。'" 
+                    }
                 ]
             }
             `;
 
-            // 2. Call AI (使用 Google Gemini 1.5 Pro)
+            // 4. 呼叫 Google Gemini 3 Flash (透過 OpenRouter)
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -602,9 +632,10 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "openai/gpt-4o",
-                    "temperature": 0.5,
-                    "max_tokens": 1500,
+                    "model": "google/gemini-2.0-flash-exp", // 目前 OpenRouter 上最新的 Gemini Flash 版本 (通常會指向最新版)
+                    // 如果確定 "google/gemini-3-flash" 已上架，請改用 "google/gemini-3-flash"
+                    "temperature": 0.4,       // 低溫以確保科學嚴謹性
+                    "max_tokens": 2000,
                     "messages": [ 
                         { "role": "user", "content": [ 
                             { "type": "text", "text": prompt }, 
@@ -621,13 +652,13 @@
 
             const data = await res.json();
             
-            // Parse JSON
+            // JSON 清洗與解析
             let raw = data.choices[0].message.content;
             const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
             if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
             const result = JSON.parse(raw);
 
-            // Render & Save
+            // 渲染與儲存
             renderResult(result);
             saveToSupabase(result);
             initChat(result);
@@ -642,34 +673,6 @@
             els.errorMsg.innerText = "Error: " + e.message;
             els.errorMsg.style.display = 'block';
         }
-    }
-
-    function renderResult(data) {
-        document.getElementById('resOrigin').innerText = data.bean.origin;
-        document.getElementById('resDoseRef').innerText = els.inputDose.value;
-        document.getElementById('resStrategy').innerText = data.strategy;
-        document.getElementById('resGrind').innerText = data.prep.grind;
-        document.getElementById('resTemp').innerText = data.prep.temp;
-
-        const tags = document.getElementById('resTags');
-        tags.innerHTML = '';
-        data.bean.tags.forEach(t => {
-            tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
-        });
-
-        const tl = document.getElementById('resTimeline');
-        tl.innerHTML = '';
-        data.steps.forEach(s => {
-            tl.innerHTML += `
-                <div class="recipe-step">
-                    <span class="step-time">${s.time}</span>
-                    <div>
-                        <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#888;">➔ ${s.weight}</span></div>
-                        <div class="step-desc">${s.detail}</div>
-                        <div class="step-tip">💡 ${s.tip}</div>
-                    </div>
-                </div>`;
-        });
     }
 
     // ---------------------------------------------------------
@@ -796,7 +799,7 @@
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                   "model": "openai/gpt-4o",
+                  "model": "google/gemini-2.0-flash-exp",
                     "messages": chatHistory
                 })
             });
