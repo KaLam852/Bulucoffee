@@ -529,7 +529,6 @@
     };
 
     // --- INIT ---
-    // 確保網頁讀取完畢才執行 (解決按鈕沒反應的關鍵)
     document.addEventListener("DOMContentLoaded", () => {
         try {
             if (typeof supabase !== 'undefined') _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
@@ -540,7 +539,7 @@
             document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
             document.getElementById('inputPaper').addEventListener('change', (e) => { config.paper = e.target.value; checkConfig(); });
             
-            // 移除 HTML 預設的 disabled，改用 JS 判斷 (讓使用者知道發生什麼事)
+            // 移除 HTML 預設的 disabled
             document.getElementById('btnNext').disabled = false;
         } catch (e) {
             console.error("Init Error:", e);
@@ -580,12 +579,10 @@
     function checkConfig() {
         const isValid = config.gear && config.grinder && config.paper;
         const btn = document.getElementById('btnNext');
-        // 只改變外觀透明度，不鎖死點擊，這樣我們可以跳 Alert
         btn.style.opacity = isValid ? '1' : '0.5';
     }
 
     function goToUpload() {
-        // 在這裡攔截點擊
         if (!config.gear || !config.grinder || !config.paper) {
             alert(translations[currentLang].alert_incomplete);
             return;
@@ -634,19 +631,20 @@
     }
 
     // --- AI ANALYSIS ---
-    async function startAnalysis()
-    
-   // 1. 基本檢查
+    // !!! FIXED: Added the missing { below !!!
+    async function startAnalysis() { 
+       
+       // 1. Basic Checks
         if (!imageBase64) { alert("Please upload an image first."); return; }
 
-        // 2. 定義所有變數 (只定義一次，不要重複)
+        // 2. Define Vars
         const dose = config.dose;
-        const grinder = config.grinder; // 確保有這一行
-        const paper = config.paper;     // 確保有這一行
+        const grinder = config.grinder; 
+        const paper = config.paper;      
         const targetWater = Math.round(dose * 15);
         const today = new Date().toISOString().split('T')[0];
 
-        // 3. 切換 UI 狀態
+        // 3. UI Toggle
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
         updateNav(3);
@@ -690,11 +688,11 @@
             }`;
 
         try {
-            // Supabase Upload (Optional, failsafe included)
+            // Supabase Upload
             let hostedImageUrl = imageBase64;
             if(_supabase) {
                 try {
-                   hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels') || imageBase64;
+                    hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels') || imageBase64;
                 } catch(err) { console.log("Upload skip"); }
             }
 
@@ -761,8 +759,7 @@
         }
     }
 
-    // (保留 Database 和 Chat 相關函式，為節省空間省略，請保留原有的 initChat, saveToSupabase 等)
-    // --- 補上缺失的 Helper Functions ---
+    // --- HELPER FUNCTIONS ---
     function getAnonId() { return localStorage.getItem('bulu_anon_id') || 'u_' + Math.random().toString(36).substr(2, 9); }
     
     async function uploadImgToSupabase(base64, folder) {
@@ -775,15 +772,35 @@
     }
 
     async function saveToSupabase(result) {
-        await _supabase.from('coffee_brewing_logs').insert([{ user_id: getAnonId(), bean_origin: result.bean.origin, ai_strategy: result.strategy, dose_grams: config.dose, full_chat_history: result }]);
+        if(!_supabase) return;
+        try {
+            await _supabase.from('coffee_brewing_logs').insert([{ user_id: getAnonId(), bean_origin: result.bean.origin, ai_strategy: result.strategy, dose_grams: config.dose, full_chat_history: result }]);
+        } catch(e) { console.error("Supabase Save Error", e); }
     }
 
     function initChat(recipe) {
         chatHistory = [{ "role": "system", "content": `Context: ${JSON.stringify(recipe)}. Lang: ${currentLang}` }];
-        document.getElementById('chatWindow').innerHTML = `<div class="chat-msg msg-ai">Rate brew:</div>`; // Simplified for brevity
+        document.getElementById('chatWindow').innerHTML = `<div class="chat-msg msg-ai">Feel free to ask questions about the brew!</div>`; 
     }
     
-    // 這裡我們簡化了 chat，確保重點在 "按鈕修復"
+    // !!! ADDED: Basic Chat function to prevent errors when clicking send !!!
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        const text = input.value;
+        if(!text) return;
+        
+        // UI Update
+        const win = document.getElementById('chatWindow');
+        win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
+        input.value = "";
+        win.scrollTop = win.scrollHeight;
+        
+        // Placeholder AI Response (Since backend chat logic wasn't fully provided)
+        setTimeout(() => {
+             win.innerHTML += `<div class="chat-msg msg-ai">That's a great question! However, the chat AI connection is currently in demo mode. Try adjusting the grind size slightly coarser if it tastes bitter.</div>`;
+             win.scrollTop = win.scrollHeight;
+        }, 800);
+    }
 </script>
 
 </body>
