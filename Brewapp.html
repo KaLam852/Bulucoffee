@@ -149,6 +149,20 @@
             line-height: 1.6; box-shadow: var(--shadow);
         }
 
+        /* 四格資訊欄 */
+        .info-grid {
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
+            margin-bottom: 30px;
+        }
+        .info-card {
+            background: #fff; padding: 12px 5px; border-radius: 12px; 
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .info-label { font-size: 10px; color: #999; margin-bottom: 5px; font-weight: bold; }
+        .info-val { font-weight: bold; color: var(--brand-primary); font-size: 13px; }
+
         .recipe-timeline { border-left: 2px solid #E0E4EB; margin-left: 15px; padding-left: 25px; }
         .recipe-step { margin-bottom: 30px; position: relative; }
         .recipe-step::before {
@@ -214,13 +228,13 @@
                     <i data-lucide="filter"></i><span class="gear-name">V60</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Origami V')">
-                    <i data-lucide="star"></i><span class="gear-name">Origami V60</span>
+                    <i data-lucide="star"></i><span class="gear-name">Origami</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
                     <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
-                    <i data-lucide="toggle-right"></i><span class="gear-name">Hario Switch</span>
+                    <i data-lucide="toggle-right"></i><span class="gear-name">Switch</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Chemex')">
                     <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
@@ -238,7 +252,7 @@
                 <option value="Niche Zero">Niche Zero</option>
                 <option value="Fellow Ode">Fellow Ode</option>
                 <option value="EK43">Mahlkonig EK43</option>
-                <option value="Other">Other</option>
+                <option value="Generic">Other / Generic</option>
             </select>
 
             <select id="inputPaper" class="custom-select">
@@ -248,7 +262,7 @@
                 <option value="Cafec T-92">Cafec T-92</option>
                 <option value="Sibarist">Sibarist FAST</option>
                 <option value="Kalita Wave">Kalita Wave</option>
-                <option value="Chemex">Chemex</option>
+                <option value="Chemex">Chemex Bonded</option>
                  <option value="Other">Other</option>
             </select>
 
@@ -289,19 +303,30 @@
             <div class="res-header">
                 <div style="font-size:11px; letter-spacing:1px; color:#999; text-transform:uppercase;">Custom Recipe for <span id="resDoseRef"></span>g</div>
                 <h2 id="resOrigin" class="res-origin">--</h2>
-                <div id="resTags" style="display: flex; justify-content: center; gap: 8px;"></div>
+                <div id="resTags" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;"></div>
             </div>
 
             <div class="strategy-box" id="resStrategy">--</div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:30px;">
-                <div style="background:#fff; padding:15px; border-radius:12px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                    <div style="font-size:11px; color:#999; margin-bottom:5px; font-weight:bold;">GRIND SIZE</div>
-                    <div id="resGrind" style="font-weight:bold; color:var(--brand-primary); font-size:15px;">--</div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label" data-i18n="lbl_grind">GRIND</div>
+                    <div id="resGrind" class="info-val">--</div>
                 </div>
-                <div style="background:#fff; padding:15px; border-radius:12px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                    <div style="font-size:11px; color:#999; margin-bottom:5px; font-weight:bold;">TEMPERATURE</div>
-                    <div id="resTemp" style="font-weight:bold; color:var(--brand-primary); font-size:15px;">--</div>
+
+                <div class="info-card">
+                    <div class="info-label" data-i18n="lbl_temp">TEMP</div>
+                    <div id="resTemp" class="info-val">--</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-label" data-i18n="lbl_water">WATER</div>
+                    <div id="resWaterTotal" class="info-val">--</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-label" data-i18n="lbl_time">TIME</div>
+                    <div id="resTotalTime" class="info-val">--</div>
                 </div>
             </div>
 
@@ -344,7 +369,7 @@
     lucide.createIcons();
 
     // ---------------------------------------------------------
-    // 1. CONFIGURATION (UPDATED)
+    // 1. CONFIGURATION
     // ---------------------------------------------------------
     const API_KEY = "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";
     const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
@@ -377,7 +402,11 @@
             chat_title: "Ask Bulu Barista",
             btn_restart: "Brew Another Bean",
             loading: "AI IS THINKING...",
-            chat_placeholder: "e.g., The flow is too slow..."
+            chat_placeholder: "e.g., The flow is too slow...",
+            lbl_grind: "GRIND",
+            lbl_temp: "TEMP",
+            lbl_water: "WATER",
+            lbl_time: "TIME"
         },
         zh: {
             title: "沖煮實驗室",
@@ -398,7 +427,11 @@
             chat_title: "詢問 Bulu 咖啡師",
             btn_restart: "沖煮另一支豆",
             loading: "AI 正在思考風味架構...",
-            chat_placeholder: "例如：流速太慢了怎麼辦..."
+            chat_placeholder: "例如：流速太慢了怎麼辦...",
+            lbl_grind: "研磨度",
+            lbl_temp: "水溫",
+            lbl_water: "注水量",
+            lbl_time: "總時間"
         }
     };
 
@@ -429,10 +462,8 @@
     // State
     let selectedGear = null;
     let imageBase64 = null;
-    let currentBrewLogId = null;
     let chatHistory = [];
 
-    // Persist Anon ID
     function getAnonId() {
         let id = localStorage.getItem('bulu_anon_id');
         if (!id) {
@@ -442,7 +473,6 @@
         return id;
     }
 
-    // Elements
     const els = {
         viewConfig: document.getElementById('viewConfig'),
         viewUpload: document.getElementById('viewUpload'),
@@ -502,10 +532,9 @@
         reader.readAsDataURL(file);
     }
 
-// ---------------------------------------------------------
-    //4：Bulu Head Scientist (全產區/全處理法/全變數矩陣)
     // ---------------------------------------------------------
-// ---------------------------------------------------------
+    // 4. BULU HEAD SCIENTIST LOGIC (GPT-4o)
+    // ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
         const grinder = document.getElementById('inputGrinder').value || "Generic";
@@ -517,8 +546,8 @@
         
         // 動態載入文字
         els.loadingText.innerText = currentLang === 'zh' 
-            ? `正在讀取烘焙日期並校正 ${grinder} 刻度...` 
-            : `Reading Roast Date & Calibrating ${grinder}...`;
+            ? `正在掃描烘焙日期並校正 ${grinder} 物理參數...` 
+            : `Scanning Roast Date & Calibrating ${grinder}...`;
 
         try {
             // 2. 上傳圖片
@@ -526,7 +555,7 @@
             console.log("Image uploaded:", hostedImageUrl);
 
             // 3. 系統參數
-            const targetWater = Math.round(dose * 15); // 預設 1:15
+            const targetWater = Math.round(dose * 15); // 自動計算 1:15
             const today = new Date().toISOString().split('T')[0];
             
             // 語言設定
@@ -555,7 +584,7 @@
             【PHASE 2: GEAR & GRINDER PHYSICS】
             - **Comandante C40**: Output "Clicks" (e.g. 24).
             - **1Zpresso K-Ultra**: Output "Number" (e.g. 7.5).
-            - **Niche Zero**: Output "Mark" (e.g. 45). Go coarser for flow.
+            - **Niche Zero**: Output "Mark" (e.g. 45). Go slightly coarser due to fines.
             - **Fellow Ode**: Output "Dial" (e.g. 5.0).
             - **EK43**: Output "Dial" (e.g. 9.5).
             - **Chemex Filter**: Thick paper -> Coarser grind + High Temp.
@@ -655,9 +684,7 @@
     }
 
     // ---------------------------------------------------------
-    // 5. RENDER FUNCTIONS 
-    // ---------------------------------------------------------
-// 5. RENDER FUNCTIONS (升級版：支援四格 UI)
+    // 5. RENDER FUNCTIONS (修復版：確保 4 格 UI 正常運作)
     // ---------------------------------------------------------
     function renderResult(data) {
         // 1. 填入基本資訊
@@ -665,11 +692,16 @@
         document.getElementById('resDoseRef').innerText = els.inputDose.value;
         document.getElementById('resStrategy').innerText = data.strategy;
         
-        // ★ 填入四格資訊
-        document.getElementById('resGrind').innerText = data.prep.grind;
-        document.getElementById('resTemp').innerText = data.prep.temp;
-        document.getElementById('resWaterTotal').innerText = data.prep.water_total || "--"; // 總水量
-        document.getElementById('resTotalTime').innerText = data.prep.time_total || "--";   // 總時間
+        // ★ 安全填入四格資訊 (防止 null 錯誤)
+        const elGrind = document.getElementById('resGrind');
+        const elTemp = document.getElementById('resTemp');
+        const elWater = document.getElementById('resWaterTotal');
+        const elTime = document.getElementById('resTotalTime');
+
+        if(elGrind) elGrind.innerText = data.prep.grind;
+        if(elTemp) elTemp.innerText = data.prep.temp;
+        if(elWater) elWater.innerText = data.prep.water_total || "--";
+        if(elTime) elTime.innerText = data.prep.time_total || "--";
 
         // 2. 渲染標籤 (Tags)
         const tags = document.getElementById('resTags');
@@ -732,7 +764,6 @@
             "content": `You are the Bulu Coffee assistant. Current recipe context: ${JSON.stringify(recipe)}. Answer concisely in the user's preferred language.`
         }];
         
-        // Initial Rating Request
         const win = document.getElementById('chatWindow');
         win.innerHTML = '';
         
@@ -747,7 +778,6 @@
             s.innerHTML = '★'; 
             s.className = 'star-icon';
             s.onclick = (e) => {
-                // Visual feedback
                 const allStars = e.target.parentNode.children;
                 for(let j=0; j<5; j++) {
                     if(j < i) allStars[j].classList.add('filled');
@@ -763,7 +793,6 @@
 
     function handleRating(score) {
         const win = document.getElementById('chatWindow');
-        
         let reply = "";
         let issues = [];
         
@@ -801,16 +830,13 @@
         const text = input.value.trim();
         if(!text) return;
 
-        // UI Update
         const win = document.getElementById('chatWindow');
         win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
         input.value = '';
         win.scrollTop = win.scrollHeight;
 
-        // API Call
         chatHistory.push({ "role": "user", "content": text });
         
-        // Add Loading indicator
         const loadingDiv = document.createElement('div');
         loadingDiv.className = 'chat-msg msg-ai';
         loadingDiv.innerText = "...";
@@ -821,14 +847,14 @@
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  "model": "openai/gpt-4o", // 確保對話也使用 GPT-4o
-                  "messages": chatHistory   
+                  "model": "openai/gpt-4o",
+                  "messages": chatHistory
                 })
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
             
-            loadingDiv.remove(); // Remove loading
+            loadingDiv.remove();
             
             chatHistory.push({ "role": "assistant", "content": reply });
             win.innerHTML += `<div class="chat-msg msg-ai">${reply}</div>`;
