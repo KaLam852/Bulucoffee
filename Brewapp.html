@@ -380,7 +380,7 @@
     // ---------------------------------------------------------
     // 2. LANGUAGE & TRANSLATIONS
     // ---------------------------------------------------------
-    let currentLang = 'zh'; // Default: Traditional Chinese (HK)
+    let currentLang = 'en'; 
 
     const translations = {
         en: {
@@ -548,8 +548,8 @@
 
     // 簡化的語言指令
     const lang = currentLang === 'zh' 
-        ? "OUTPUT: Traditional Chinese (HK). Terms: '4:6法', '滲透壓', '梅納反應', '濕剝法'."
-        : "OUTPUT: English. Terms: '4:6 Method', 'Osmotic Flow', 'Maillard', 'Wet-Hulled'.";
+        ? "OUTPUT: Traditional Chinese (HK)."
+        : "OUTPUT: English.";
 
     try {
         const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
