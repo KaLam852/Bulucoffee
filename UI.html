@@ -137,4 +137,307 @@
 
         /* --- 2. Gear: The "Planets" (Floating Circles) --- */
         .section-label {
-            text-align: center; font-size: 12px; letter
+            text-align: center; font-size: 12px; letter-spacing: 1.5px; 
+            color: var(--text-light); text-transform: uppercase; margin-bottom: 20px;
+        }
+
+        .gear-orbit-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
+            max-width: 400px; margin: 0 auto 40px auto;
+        }
+        
+        .gear-planet {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 彈性動畫 */
+        }
+        
+        .gear-planet i { margin-bottom: 5px; color: #CBD2E0; }
+        .gear-planet span { font-size: 10px; font-weight: 600; color: var(--text-light); }
+
+        .gear-planet.selected {
+            border-color: var(--brand-primary);
+            background: #fff;
+            transform: scale(1.1); /* 選中時放大 */
+            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
+        }
+        .gear-planet.selected i { color: var(--brand-primary); }
+        .gear-planet.selected span { color: var(--brand-primary); }
+
+        /* --- 3. Inputs: Rounded Pills --- */
+        .input-pill-group {
+            width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+        }
+        .custom-select {
+            width: 100%; padding: 15px 20px;
+            background: #fff; border: 1px solid transparent;
+            border-radius: 50px; /* 藥丸形狀 */
+            font-size: 14px; text-align: center; text-align-last: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            appearance: none; color: var(--text-main); font-weight: 500;
+        }
+        .custom-select:focus { border-color: var(--brand-primary); outline: none; }
+
+        /* --- Button: Floating Action --- */
+        .btn-orbit {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: var(--brand-primary); color: #fff;
+            border: none; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.3);
+            cursor: pointer; transition: 0.3s;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 100;
+        }
+        .btn-orbit:active { transform: translateX(-50%) scale(0.9); }
+        .btn-orbit:disabled { background: #CBD2E0; box-shadow: none; }
+        
+        /* 為了讓按鈕不擋住內容 */
+        .spacer { height: 80px; }
+
+        /* --- Upload View: Circular Focus --- */
+        .upload-circle {
+            width: 280px; height: 280px; border-radius: 50%;
+            background: #fff; border: 2px dashed #DDE1E8;
+            margin: 20px auto; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        .upload-label { text-align: center; }
+
+        /* --- Result View: Radial Stats --- */
+        .res-top { text-align: center; margin-bottom: 40px; }
+        .res-origin { 
+            font-family: var(--font-serif); font-size: 32px; 
+            color: var(--brand-primary); margin: 10px 0; 
+        }
+
+        /* 圓形數據環 */
+        .stats-orbit-container {
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .stat-circle {
+            width: 85px; height: 85px; border-radius: 50%;
+            background: #fff; border: 1px solid #F0F2F9;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .stat-label { font-size: 9px; color: var(--text-light); margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-size: 13px; font-weight: 700; color: var(--text-main); text-align: center; padding: 0 5px; line-height: 1.2;}
+
+        .strategy-bubble {
+            background: #fff; padding: 25px; border-radius: 20px;
+            text-align: center; margin-bottom: 30px;
+            font-family: var(--font-serif); font-size: 18px; color: #444;
+            box-shadow: var(--shadow); position: relative;
+        }
+        /* 對話框尖角 */
+        .strategy-bubble::after {
+            content: ''; position: absolute; top: -10px; left: 50%; margin-left: -10px;
+            border-width: 0 10px 10px 10px; border-style: solid;
+            border-color: transparent transparent #fff transparent;
+        }
+
+        /* Timeline: Center Line */
+        .recipe-timeline { 
+            position: relative; padding: 0; margin-top: 20px;
+        }
+        .recipe-timeline::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 50%; 
+            width: 1px; background: #E0E4EB; transform: translateX(-50%);
+        }
+        
+        .recipe-step { 
+            position: relative; margin-bottom: 40px; text-align: center; 
+            background: #fff; padding: 20px; border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            z-index: 2; /* 蓋住線 */
+        }
+        .step-time {
+            display: inline-block; background: var(--brand-primary); color: #fff;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            margin-bottom: 10px; box-shadow: 0 4px 10px rgba(84, 104, 170, 0.3);
+        }
+        .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
+        
+        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); }
+        .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
+
+        .loading-screen { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header class="brand-header">
+        <div class="brand-logo">BULU COFFEE</div>
+        <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
+        <button id="langToggle" class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
+    </header>
+
+    <div class="content-wrap">
+        
+        <section id="viewConfig">
+            <div class="orbit-ring orbit-1"></div>
+            <div class="orbit-ring orbit-2"></div>
+
+            <div class="dose-planet-wrap">
+                <div class="dose-planet">
+                    <span class="dose-label" data-i18n="sec_dose">DOSE</span>
+                    <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
+                    <div style="font-size:10px; color:#aaa; margin-top:5px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
+                </div>
+            </div>
+            
+            <div class="slider-wrapper">
+                <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+            </div>
+
+            <div class="section-label" data-i18n="sec_dripper">SELECT DRIPPER</div>
+            <div class="gear-orbit-grid">
+                <div class="gear-planet" onclick="selectGear(this, 'Hario V60')">
+                    <i data-lucide="filter" size="20"></i><span>V60</span>
+                </div>
+                <div class="gear-planet" onclick="selectGear(this, 'Origami V')">
+                    <i data-lucide="star" size="20"></i><span>Origami</span>
+                </div>
+                <div class="gear-planet" onclick="selectGear(this, 'Kalita Wave')">
+                    <i data-lucide="align-center" size="20"></i><span>Kalita</span>
+                </div>
+                <div class="gear-planet" onclick="selectGear(this, 'Hario Switch')">
+                    <i data-lucide="toggle-right" size="20"></i><span>Switch</span>
+                </div>
+                <div class="gear-planet" onclick="selectGear(this, 'Chemex')">
+                    <i data-lucide="flask-conical" size="20"></i><span>Chemex</span>
+                </div>
+                 <div class="gear-planet" onclick="selectGear(this, 'Other')">
+                    <i data-lucide="more-horizontal" size="20"></i><span data-i18n="gear_other">Other</span>
+                </div>
+            </div>
+
+            <div class="section-label" data-i18n="sec_grinder">GRINDER & PAPER</div>
+            <div class="input-pill-group">
+                <select id="inputGrinder" class="custom-select">
+                    <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
+                    <option value="Comandante C40">Comandante C40</option>
+                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                    <option value="Niche Zero">Niche Zero</option>
+                    <option value="Fellow Ode">Fellow Ode</option>
+                    <option value="EK43">Mahlkonig EK43</option>
+                    <option value="Generic">Other / Generic</option>
+                </select>
+
+                <select id="inputPaper" class="custom-select">
+                    <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
+                    <option value="Hario V60">Hario V60 Standard</option>
+                    <option value="Cafec Abaca">Cafec Abaca</option>
+                    <option value="Cafec T-92">Cafec T-92</option>
+                    <option value="Sibarist">Sibarist FAST</option>
+                    <option value="Kalita Wave">Kalita Wave</option>
+                    <option value="Chemex">Chemex Bonded</option>
+                     <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
+                <i data-lucide="arrow-right" size="24"></i>
+            </button>
+            <div class="spacer"></div>
+        </section>
+
+        <section id="viewUpload" class="hidden" style="text-align:center;">
+             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px;" onclick="backToConfig()">
+                <i data-lucide="arrow-left" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_back">BACK</span>
+            </button>
+            
+            <h2 class="section-label" data-i18n="sec_scan" style="font-size:16px;">SCAN BEAN LABEL</h2>
+            <p style="font-size: 14px; color: #888; margin-bottom: 30px; padding: 0 20px;" data-i18n="scan_desc">
+                AI will analyze the roast level, origin, and freshness.
+            </p>
+
+            <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
+                <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
+                <div class="upload-label">
+                    <i data-lucide="camera" size="48" color="#5468AA" style="margin-bottom:10px;"></i>
+                    <div style="font-weight:700; color:var(--brand-primary);" data-i18n="tap_upload">TAP TO UPLOAD</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
+            </div>
+            
+            <div id="errorMsg" style="color:red; font-size:12px; margin-top:20px; display:none;"></div>
+
+            <button id="btnAnalyze" class="btn-orbit" disabled onclick="startAnalysis()">
+                <i data-lucide="sparkles" size="24"></i>
+            </button>
+        </section>
+
+        <section id="viewResult" class="hidden">
+            <div class="res-top">
+                <div style="font-size:10px; letter-spacing:2px; color:var(--brand-accent); font-weight:700;">RECIPE FOR <span id="resDoseRef"></span>G</div>
+                <h2 id="resOrigin" class="res-origin">--</h2>
+                <div id="resTags" style="display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; margin-top:10px;"></div>
+            </div>
+
+            <div class="strategy-bubble" id="resStrategy">--</div>
+
+            <div class="stats-orbit-container">
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_grind">GRIND</div>
+                    <div id="resGrind" class="stat-val">--</div>
+                </div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_temp">TEMP</div>
+                    <div id="resTemp" class="stat-val">--</div>
+                </div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_water">WATER</div>
+                    <div id="resWaterTotal" class="stat-val">--</div>
+                </div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_time">TIME</div>
+                    <div id="resTotalTime" class="stat-val">--</div>
+                </div>
+            </div>
+
+            <div class="section-label" style="margin-top:40px;" data-i18n="steps_title">BREWING STEPS</div>
+            <div id="resTimeline" class="recipe-timeline"></div>
+
+            <div class="chat-section">
+                <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px; color:var(--brand-primary);">
+                    <i data-lucide="message-circle" size="18"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
+                </div>
+                <div id="chatWindow" class="chat-window" style="height:300px; overflow-y:auto; padding:10px; margin-bottom:10px;"></div>
+                <div class="chat-input-box">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="...">
+                    <button style="background:var(--brand-primary); color:white; border:none; width:40px; height:40px; border-radius:50%;" onclick="sendChat()">
+                        <i data-lucide="send" size="16"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:40px;">
+                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700;">
+                    <i data-lucide="rotate-ccw" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_restart">BREW AGAIN</span>
+                </button>
+            </div>
+            
+            <div style="text-align:center; margin-top:30px; font-size:10px; color:#ccc;">© BULU COFFEE</div>
+        </section>
+
+    </div>
+
+    <div id="viewLoading" class="loading-screen hidden">
+        <div class="loading-pulse"></div>
+        <div style="margin-top:25px; font-family:var(--font-serif); font-weight:700; font-size:20px; color:var(--brand-primary);">BULU LAB</div>
+        <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #888;">CALCULATING ORBIT...</div>
+    </div>
+</div>
+
+</body>
+</html>
