@@ -674,6 +674,9 @@
             4. **Gear Specifics**:
                - Flat Bottom (Kalita/Orea): Focus on raising bed level.
                - Cone (V60): Focus on center vs edge pouring to control bypass.
+               
+               - Chemex Special: Use Pulse Pouring (not continuous) to maintain thermal mass and prevent stalling.
+               
              5. **GRINDER SETTING (FILTER ONLY)**:
                Ignore Espresso settings. Use these FILTER ranges for "${grinder}":
                - **Niche Zero**: 35-50 (Dot). Target 45 for standard V60.
@@ -682,7 +685,11 @@
                - **Fellow Ode**: 4.0-6.0.
                - **EK43**: 9.0-11.5.
                - **Generic**: Medium-Coarse.
+               -**⚠️ CHEMEX OVERRIDE RULE (CRITICAL)**:
+               IF Dripper is "Chemex" OR "Chemex Bonded Paper":
+               **YOU MUST GRIND COARSER** (Chemex paper is 30% thicker)
                *Logic*: Natural Process or Dark Roast? -> Go Coarser (+10%). Washed/Light? -> Go Finer.
+              
 
             【OUTPUT JSON REQUIREMENTS】
             Strictly follow this JSON structure. Do not use Markdown inside the JSON values.
@@ -700,8 +707,8 @@
                         "time": "0:00", 
                         "action": "Step Name (Translate to ${langInstruction})", 
                         "weight": "Target Cumulative Weight (g)", 
-                        "detail": "VERY DETAILED ACTION in ${langInstruction}: Must specify Flow Rate, Pour Height, and Motion.", 
-                        "tip": "SCIENTIFIC INSIGHT in ${langInstruction}: Explain the physics." 
+                        "detail": "VERY DETAILED ACTION in ${langInstruction}: Must specify Pouring, Flow Rate, Agitation, Pour Height, and Motion.", 
+                        "tip": "PROFESSIONAL INSIGHT in ${langInstruction}: Explain the chemistry and physics." 
                     }
                 ]
             }`;
