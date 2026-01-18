@@ -6,29 +6,29 @@
     <title>Bulu Coffee | AI Brew Guide</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-        
+    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">  
     
     <style>
         :root {
-            /* --- Bulu Coffee 品牌專屬配色 (源自 Logo) --- */
-            --brand-primary: #5468AA; /* Logo 藍紫色 (Periwinkle Blue) */
+            /* --- Bulu Coffee 品牌專屬配色 --- */
+            --brand-primary: #5468AA; /* Logo 藍紫色 */
             --brand-secondary: #F0F2F9; /* 極淡藍色背景 */
-            --brand-accent: #FFA07A;  /* Logo 臉頰珊瑚橘 (Coral) */
+            --brand-accent: #FFA07A;  /* Logo 珊瑚橘 */
             
             /* --- 介面基礎設定 --- */
-            --bg-color: #FAFAFC;      /* 乾淨紙質感 */
-            --text-main: #2D3436;     /* 柔和深灰 */
+            --bg-color: #FAFAFC;
+            --text-main: #2D3436;
             --text-light: #636E72;
             --card-bg: #FFFFFF;
-            --radius: 20px;           /* 圓潤導角，呼應手繪線條 */
-            --shadow: 0 8px 24px rgba(84, 104, 170, 0.12); /* 藍色調柔和陰影 */
+            --radius: 20px;
+            --shadow: 0 8px 24px rgba(84, 104, 170, 0.12);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0;
-            font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, 'Noto Sans TC', sans-serif-serif;
+            font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, 'Noto Sans TC', sans-serif;
             background: var(--bg-color);
             color: var(--text-main);
         }
@@ -53,7 +53,7 @@
         }
         .brand-title {
             margin: 4px 0 0 0; font-size: 22px; 
-            font-family: 'Verdana', sans-serif; /* 圓潤一點的字體 */
+            font-family: 'Verdana', sans-serif;
             color: var(--brand-accent);
             font-weight: 700;
         }
@@ -103,11 +103,11 @@
         /* --- Buttons --- */
         .btn-brand {
             width: 100%; padding: 18px; 
-            background: var(--brand-primary); /* Bulu Blue */
-            color: #fff; border: none; border-radius: 50px; /* 全圓角 */
+            background: var(--brand-primary);
+            color: #fff; border: none; border-radius: 50px;
             font-size: 16px; font-weight: bold; cursor: pointer;
             margin-top: 35px; display: flex; justify-content: center; align-items: center; gap: 10px;
-            box-shadow: 0 8px 20px rgba(84, 104, 170, 0.3); /* 藍色光暈 */
+            box-shadow: 0 8px 20px rgba(84, 104, 170, 0.3);
             transition: transform 0.1s;
         }
         .btn-brand:active { transform: scale(0.98); }
@@ -134,7 +134,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .loading-pulse {
-            width: 60px; height: 60px; background: var(--brand-accent); /* 橘色 Loading */
+            width: 60px; height: 60px; background: var(--brand-accent);
             border-radius: 50%; animation: pulse 1.2s infinite;
         }
         @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
@@ -209,87 +209,47 @@
             </div>
 
             <h2 class="section-title"><i data-lucide="coffee" size="18"></i> <span data-i18n="sec_dripper">2. Select Dripper</span></h2>
-
             <div class="gear-grid">
-
                 <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
-
                     <i data-lucide="filter"></i><span class="gear-name">V60</span>
-
                 </div>
-
                 <div class="gear-item" onclick="selectGear(this, 'Origami V')">
-
                     <i data-lucide="star"></i><span class="gear-name">Origami V60</span>
-
                 </div>
-
                 <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
-
                     <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
-
                 </div>
-
                 <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
-
                     <i data-lucide="toggle-right"></i><span class="gear-name">Hario Switch</span>
-
                 </div>
-
                 <div class="gear-item" onclick="selectGear(this, 'Chemex')">
-
                     <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
-
                 </div>
-
                  <div class="gear-item" onclick="selectGear(this, 'Other')">
-
                     <i data-lucide="more-horizontal"></i><span class="gear-name" data-i18n="gear_other">Other</span>
-
                 </div>
-
             </div>
 
-
-
             <h2 class="section-title"><i data-lucide="settings-2" size="18"></i> <span data-i18n="sec_grinder">3. Grinder & Paper</span></h2>
-
             <select id="inputGrinder" class="custom-select">
-
                 <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
-
                 <option value="Comandante C40">Comandante C40</option>
-
                 <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-
                 <option value="Niche Zero">Niche Zero</option>
-
                 <option value="Fellow Ode">Fellow Ode</option>
-
                 <option value="EK43">Mahlkonig EK43</option>
-
                 <option value="Other">Other</option>
-
             </select>
 
             <select id="inputPaper" class="custom-select">
-
                 <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
-
                 <option value="Hario V60">Hario V60 Standard</option>
-
                 <option value="Cafec Abaca">Cafec Abaca</option>
-
                 <option value="Cafec T-92">Cafec T-92</option>
-
                 <option value="Sibarist">Sibarist FAST</option>
-
                 <option value="Kalita Wave">Kalita Wave</option>
-
                 <option value="Chemex">Chemex</option>
-
                  <option value="Other">Other</option>
-
             </select>
 
             <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
@@ -542,8 +502,8 @@
         reader.readAsDataURL(file);
     }
 
- // ---------------------------------------------------------
-    //4 旗艦版：Bulu 首席科學家分析
+    // ---------------------------------------------------------
+    // 4. 旗艦版：Bulu 首席科學家分析 (GPT-4o)
     // ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
@@ -554,23 +514,23 @@
         els.viewUpload.classList.add('hidden');
         els.viewLoading.classList.remove('hidden');
         
-        // 設定載入文字 (增加專業感)
+        // 設定載入文字
         els.loadingText.innerText = currentLang === 'zh' 
-            ? "Gemini 3 正在計算流體力學與細胞壁結構..." 
-            : "Gemini 3 is analyzing fluid dynamics & cell structure...";
+            ? "GPT-4o 正在計算流體力學與細胞壁結構..." 
+            : "GPT-4o is analyzing fluid dynamics & cell structure...";
 
         try {
             // 2. 上傳圖片到 Supabase
             const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
             console.log("Image uploaded:", hostedImageUrl);
 
-            // 3. 定義「科學級」Prompt (針對 Gemini 3 的深度思考優化)
+            // 3. 定義「科學級」Prompt
             const prompt = `
             You are the **Head of Coffee Science** at Bulu Coffee (Hong Kong). 
-            Your goal is to provide a **Master-Level Scientific Analysis** that rivals Coffee beans in depth.
+            Your goal is to provide a **Master-Level Scientific Analysis** that rivals "Coffee beans" in depth.
             
             【System Info】
-            Model: Google Gemini 3 Flash (2026). Use your "Deep Thinking" capabilities to infer physical properties from the image.
+            Model: OpenAI GPT-4o. Use your physics & chemistry reasoning capabilities.
 
             【Current Setup】
             - Dose: ${dose}g
@@ -622,7 +582,7 @@
             }
             `;
 
-            // 4. 呼叫 
+            // 4. 呼叫 GPT-4o
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -632,7 +592,7 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "openai/gpt-4o",
+                    "model": "openai/gpt-4o", // ★ 穩定王者
                     "temperature": 0.4,       // 低溫以確保科學嚴謹性
                     "max_tokens": 2000,
                     "messages": [ 
@@ -675,7 +635,45 @@
     }
 
     // ---------------------------------------------------------
-    // 5. DATABASE & STORAGE
+    // 5. RENDER FUNCTIONS 
+    // ---------------------------------------------------------
+    function renderResult(data) {
+        // 1. 填入基本資訊
+        document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Origin";
+        document.getElementById('resDoseRef').innerText = els.inputDose.value;
+        document.getElementById('resStrategy').innerText = data.strategy;
+        document.getElementById('resGrind').innerText = data.prep.grind;
+        document.getElementById('resTemp').innerText = data.prep.temp;
+
+        // 2. 渲染標籤 (Tags)
+        const tags = document.getElementById('resTags');
+        tags.innerHTML = '';
+        if (data.bean.tags && Array.isArray(data.bean.tags)) {
+            data.bean.tags.forEach(t => {
+                tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
+            });
+        }
+
+        // 3. 渲染時間軸 (Timeline)
+        const tl = document.getElementById('resTimeline');
+        tl.innerHTML = '';
+        if (data.steps && Array.isArray(data.steps)) {
+            data.steps.forEach(s => {
+                tl.innerHTML += `
+                    <div class="recipe-step">
+                        <span class="step-time">${s.time}</span>
+                        <div>
+                            <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#888;">➔ ${s.weight}</span></div>
+                            <div class="step-desc">${s.detail}</div>
+                            <div class="step-tip">💡 ${s.tip}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+    }
+
+    // ---------------------------------------------------------
+    // 6. DATABASE & STORAGE
     // ---------------------------------------------------------
     async function uploadImgToSupabase(base64, folder) {
         try {
@@ -700,7 +698,7 @@
     }
 
     // ---------------------------------------------------------
-    // 6. CHAT / RATING SYSTEM
+    // 7. CHAT / RATING SYSTEM
     // ---------------------------------------------------------
     function initChat(recipe) {
         chatHistory = [{
@@ -739,7 +737,6 @@
 
     function handleRating(score) {
         const win = document.getElementById('chatWindow');
-        // Prevent double rating visual spam, just clear instructions
         
         let reply = "";
         let issues = [];
@@ -793,13 +790,13 @@
         loadingDiv.innerText = "...";
         win.appendChild(loadingDiv);
 
-       try {
+        try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  "model": "openai/gpt-4o",
-                    "messages": chatHistor
+                  "model": "openai/gpt-4o", // 確保對話也使用 GPT-4o
+                  "messages": chatHistory   // ★ 已修復這裡的拼字錯誤 (原本是 chatHistor)
                 })
             });
             const data = await res.json();
