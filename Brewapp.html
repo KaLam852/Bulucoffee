@@ -634,17 +634,23 @@
     }
 
     // --- AI ANALYSIS ---
-    async function startAnalysis() {
+    async function startAnalysis()
+    
+   // 1. 基本檢查
         if (!imageBase64) { alert("Please upload an image first."); return; }
 
+        // 2. 定義所有變數 (只定義一次，不要重複)
         const dose = config.dose;
+        const grinder = config.grinder; // 確保有這一行
+        const paper = config.paper;     // 確保有這一行
         const targetWater = Math.round(dose * 15);
         const today = new Date().toISOString().split('T')[0];
 
+        // 3. 切換 UI 狀態
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
         updateNav(3);
-
+    
         const prompt = `
             Role: World Barista Champion & Coffee Scientist.
             Task: Create an EXTREMELY DETAILED, high-precision brewing recipe.
