@@ -590,7 +590,7 @@
             }
             `;
 
-            // 2. Call AI (FIXED MODEL NAME)
+            // 2. Call AI (使用 Google Gemini 1.5 Pro)
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -600,7 +600,7 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-1.5-pro", // CORRECTED MODEL NAME
+                    "model": "google/gemini-1.5-pro", 
                     "temperature": 0.5,
                     "max_tokens": 1500,
                     "messages": [ 
@@ -789,12 +789,12 @@
         loadingDiv.innerText = "...";
         win.appendChild(loadingDiv);
 
-        try {
+       try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "model": "google/gemini-1.5-pro"", // Use the correct model for chat too
+                    "model": "google/gemini-1.5-pro",
                     "messages": chatHistory
                 })
             });
