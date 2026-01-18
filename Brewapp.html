@@ -654,7 +654,7 @@
 
         // 2. 修改 Prompt
         const prompt = `
-            Role: World Barista Champion & Coffee Scientist.
+            Role: World Barista Champion.
             Task: Create an EXTREMELY DETAILED, high-precision brewing recipe.
             
             【INPUTS】
@@ -675,7 +675,13 @@
                - Flat Bottom (Kalita/Orea): Focus on raising bed level.
                - Cone (V60): Focus on center vs edge pouring to control bypass.
              5. **GRINDER SETTING (FILTER ONLY)**:
-               - Ignore Espresso settings. Use FILTER ranges settings for "${grinder}".
+               Ignore Espresso settings. Use these FILTER ranges for "${grinder}":
+               - **Niche Zero**: 35-50 (Dot). Target 45 for standard V60.
+               - **Comandante C40**: 22-28 Clicks.
+               - **1Zpresso K-Ultra**: 7.0-8.5.
+               - **Fellow Ode**: 4.0-6.0.
+               - **Generic**: Medium-Coarse.
+               *Logic*: Natural Process or Dark Roast? -> Go Coarser (+10%). Washed/Light? -> Go Finer.
 
             【OUTPUT JSON REQUIREMENTS】
             Strictly follow this JSON structure. Do not use Markdown inside the JSON values.
