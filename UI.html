@@ -11,7 +11,7 @@
     
     <style>
         :root {
-            /* --- [保留] Bulu Coffee 品牌專屬配色 --- */
+            /* --- [保留] 品牌配色 --- */
             --brand-primary: #5468AA;
             --brand-secondary: #F0F2F9;
             --brand-accent: #FFA07A;
@@ -21,425 +21,120 @@
             --text-main: #2D3436;
             --text-light: #636E72;
             --card-bg: #FFFFFF;
-            --radius: 20px;
-            --shadow: 0 8px 24px rgba(84, 104, 170, 0.12);
-
+            
             /* 新增排版變數 */
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Noto Sans TC', sans-serif;
+            
+            /* 放射式設計專用 */
+            --circle-size: 240px; /* 主圓盤大小 */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             margin: 0; padding: 0;
-            font-family: var(--font-sans); /* 預設使用無襯線體 */
-            background: var(--bg-color);
+            font-family: var(--font-sans);
+            background: radial-gradient(circle at top center, #F0F2F9 0%, #FAFAFC 70%); /* 放射狀背景 */
             color: var(--text-main);
-            padding-bottom: 40px;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- New Layout: Fluid Container --- */
+        /* --- Layout: Centered & Radial --- */
         .content-wrap { 
-            max-width: 600px; 
+            max-width: 500px; 
             margin: 0 auto; 
-            padding: 0 24px 120px 24px; 
+            padding: 20px 24px 100px 24px; 
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- Header: Clean & Minimal --- */
+        .hidden { display: none !important; }
+
+        /* --- Header: Center Alignment --- */
         .brand-header {
-            padding: 30px 24px 10px 24px;
-            background: var(--bg-color); /* 與背景融合 */
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            position: sticky; top: 0; z-index: 50;
-            backdrop-filter: blur(8px);
-            background: rgba(250, 250, 252, 0.9);
+            padding: 40px 0 20px 0;
+            text-align: center;
+            width: 100%;
         }
-        
-        .header-left { display: flex; flex-direction: column; }
         
         .brand-logo {
-            font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            font-size: 10px; font-weight: 700; letter-spacing: 3px;
             color: var(--brand-accent); text-transform: uppercase; margin-bottom: 5px;
         }
         .brand-title {
             margin: 0; 
-            font-family: var(--font-serif); /* 標題使用襯線體 */
+            font-family: var(--font-serif);
             font-size: 32px; 
             color: var(--brand-primary);
             font-weight: 700;
-            line-height: 1;
         }
 
         .btn-lang {
-            background: transparent; 
-            border: 1px solid var(--brand-primary);
-            color: var(--brand-primary); 
-            padding: 6px 16px;
-            border-radius: 100px; 
-            font-size: 11px; font-weight: 700;
+            position: absolute; top: 20px; right: 20px;
+            background: transparent; border: 1px solid #E0E4EB;
+            color: var(--text-light); padding: 5px 12px;
+            border-radius: 20px; font-size: 10px; font-weight: 700;
             cursor: pointer;
         }
 
-        /* --- Section Titles: Side Labels --- */
-        /* 將標題改為側邊標籤感，打破垂直堆疊 */
-        .section-title {
-            font-family: var(--font-serif);
-            font-size: 18px; 
-            margin: 40px 0 15px 0; 
-            color: var(--text-main);
-            display: flex; align-items: center; gap: 8px; font-weight: 700;
+        /* --- 1. Dose: The "Sun" (Central Dial) --- */
+        /* 這是放射式的核心：巨大的圓形控制器 */
+        .dose-planet-wrap {
+            position: relative;
+            width: var(--circle-size);
+            height: var(--circle-size);
+            margin: 20px auto 40px auto;
+            display: flex; justify-content: center; align-items: center;
         }
-        .section-title i { color: var(--brand-primary); }
+        
+        .dose-planet {
+            width: 100%; height: 100%;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 20px 50px rgba(84, 104, 170, 0.15), 
+                        inset 0 0 0 1px rgba(84, 104, 170, 0.05); /* 外光暈 */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
+            z-index: 2;
+        }
 
-        /* --- 1. Dose: Hero Unit (巨大化) --- */
-        .dose-container {
-            background: transparent; /* 移除背景色塊，改用純文字呈現 */
-            padding: 10px 0; 
-            box-shadow: none; 
-            text-align: center;
+        /* 裝飾軌道線 */
+        .orbit-ring {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0;
+            pointer-events: none;
         }
-        .dose-display-wrap {
-            display: flex; justify-content: center; align-items: baseline;
+        .orbit-1 { width: 320px; height: 320px; opacity: 0.6; }
+        .orbit-2 { width: 450px; height: 450px; opacity: 0.3; }
+
+        .dose-label {
+            font-size: 11px; letter-spacing: 2px; color: var(--text-light); 
+            text-transform: uppercase; margin-bottom: 5px;
         }
         .dose-display { 
             font-family: var(--font-serif);
-            font-size: 96px; /* 超巨大數字 */
-            font-weight: 600; 
-            color: var(--brand-primary); 
-            line-height: 1;
-            letter-spacing: -2px;
+            font-size: 80px; font-weight: 600; 
+            color: var(--brand-primary); line-height: 1;
         }
-        .dose-unit {
-            font-family: var(--font-serif);
-            font-size: 32px; color: var(--brand-accent); margin-left: 5px;
+        .dose-unit { font-size: 14px; color: var(--brand-accent); font-weight: 600; }
+
+        /* 將 Slider 隱藏在圓盤下方，作為互動層 */
+        .slider-wrapper {
+            position: absolute; bottom: -40px; width: 200px; text-align: center;
         }
-        
-        /* 線條式拉桿 */
         input[type=range] { 
-            width: 100%; margin: 20px 0; 
+            width: 100%; -webkit-appearance: none; background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
             height: 4px; background: #E0E4EB; border-radius: 2px;
-            -webkit-appearance: none;
         }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px; height: 24px; 
-            background: var(--brand-primary); 
-            border: 3px solid #fff; 
-            border-radius: 50%; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            margin-top: -10px;
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+            background: var(--brand-primary); margin-top: -8px; 
+            border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* --- 2. Gear: Horizontal Scroll (橫向捲動) --- */
-        /* 這是最大的改變：將格狀改為橫向滑動列 */
-        .gear-grid { 
-            display: flex; 
-            overflow-x: auto; 
-            gap: 15px; 
-            padding: 5px 5px 20px 5px; /* 預留陰影空間 */
-            scroll-behavior: smooth;
-            -ms-overflow-style: none;  /* IE/Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .gear-grid::-webkit-scrollbar { display: none; } /* Hide scrollbar */
-
-        .gear-item {
-            min-width: 100px; /* 固定寬度 */
-            background: #fff; 
-            border: 1px solid transparent;
-            padding: 20px 10px; 
-            border-radius: 16px; 
-            cursor: pointer;
-            text-align: center; 
-            transition: 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-        }
-        .gear-item i { color: #CBD2E0; transition: 0.2s; }
-        
-        .gear-item.selected {
-            border: 1px solid var(--brand-primary);
-            background: var(--brand-secondary);
-            box-shadow: 0 8px 16px rgba(84, 104, 170, 0.15);
-            transform: translateY(-3px);
-        }
-        .gear-item.selected i { color: var(--brand-primary); }
-        .gear-name { 
-            font-size: 12px; font-weight: 600; color: var(--text-light);
-        }
-        .gear-item.selected .gear-name { color: var(--brand-primary); }
-
-        /* --- 3. Inputs: Modern Fields --- */
-        .custom-select {
-            width: 100%; padding: 18px; 
-            border: none; border-bottom: 2px solid #E0E4EB;
-            border-radius: 0; background: transparent;
-            font-size: 16px; font-weight: 500;
-            margin-bottom: 20px; color: var(--text-main);
-            transition: 0.2s;
-        }
-        .custom-select:focus { border-color: var(--brand-primary); outline: none; }
-
-        /* --- Floating Action Button (FAB) Style --- */
-        .btn-brand {
-            width: 100%; padding: 20px; 
-            background: var(--brand-primary);
-            color: #fff; border: none; border-radius: 16px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
-            margin-top: 40px; 
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            box-shadow: 0 12px 30px rgba(84, 104, 170, 0.25); /* 強烈陰影 */
-            transition: 0.2s;
-        }
-        .btn-brand:active { transform: scale(0.98); }
-        
-        .btn-outline {
-            width: 100%; padding: 15px; background: transparent;
-            border: 1px solid var(--brand-primary); color: var(--brand-primary);
-            border-radius: 16px; margin-top: 15px; font-weight: 600;
-        }
-
-        /* --- Upload Area --- */
-        .upload-box {
-            height: 350px; background: #fff; 
-            border: none;
-            box-shadow: var(--shadow); /* 浮動感 */
-            border-radius: 24px; 
-            position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* --- Result Dashboard (儀表板佈局) --- */
-        .res-header { text-align: left; border-bottom: 1px solid #E0E4EB; padding-bottom: 20px; margin-bottom: 20px; }
-        .res-origin { 
-            font-family: var(--font-serif);
-            font-size: 36px; line-height: 1.1;
-            font-weight: 700; color: var(--brand-primary); 
-            margin: 5px 0 15px 0; 
-        }
-        
-        .strategy-box {
-            background: #fff; padding: 25px; 
-            border-left: 4px solid var(--brand-accent);
-            border-radius: 0 12px 12px 0;
-            font-family: var(--font-serif); font-size: 18px;
-            color: var(--text-main); margin-bottom: 30px; box-shadow: var(--shadow);
-        }
-
-        /* 2x2 Grid for Stats */
-        .info-grid {
-            display: grid; 
-            grid-template-columns: 1fr 1fr; /* 兩欄 */
-            gap: 15px; margin-bottom: 40px;
-        }
-        .info-card {
-            background: #fff; padding: 15px; border-radius: 16px;
-            text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .info-label { 
-            font-size: 10px; color: var(--brand-accent); 
-            font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; 
-        }
-        .info-val { 
-            font-size: 16px; color: var(--text-main); font-weight: 600;
-        }
-
-        /* Timeline: Dot Connector */
-        .recipe-timeline { border-left: 2px dashed #DDE1E8; margin-left: 10px; padding-left: 30px; }
-        .recipe-step { margin-bottom: 40px; position: relative; }
-        .recipe-step::before {
-            content: ''; position: absolute; left: -37px; top: 2px;
-            width: 12px; height: 12px; background: var(--bg-color); 
-            border: 3px solid var(--brand-primary); border-radius: 50%;
-        }
-        .step-time { 
-            font-family: var(--font-serif);
-            font-size: 20px; color: var(--brand-primary); 
-            background: transparent; padding: 0; font-weight: 700;
-        }
-        .step-title { font-size: 17px; margin: 5px 0; color: var(--text-main); font-weight: 700; }
-        
-        /* Chat UI */
-        .chat-section { background: #fff; padding: 20px; border-radius: 24px; box-shadow: var(--shadow); }
-        .chat-window { background: var(--bg-color); border: none; }
-        .msg-ai { background: #fff; border: 1px solid #eee; color: var(--text-main); }
-        .msg-user { background: var(--brand-primary); color: #fff; }
-
-        /* Loading */
-        .loading-screen { background: rgba(255,255,255,0.98); }
-
-        .footer-brand { margin-top: 60px; font-family: var(--font-serif); font-style: italic; }
-    </style>
-</head>
-<body>
-
-<div id="app">
-    <header class="brand-header">
-        <div class="header-left">
-            <div class="brand-logo">BULU COFFEE</div>
-            <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
-        </div>
-        <button id="langToggle" class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
-    </header>
-
-    <div class="content-wrap">
-        
-        <section id="viewConfig">
-            <div class="dose-container">
-                <h2 class="section-title" style="justify-content:center; margin-bottom:5px;"><span data-i18n="sec_dose">1. Set Dose</span></h2>
-                <div class="dose-display-wrap">
-                    <span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span>
-                </div>
-                <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
-                <div style="font-size: 13px; color: var(--text-light); margin-top:5px;" data-i18n="dose_desc">Drag to adjust</div>
-            </div>
-
-            <h2 class="section-title"><i data-lucide="coffee" size="18"></i> <span data-i18n="sec_dripper">2. Select Dripper</span></h2>
-            <div class="gear-grid">
-                <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
-                    <i data-lucide="filter"></i><span class="gear-name">V60</span>
-                </div>
-                <div class="gear-item" onclick="selectGear(this, 'Origami V')">
-                    <i data-lucide="star"></i><span class="gear-name">Origami</span>
-                </div>
-                <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
-                    <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
-                </div>
-                <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
-                    <i data-lucide="toggle-right"></i><span class="gear-name">Switch</span>
-                </div>
-                <div class="gear-item" onclick="selectGear(this, 'Chemex')">
-                    <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
-                </div>
-                 <div class="gear-item" onclick="selectGear(this, 'Other')">
-                    <i data-lucide="more-horizontal"></i><span class="gear-name" data-i18n="gear_other">Other</span>
-                </div>
-            </div>
-
-            <h2 class="section-title"><i data-lucide="settings-2" size="18"></i> <span data-i18n="sec_grinder">3. Grinder & Paper</span></h2>
-            <div style="background:#fff; padding:10px 20px; border-radius:16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <select id="inputGrinder" class="custom-select">
-                    <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
-                    <option value="Comandante C40">Comandante C40</option>
-                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-                    <option value="Niche Zero">Niche Zero</option>
-                    <option value="Fellow Ode">Fellow Ode</option>
-                    <option value="EK43">Mahlkonig EK43</option>
-                    <option value="Generic">Other / Generic</option>
-                </select>
-
-                <select id="inputPaper" class="custom-select" style="border-bottom:none; margin-bottom:0;">
-                    <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
-                    <option value="Hario V60">Hario V60 Standard</option>
-                    <option value="Cafec Abaca">Cafec Abaca</option>
-                    <option value="Cafec T-92">Cafec T-92</option>
-                    <option value="Sibarist">Sibarist FAST</option>
-                    <option value="Kalita Wave">Kalita Wave</option>
-                    <option value="Chemex">Chemex Bonded</option>
-                     <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
-                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="18"></i>
-            </button>
-        </section>
-
-        <section id="viewUpload" class="hidden">
-            <button class="btn-outline" style="border:none; padding-left:0; width:auto; margin-bottom:10px; color:var(--text-light);" onclick="backToConfig()">
-                <i data-lucide="arrow-left" size="18"></i> <span data-i18n="btn_back">Back</span>
-            </button>
-            
-            <h2 class="section-title" data-i18n="sec_scan" style="margin-top:10px;">4. Scan Bean Label</h2>
-            <p style="font-size: 15px; color: var(--text-light); margin-bottom: 25px; line-height: 1.6;" data-i18n="scan_desc">
-                AI will analyze the roast level, origin, and freshness.
-            </p>
-            
-            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-                <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
-                <div class="upload-ui" style="text-align: center;">
-                    <div style="background:var(--brand-secondary); padding:25px; border-radius:50%; display:inline-block; margin-bottom:20px;">
-                        <i data-lucide="scan-line" size="36" color="#5468AA"></i>
-                    </div>
-                    <div style="font-weight:700; color:var(--brand-primary); font-size:16px;" data-i18n="tap_upload">Tap to Upload Photo</div>
-                </div>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
-            </div>
-            
-            <div id="errorMsg" style="color:red; font-size:13px; margin-top:20px; display:none; background:#FFF0F0; padding:15px; border-radius:12px; text-align:center;"></div>
-            
-            <button id="btnAnalyze" class="btn-brand" disabled onclick="startAnalysis()">
-                <span data-i18n="btn_brew">Start Brewing</span> <i data-lucide="sparkles" size="18"></i>
-            </button>
-        </section>
-
-        <section id="viewResult" class="hidden">
-            <div class="res-header">
-                <div style="font-size:11px; letter-spacing:2px; color:var(--brand-accent); font-weight:700; margin-bottom:5px;">RECIPE FOR <span id="resDoseRef"></span>G</div>
-                <h2 id="resOrigin" class="res-origin">--</h2>
-                <div id="resTags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
-            </div>
-
-            <div class="strategy-box" id="resStrategy">--</div>
-
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_grind">GRIND</div>
-                    <div id="resGrind" class="info-val">--</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_temp">TEMP</div>
-                    <div id="resTemp" class="info-val">--</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_water">WATER</div>
-                    <div id="resWaterTotal" class="info-val">--</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_time">TIME</div>
-                    <div id="resTotalTime" class="info-val">--</div>
-                </div>
-            </div>
-
-            <h3 style="font-family: var(--font-serif); font-size: 24px; border-bottom: 1px solid #E0E4EB; padding-bottom: 15px; margin-bottom: 30px; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
-            <div id="resTimeline" class="recipe-timeline"></div>
-
-            <div class="chat-section">
-                <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px; color:var(--brand-primary);">
-                    <i data-lucide="message-circle" size="18"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
-                </div>
-                <div id="chatWindow" class="chat-window"></div>
-                <div class="chat-input-box">
-                    <input type="text" id="chatInput" class="chat-input" placeholder="...">
-                    <button class="btn-icon" style="background:var(--brand-primary); color:white; border:none; width:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="sendChat()">
-                        <i data-lucide="send" size="16"></i>
-                    </button>
-                </div>
-            </div>
-
-            <button onclick="location.reload()" class="btn-outline">
-                <span data-i18n="btn_restart">Brew Another Bean</span> <i data-lucide="rotate-ccw" size="16"></i>
-            </button>
-
-            <div class="footer-brand">
-                © Bulu Coffee | Art of Beverages<br>
-                <a href="https://bulucoffee.com" target="_blank" style="color:#888; text-decoration:none;">bulucoffee.com</a>
-            </div>
-        </section>
-
-    </div>
-
-    <div id="viewLoading" class="loading-screen hidden">
-        <div class="loading-pulse"></div>
-        <div style="margin-top:25px; font-family:var(--font-serif); font-weight:700; font-size:20px; color:var(--brand-primary); letter-spacing:1px;">BULU LAB</div>
-        <div id="loadingText" style="font-size: 12px; letter-spacing: 0.5px; margin-top: 10px; color: #999;">ANALYZING...</div>
-    </div>
-</div>
-
-</body>
-</html>
+        /* --- 2. Gear: The "Planets" (Floating Circles) --- */
+        .section-label {
+            text-align: center; font-size: 12px; letter
