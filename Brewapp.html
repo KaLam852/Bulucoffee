@@ -502,87 +502,120 @@
         reader.readAsDataURL(file);
     }
 
-    // ---------------------------------------------------------
-    // 4. 旗艦版：Bulu 首席科學家分析 (GPT-4o)
+// ---------------------------------------------------------
+    //4：Bulu Head Scientist (全產區/全處理法/全變數矩陣)
     // ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
         const grinder = document.getElementById('inputGrinder').value || "Generic";
         const paper = document.getElementById('inputPaper').value || "Standard";
         
-        // 1. 切換 UI 到載入狀態
+        // 1. UI 切換
         els.viewUpload.classList.add('hidden');
         els.viewLoading.classList.remove('hidden');
         
-        // 設定載入文字
+        // 動態載入文字
         els.loadingText.innerText = currentLang === 'zh' 
-            ? "GPT-4o 正在計算流體力學與細胞壁結構..." 
-            : "GPT-4o is analyzing fluid dynamics & cell structure...";
+            ? "正在分析產區風土、處理法與物理結構..." 
+            : "Analyzing Terroir, Processing & Physical Structure...";
 
         try {
-            // 2. 上傳圖片到 Supabase
+            // 2. 上傳圖片
             const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
             console.log("Image uploaded:", hostedImageUrl);
 
-            // 3. 定義「科學級」Prompt
-            const prompt = `
-            You are the **Head of Coffee Science** at Bulu Coffee (Hong Kong). 
-            Your goal is to provide a **Master-Level Scientific Analysis** that rivals "Coffee beans" in depth.
+            // 3. 系統參數
+            const today = new Date().toISOString().split('T')[0];
             
-            【System Info】
-            Model: OpenAI GPT-4o. Use your physics & chemistry reasoning capabilities.
+            // 語言設定
+            const langInstruction = currentLang === 'zh' 
+                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style). Use terms: '4:6法', '滲透壓', '擾動', 'TDS', '梅納反應', '厭氧', '濕剝法'." 
+                : "OUTPUT LANGUAGE: English. Use terms: '4:6 Method', 'Osmotic Flow', 'Agitation', 'TDS', 'Anaerobic', 'Wet-Hulled'.";
 
-            【Current Setup】
-            - Dose: ${dose}g
-            - Dripper: ${selectedGear}
+            // 4. 定義「全知全能」Prompt (大腦核心)
+            const prompt = `
+            You are the **World Barista Champion & Head Scientist** at Bulu Coffee. 
+            Your task is to generate the **Ultimate Brewing Recipe** by cross-referencing Origin, Process, Roast, and Gear.
+
+            【SYSTEM CONSTRAINTS】
+            1. **${langInstruction}** (CRITICAL).
+            2. **Current Date**: ${today}.
+            3. **Target Yield**: Ratio 1:15 ~ 1:16.6 (Auto-calc water: ${dose} * 15).
+
+            【INPUT VARIABLES】
+            - Gear: ${selectedGear}
             - Grinder: ${grinder}
+            - Image: Extract ALL text (Origin, Region, Varietal, Process, Altitude, Roast Date).
 
-            【PHASE 1: VISUAL & PHYSICS ANALYSIS (The "Why")】
-            Look at the bean label image. Deduce:
-            1. **Origin & Density**: High altitude (Ethiopia/Kenya) = High Density (Hard structure). Requires higher heat to penetrate.
-            2. **Roast Level**: Light (Intact cell walls, difficult to extract) vs Dark (Brittle, easy to extract).
-            3. **Freshness (CRITICAL)**: Calculate age from roast date.
-               - **"Fresh" (<14 days)**: High CO2 pressure. Strategy: Long bloom, Agitation to degas.
-               - **"Aged" (>60 days)**: "Cell walls are fragile", "Lipids oxidized", "CO2 lost". 
-                 *Strategy:* Lower temp (90-92°C) to avoid bitterness, **Gentle Center Pour** to avoid channeling (fines migration).
+            【PHASE 1: THE KNOWLEDGE BASE (Logic Matrix)】
+            Analyze the bean based on these rules:
 
-            【PHASE 2: RECIPE CONSTRUCTION】
-            Create a structured JSON recipe.
-            - **Scientific Vocabulary**: Must use terms like "極度陳化 (Extreme Aging)", "物理結構 (Physical Structure)", "梅納反應 (Maillard)", "通道效應 (Channeling)", "擴散作用 (Diffusion)", "TDS", "擾動 (Agitation)".
-            - **Logic**: Explain THE PHYSICS behind each step. (e.g., "Why gentle pour? To prevent fines from clogging the paper.")
+            👉 **A. PROCESSING METHOD RULES**:
+               - **Washed (水洗)**: Clean structure. Needs **High Agitation** & Finer Grind to extract complex acidity.
+               - **Natural (日曬)**: High fines, heavy body. Needs **Coarser Grind** & Controlled Flow to prevent clogging/astringency.
+               - **Honey (蜜處理)**: Balance. Treat as hybrid (Medium grind, steady pour).
+               - **Anaerobic/Infused (厭氧/特殊發酵)**: Volatile compounds. Risk of "funkiness". Strategy: **Lower Temp (90-92°C)** & **Low Agitation** to keep clarity.
+               - **Wet-Hulled (濕剝/蘇門答臘)**: Earthy, low acid. Strategy: **Coarser grind, Pulse pour** to open up flavors.
 
-            【Output Format: Traditional Chinese (HK Style)】
-            JSON Format ONLY.
+            👉 **B. ORIGIN & DENSITY RULES**:
+               - **Africa (Kenya/Ethiopia/Rwanda)**: EXTREME High Density. Hard to extract. **Needs 93°C - 96°C** + High Turbulence.
+               - **South America (Colombia/Peru)**: High Density. Standard 92°C - 94°C.
+               - **Brazil/Island (Kona/Jamaica)**: Low Density (Soft). Easy to over-extract. **Needs 88°C - 90°C**.
+               - **Panama (Geisha)**: Delicate florals. Needs **Gentle extraction** (90-92°C) to avoid masking tea-like notes.
+               - **Asia (Yunnan/Indonesia)**: Varied. Watch for roast level closely.
+
+            👉 **C. ROAST LEVEL & FRESHNESS**:
+               - **Light**: High Temp, Finer Grind.
+               - **Dark**: Low Temp (85-88°C), Coarser Grind, Osmotic Flow (Center pour).
+               - **Age**: If >60 days, drop temp by 2°C and grind finer.
+
+            【PHASE 2: SELECT BREWING PROTOCOL】
+            Based on the Matrix above, create a specific step-by-step plan.
+            - If **V60 + Light Kenya**: Use "Multi-Pour High Agitation" (Push extraction).
+            - If **V60 + Anaerobic**: Use "Gentle Pour" (Protect volatile aromatics).
+            - If **Switch + Natural**: Use "Hybrid Steep" (Immersion mitigates clogging risk).
+            - If **Flat Bottom (Kalita/Orea)**: Use "Heavy Center Pour" (Increase flow rate).
+
+            【PHASE 3: RECIPE GENERATION (JSON)】
+            Output valid JSON only.
+
             {
                 "bean": { 
-                    "origin": "e.g. 依索比亞 谷吉", 
-                    "tags": ["極硬豆", "淺焙", "陳化"] 
+                    "origin": "Detected Origin (e.g. Kenya Nyeri)", 
+                    "tags": ["Roast", "Process (e.g. Anaerobic)", "Varietal (e.g. SL28)"] 
                 },
-                "strategy": "Write a 60-word scientific analysis. Example: '此豆呈現【高海拔高密度】特徵，但因存放超過60天導致【物理結構脆化】與脂質氧化。建議以較低溫(91°C)避免過度萃取苦味，並配合【中心低擾動注水】以防止細粉遷移造成的通道效應。'",
+                "strategy": "Professional 80-word analysis. EXPLAIN: 'Detected [Origin/Process]. Because this is [Process], I recommend [Technique] to avoid [Risk]. Water temp is set to [Temp] due to [Density].'",
                 "prep": { 
-                    "grind": "Specific clicks for ${grinder}. Desc: '像細砂糖 (Fine-Medium)'.", 
-                    "temp": "Specific Temp (e.g., 91°C)" 
+                    "grind": "Specific setting for ${grinder}. Ex: '24 Clicks'. Reason: 'Natural process creates fines, go coarser'.", 
+                    "temp": "Specific °C" 
                 },
                 "steps": [
                     { 
                         "time": "0:00", 
                         "action": "悶蒸 (Bloom)", 
-                        "weight": "40g", 
-                        "detail": "Gentle center pour...", 
-                        "tip": "Physics: '陳化豆排氣量低，縮短悶蒸至20秒以防過度氧化，僅需潤濕粉層。'" 
+                        "weight": "Target: ${dose * 2}g", 
+                        "detail": "Action (e.g. Swirl or Excavate)...", 
+                        "tip": "Physics: Why this agitation level?" 
                     },
                     { 
-                        "time": "0:20", 
-                        "action": "第一段注水 (Pour 1)", 
-                        "weight": "To 150g", 
-                        "detail": "Slow circular pour...", 
-                        "tip": "Physics: '維持高水位 (Thermal Mass) 以提供穩定熱能，分解高密度物質。'" 
+                        "time": "0:45", 
+                        "action": "Step Name (e.g. Acid Extraction)", 
+                        "weight": "Target: ...g", 
+                        "detail": "Flow rate & Pattern...", 
+                        "tip": "Why this flow rate? (e.g. 'To breakdown high density cell walls')" 
+                    },
+                    { 
+                        "time": "...", 
+                        "action": "...", 
+                        "weight": "...", 
+                        "detail": "...", 
+                        "tip": "..." 
                     }
                 ]
             }
             `;
 
-            // 4. 呼叫 GPT-4o
+            // 5. 呼叫 GPT-4o
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -592,9 +625,9 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "openai/gpt-4o", // ★ 穩定王者
-                    "temperature": 0.4,       // 低溫以確保科學嚴謹性
-                    "max_tokens": 2000,
+                    "model": "openai/gpt-4o", 
+                    "temperature": 0.4, 
+                    "max_tokens": 2500,
                     "messages": [ 
                         { "role": "user", "content": [ 
                             { "type": "text", "text": prompt }, 
@@ -611,7 +644,7 @@
 
             const data = await res.json();
             
-            // JSON 清洗與解析
+            // JSON 解析
             let raw = data.choices[0].message.content;
             const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
             if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
@@ -796,7 +829,7 @@
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                   "model": "openai/gpt-4o", // 確保對話也使用 GPT-4o
-                  "messages": chatHistory   // ★ 已修復這裡的拼字錯誤 (原本是 chatHistor)
+                  "messages": chatHistory   
                 })
             });
             const data = await res.json();
