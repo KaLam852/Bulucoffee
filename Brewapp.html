@@ -3,42 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bulu Coffee Lab | Smart Brewer</title>
+    <title>Bulu Coffee | AI Brew Guide</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-  :root {
-    /* --- Bulu Coffee 專屬配色 (源自 Logo) --- */
-    --brand-primary: #5468AA; /* Logo 的長春花藍色 (文字與線條) */
-    --brand-secondary: #F0F2F9; /* 極淡的藍色背景，比純白更有質感 */
-    --brand-accent: #FFA07A;  /* 臉頰的珊瑚橘 (用於按鈕亮點或強調) */
-    
-    /* --- 介面基礎設定 --- */
-    --bg-color: #FAFAFC;      /* 乾淨、明亮的紙質感背景 */
-    --text-main: #2D3436;     /* 深灰色文字 (比純黑柔和) */
-    --text-light: #636E72;
-    --card-bg: #FFFFFF;
-    --radius: 20px;           /* 更圓潤的導角，呼應 Logo 的圓弧線條 */
-    --shadow: 0 8px 24px rgba(84, 104, 170, 0.12); /* 帶有品牌藍色調的柔和陰影 */
-}
-
-/* 額外優化：讓按鈕變成品牌藍，並帶有圓潤感 */
-.btn-brand {
-    background: var(--brand-primary);
-    box-shadow: 0 4px 12px rgba(84, 104, 170, 0.4);
-    border-radius: 50px; /* 全圓角按鈕，更親切 */
-}
-
-/* 讓載入動畫也配合品牌色 */
-.loading-pulse {
-    background: var(--brand-accent); /* 改用橘色，讓等待時更有活力 */
-}
+        :root {
+            /* --- Bulu Coffee 品牌專屬配色 (源自 Logo) --- */
+            --brand-primary: #5468AA; /* Logo 藍紫色 (Periwinkle Blue) */
+            --brand-secondary: #F0F2F9; /* 極淡藍色背景 */
+            --brand-accent: #FFA07A;  /* Logo 臉頰珊瑚橘 (Coral) */
+            
+            /* --- 介面基礎設定 --- */
+            --bg-color: #FAFAFC;      /* 乾淨紙質感 */
+            --text-main: #2D3436;     /* 柔和深灰 */
+            --text-light: #636E72;
+            --card-bg: #FFFFFF;
+            --radius: 20px;           /* 圓潤導角，呼應手繪線條 */
+            --shadow: 0 8px 24px rgba(84, 104, 170, 0.12); /* 藍色調柔和陰影 */
+        }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg-color);
             color: var(--text-main);
         }
@@ -46,7 +34,8 @@
         /* --- Header --- */
         .brand-header {
             padding: 20px;
-            background: var(--bg-color);
+            background: rgba(250, 250, 252, 0.95);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
@@ -57,130 +46,143 @@
         }
         .header-left { display: flex; flex-direction: column; }
         .brand-logo {
-            font-size: 12px; font-weight: 700; letter-spacing: 2px;
+            font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
             color: var(--brand-accent); text-transform: uppercase;
         }
         .brand-title {
-            margin: 5px 0 0 0; font-size: 20px; font-family: 'Times New Roman', serif;
+            margin: 4px 0 0 0; font-size: 22px; 
+            font-family: 'Verdana', sans-serif; /* 圓潤一點的字體 */
             color: var(--brand-primary);
+            font-weight: 700;
         }
         .btn-lang {
-            background: transparent; border: 1px solid var(--brand-primary);
-            color: var(--brand-primary); padding: 5px 10px;
+            background: #fff; border: 1px solid var(--brand-primary);
+            color: var(--brand-primary); padding: 6px 14px;
             border-radius: 20px; font-size: 11px; font-weight: bold;
-            cursor: pointer;
+            cursor: pointer; transition: 0.2s;
         }
 
         /* --- Layout --- */
-        .content-wrap { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 80px; }
+        .content-wrap { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
         .hidden { display: none !important; }
         .section-title {
-            font-size: 16px; margin: 30px 0 15px 0; color: var(--brand-primary);
-            display: flex; align-items: center; gap: 8px; font-weight: 600;
+            font-size: 17px; margin: 35px 0 15px 0; color: var(--brand-primary);
+            display: flex; align-items: center; gap: 8px; font-weight: 700;
         }
 
         /* --- Config Controls --- */
         .dose-container {
-            background: var(--card-bg); padding: 25px; border-radius: var(--radius);
+            background: var(--card-bg); padding: 30px; border-radius: var(--radius);
             box-shadow: var(--shadow); text-align: center;
         }
-        .dose-display { font-size: 48px; font-weight: 300; color: var(--brand-primary); }
-        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--brand-primary); cursor: pointer; }
+        .dose-display { font-size: 52px; font-weight: 300; color: var(--brand-primary); font-variant-numeric: tabular-nums; }
+        input[type=range] { width: 100%; margin: 25px 0; accent-color: var(--brand-accent); cursor: pointer; }
 
-        .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .gear-item {
-            background: var(--card-bg); border: 1px solid transparent;
+            background: var(--card-bg); border: 2px solid transparent;
             padding: 15px 10px; border-radius: var(--radius); cursor: pointer;
             text-align: center; transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
         .gear-item.selected {
-            border-color: var(--brand-primary); background: #EAF2EE;
+            border-color: var(--brand-primary); background: var(--brand-secondary);
+            transform: translateY(-2px);
         }
-        .gear-name { display: block; font-size: 12px; font-weight: bold; margin-top: 5px; }
+        .gear-name { display: block; font-size: 12px; font-weight: bold; margin-top: 8px; color: var(--text-main); }
         
         .custom-select {
-            width: 100%; padding: 15px; border: 1px solid #ddd;
-            border-radius: var(--radius); font-size: 14px; background: #fff;
-            margin-bottom: 10px; appearance: none;
+            width: 100%; padding: 16px; border: 1px solid #eee;
+            border-radius: var(--radius); font-size: 15px; background: #fff;
+            margin-bottom: 12px; appearance: none; color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         /* --- Buttons --- */
         .btn-brand {
-            width: 100%; padding: 18px; background: var(--brand-primary);
-            color: #fff; border: none; border-radius: 30px;
+            width: 100%; padding: 18px; 
+            background: var(--brand-primary); /* Bulu Blue */
+            color: #fff; border: none; border-radius: 50px; /* 全圓角 */
             font-size: 16px; font-weight: bold; cursor: pointer;
-            margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 10px;
-            box-shadow: 0 5px 15px rgba(44, 74, 59, 0.3);
+            margin-top: 35px; display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 8px 20px rgba(84, 104, 170, 0.3); /* 藍色光暈 */
+            transition: transform 0.1s;
         }
-        .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-brand:active { transform: scale(0.98); }
+        .btn-brand:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        
         .btn-outline {
             width: 100%; padding: 15px; background: transparent;
-            border: 1px solid var(--brand-primary); color: var(--brand-primary);
-            border-radius: 30px; margin-top: 15px; cursor: pointer;
+            border: 2px solid var(--brand-primary); color: var(--brand-primary);
+            border-radius: 50px; margin-top: 15px; cursor: pointer; font-weight: 600;
         }
 
         /* --- Upload & Loading --- */
         .upload-box {
-            height: 300px; background: #fff; border: 2px dashed #ccc;
+            height: 320px; background: #fff; border: 2px dashed #DDE1E8;
             border-radius: var(--radius); position: relative; overflow: hidden;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.2s;
         }
+        .upload-box:active { background: #fafafa; }
+        
         .loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 200;
+            background: rgba(255,255,255,0.95); z-index: 200;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .loading-pulse {
-            width: 60px; height: 60px; background: var(--brand-primary);
-            border-radius: 50%; animation: pulse 1.5s infinite;
+            width: 60px; height: 60px; background: var(--brand-accent); /* 橘色 Loading */
+            border-radius: 50%; animation: pulse 1.2s infinite;
         }
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
+        @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
 
         /* --- Results --- */
-        .res-header { text-align: center; margin-bottom: 20px; }
-        .res-origin { font-size: 28px; font-family: 'Times New Roman', serif; color: var(--brand-primary); margin: 5px 0; }
+        .res-header { text-align: center; margin-bottom: 25px; }
+        .res-origin { font-size: 28px; font-weight: 800; color: var(--brand-primary); margin: 5px 0; letter-spacing: -0.5px; }
         
         .strategy-box {
-            background: #fff; padding: 20px; border-left: 4px solid var(--brand-accent);
-            font-style: italic; color: #555; margin-bottom: 20px; border-radius: 0 8px 8px 0;
-            line-height: 1.6;
+            background: #fff; padding: 25px; border-left: 5px solid var(--brand-accent);
+            font-style: italic; color: #555; margin-bottom: 25px; border-radius: 0 var(--radius) var(--radius) 0;
+            line-height: 1.6; box-shadow: var(--shadow);
         }
 
-        .recipe-timeline { border-left: 2px solid #ddd; margin-left: 10px; padding-left: 20px; }
-        .recipe-step { margin-bottom: 25px; position: relative; }
+        .recipe-timeline { border-left: 2px solid #E0E4EB; margin-left: 15px; padding-left: 25px; }
+        .recipe-step { margin-bottom: 30px; position: relative; }
         .recipe-step::before {
-            content: ''; position: absolute; left: -26px; top: 5px;
-            width: 10px; height: 10px; background: var(--brand-primary); border-radius: 50%;
+            content: ''; position: absolute; left: -31px; top: 5px;
+            width: 10px; height: 10px; background: #fff; border: 2px solid var(--brand-primary); border-radius: 50%;
         }
-        .step-time { font-size: 12px; font-weight: bold; color: var(--brand-accent); }
-        .step-title { font-weight: bold; font-size: 16px; margin: 2px 0; }
-        .step-desc { font-size: 14px; color: #666; margin-bottom: 5px; }
-        .step-tip { font-size: 12px; color: #888; background: #eee; padding: 5px 10px; border-radius: 4px; display: inline-block; }
+        .step-time { font-size: 13px; font-weight: 800; color: var(--brand-accent); background: #FFF4E6; padding: 2px 8px; border-radius: 4px; }
+        .step-title { font-weight: 700; font-size: 17px; margin: 6px 0 4px 0; color: var(--text-main); }
+        .step-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 6px; }
+        .step-tip { font-size: 13px; color: #777; background: #F5F7FA; padding: 8px 12px; border-radius: 8px; display: inline-block; }
 
         /* --- Chat --- */
-        .chat-section { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
-        .chat-window { height: 300px; overflow-y: auto; background: #fff; border-radius: var(--radius); padding: 15px; border: 1px solid #eee; margin-bottom: 10px; }
-        .chat-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.5; }
-        .msg-ai { background: #f0f4f2; color: #1a1a1a; align-self: flex-start; }
-        .msg-user { background: var(--brand-primary); color: #fff; margin-left: auto; }
+        .chat-section { margin-top: 50px; border-top: 1px solid #eee; padding-top: 30px; }
+        .chat-window { height: 350px; overflow-y: auto; background: #fff; border-radius: var(--radius); padding: 20px; border: 1px solid #eee; margin-bottom: 15px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); }
+        .chat-msg { margin-bottom: 12px; padding: 12px 16px; border-radius: 16px; max-width: 85%; font-size: 14px; line-height: 1.5; }
+        .msg-ai { background: var(--brand-secondary); color: var(--brand-primary); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-user { background: var(--brand-primary); color: #fff; margin-left: auto; border-bottom-right-radius: 2px; }
+        
         .chat-input-box { display: flex; gap: 10px; }
-        .chat-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; }
-        
+        .chat-input { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 30px; outline: none; transition: 0.2s; }
+        .chat-input:focus { border-color: var(--brand-primary); }
+
         /* Rating Stars */
-        .rating-container { display: flex; gap: 5px; margin-top: 10px; cursor: pointer; }
-        .star-icon { color: #ddd; transition: 0.2s; }
-        .star-icon.filled { color: var(--brand-accent); fill: var(--brand-accent); }
+        .rating-container { display: flex; gap: 8px; margin-top: 10px; cursor: pointer; }
+        .star-icon { color: #E0E0E0; transition: 0.2s; font-size: 24px; }
+        .star-icon.filled { color: var(--brand-accent); }
         
-        .feedback-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .feedback-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
         .feedback-chip { 
-            background: #fff; border: 1px solid #ddd; padding: 5px 10px; 
-            border-radius: 15px; font-size: 11px; cursor: pointer; 
+            background: #fff; border: 1px solid #ddd; padding: 6px 12px; 
+            border-radius: 20px; font-size: 12px; cursor: pointer; color: #666;
         }
-        .feedback-chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+        .feedback-chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: var(--brand-secondary); }
 
         /* Footer */
-        .footer-brand { text-align: center; font-size: 11px; color: #aaa; margin-top: 40px; }
+        .footer-brand { text-align: center; font-size: 11px; color: #aaa; margin-top: 50px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -199,123 +201,166 @@
         <section id="viewConfig">
             <h2 class="section-title"><i data-lucide="sliders-horizontal" size="18"></i> <span data-i18n="sec_dose">1. Set Dose</span></h2>
             <div class="dose-container">
-                <div><span id="doseDisplay" class="dose-display">20</span><span style="font-size: 16px; color: #999;">g</span></div>
+                <div><span id="doseDisplay" class="dose-display">20</span><span style="font-size: 18px; color: #999; font-weight:300;">g</span></div>
                 <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
-                <div style="font-size: 11px; color: #aaa;" data-i18n="dose_desc">Drag to adjust (10g - 30g)</div>
+                <div style="font-size: 12px; color: #aaa;" data-i18n="dose_desc">Drag to adjust (10g - 30g)</div>
             </div>
 
             <h2 class="section-title"><i data-lucide="coffee" size="18"></i> <span data-i18n="sec_dripper">2. Select Dripper</span></h2>
+
             <div class="gear-grid">
+
                 <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
+
                     <i data-lucide="filter"></i><span class="gear-name">V60</span>
+
                 </div>
+
                 <div class="gear-item" onclick="selectGear(this, 'Origami V')">
+
                     <i data-lucide="star"></i><span class="gear-name">Origami V60</span>
+
                 </div>
+
                 <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
+
                     <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
+
                 </div>
+
                 <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
+
                     <i data-lucide="toggle-right"></i><span class="gear-name">Hario Switch</span>
+
                 </div>
+
                 <div class="gear-item" onclick="selectGear(this, 'Chemex')">
+
                     <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
+
                 </div>
+
                  <div class="gear-item" onclick="selectGear(this, 'Other')">
+
                     <i data-lucide="more-horizontal"></i><span class="gear-name" data-i18n="gear_other">Other</span>
+
                 </div>
+
             </div>
 
+
+
             <h2 class="section-title"><i data-lucide="settings-2" size="18"></i> <span data-i18n="sec_grinder">3. Grinder & Paper</span></h2>
+
             <select id="inputGrinder" class="custom-select">
+
                 <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
+
                 <option value="Comandante C40">Comandante C40</option>
+
                 <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+
                 <option value="Niche Zero">Niche Zero</option>
+
                 <option value="Fellow Ode">Fellow Ode</option>
+
                 <option value="EK43">Mahlkonig EK43</option>
-                <option value="Other">Other / Generic</option>
+
+                <option value="Other">Other</option>
+
             </select>
+
             <select id="inputPaper" class="custom-select">
+
                 <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
+
                 <option value="Hario V60">Hario V60 Standard</option>
+
                 <option value="Cafec Abaca">Cafec Abaca</option>
+
                 <option value="Cafec T-92">Cafec T-92</option>
+
                 <option value="Sibarist">Sibarist FAST</option>
+
                 <option value="Kalita Wave">Kalita Wave</option>
+
                 <option value="Chemex">Chemex</option>
+
                  <option value="Other">Other</option>
+
             </select>
 
             <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
-                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="16"></i>
+                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="18"></i>
             </button>
         </section>
 
         <section id="viewUpload" class="hidden">
             <button class="btn-outline" style="width:auto; border:none; padding-left:0; margin-bottom:10px;" onclick="backToConfig()">
-                <i data-lucide="arrow-left" size="14"></i> <span data-i18n="btn_back">Back</span>
+                <i data-lucide="arrow-left" size="16"></i> <span data-i18n="btn_back">Back</span>
             </button>
             
             <h2 class="section-title" data-i18n="sec_scan">4. Scan Bean Label</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 15px; line-height: 1.5;" data-i18n="scan_desc">
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.6;" data-i18n="scan_desc">
                 Take a photo of your coffee bag. AI will analyze the roast level, origin, and freshness to design the perfect recipe.
             </p>
             
             <div class="upload-box" onclick="document.getElementById('fileInput').click()">
                 <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
                 <div class="upload-ui" style="text-align: center;">
-                    <i data-lucide="scan-line" size="32" color="#2C4A3B"></i>
-                    <div style="margin-top:10px; font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Tap to Upload Photo</div>
+                    <div style="background:var(--brand-secondary); padding:20px; border-radius:50%; display:inline-block; margin-bottom:15px;">
+                        <i data-lucide="scan-line" size="32" color="#5468AA"></i>
+                    </div>
+                    <div style="font-weight:bold; color:var(--brand-primary); font-size:16px;" data-i18n="tap_upload">Tap to Upload Photo</div>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
             </div>
             
-            <div id="errorMsg" style="color:red; font-size:12px; margin-top:10px; display:none;"></div>
+            <div id="errorMsg" style="color:red; font-size:13px; margin-top:15px; display:none; background:#FFF0F0; padding:10px; border-radius:8px;"></div>
             
             <button id="btnAnalyze" class="btn-brand" disabled onclick="startAnalysis()">
-                <span data-i18n="btn_brew">Start Brewing</span> <i data-lucide="sparkles" size="16"></i>
+                <span data-i18n="btn_brew">Start Brewing</span> <i data-lucide="sparkles" size="18"></i>
             </button>
         </section>
 
         <section id="viewResult" class="hidden">
             <div class="res-header">
-                <div style="font-size:10px; letter-spacing:1px; color:#999;">CUSTOM RECIPE FOR <span id="resDoseRef"></span>G</div>
+                <div style="font-size:11px; letter-spacing:1px; color:#999; text-transform:uppercase;">Custom Recipe for <span id="resDoseRef"></span>g</div>
                 <h2 id="resOrigin" class="res-origin">--</h2>
                 <div id="resTags" style="display: flex; justify-content: center; gap: 8px;"></div>
             </div>
 
             <div class="strategy-box" id="resStrategy">--</div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div style="background:#fff; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
-                    <div style="font-size:11px; color:#999; margin-bottom:5px;">GRIND</div>
-                    <div id="resGrind" style="font-weight:bold; color:var(--brand-primary);">--</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:30px;">
+                <div style="background:#fff; padding:15px; border-radius:12px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                    <div style="font-size:11px; color:#999; margin-bottom:5px; font-weight:bold;">GRIND SIZE</div>
+                    <div id="resGrind" style="font-weight:bold; color:var(--brand-primary); font-size:15px;">--</div>
                 </div>
-                <div style="background:#fff; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
-                    <div style="font-size:11px; color:#999; margin-bottom:5px;">TEMP</div>
-                    <div id="resTemp" style="font-weight:bold; color:var(--brand-primary);">--</div>
+                <div style="background:#fff; padding:15px; border-radius:12px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                    <div style="font-size:11px; color:#999; margin-bottom:5px; font-weight:bold;">TEMPERATURE</div>
+                    <div id="resTemp" style="font-weight:bold; color:var(--brand-primary); font-size:15px;">--</div>
                 </div>
             </div>
 
-            <h3 style="font-family: 'Times New Roman'; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;" data-i18n="steps_title">Brewing Steps</h3>
+            <h3 style="font-family: 'Verdana'; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 25px; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
             <div id="resTimeline" class="recipe-timeline"></div>
 
             <div class="chat-section">
-                <div style="font-weight:bold; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-                    <i data-lucide="message-circle" size="16"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
+                <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px; color:var(--brand-primary);">
+                    <i data-lucide="message-circle" size="18"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
                 </div>
                 <div id="chatWindow" class="chat-window"></div>
                 <div class="chat-input-box">
                     <input type="text" id="chatInput" class="chat-input" placeholder="...">
-                    <button class="btn-icon" style="background:var(--brand-primary); color:white; border:none; width:40px; border-radius:50%; cursor:pointer;" onclick="sendChat()">
-                        <i data-lucide="send" size="14"></i>
+                    <button class="btn-icon" style="background:var(--brand-primary); color:white; border:none; width:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="sendChat()">
+                        <i data-lucide="send" size="16"></i>
                     </button>
                 </div>
             </div>
 
             <button onclick="location.reload()" class="btn-outline">
-                <span data-i18n="btn_restart">Brew Another Bean</span> <i data-lucide="rotate-ccw" size="14"></i>
+                <span data-i18n="btn_restart">Brew Another Bean</span> <i data-lucide="rotate-ccw" size="16"></i>
             </button>
 
             <div class="footer-brand">
@@ -328,8 +373,8 @@
 
     <div id="viewLoading" class="loading-screen hidden">
         <div class="loading-pulse"></div>
-        <div style="margin-top:20px; font-weight:bold; color:var(--brand-primary);">BULU LAB</div>
-        <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #999;">ANALYZING...</div>
+        <div style="margin-top:25px; font-weight:800; font-size:18px; color:var(--brand-primary); letter-spacing:1px;">BULU LAB</div>
+        <div id="loadingText" style="font-size: 12px; letter-spacing: 0.5px; margin-top: 10px; color: #999;">ANALYZING...</div>
     </div>
 </div>
 
@@ -337,7 +382,7 @@
     lucide.createIcons();
 
     // ---------------------------------------------------------
-    // 1. CONFIGURATION (KEYS & SUPABASE)
+    // 1. CONFIGURATION (UPDATED)
     // ---------------------------------------------------------
     const API_KEY = "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";
     const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
@@ -367,7 +412,7 @@
             tap_upload: "Tap to Upload Photo",
             btn_brew: "Start Brewing",
             steps_title: "Brewing Steps",
-            chat_title: "Ask Bulu",
+            chat_title: "Ask Bulu Barista",
             btn_restart: "Brew Another Bean",
             loading: "AI IS THINKING...",
             chat_placeholder: "e.g., The flow is too slow..."
@@ -489,13 +534,14 @@
                 els.imgPreview.src = imageBase64;
                 els.imgPreview.style.opacity = '1';
                 els.btnAnalyze.disabled = false;
+                els.errorMsg.style.display = 'none';
             };
         };
         reader.readAsDataURL(file);
     }
 
     // ---------------------------------------------------------
-    // 4. AI ANALYSIS (MODIFIED FOR BULU + BILINGUAL)
+    // 4. AI ANALYSIS (FIXED MODEL NAME & LOGIC)
     // ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
@@ -507,10 +553,9 @@
         els.loadingText.innerText = translations[currentLang]['loading'];
 
         try {
-            // Upload Image first (Background)
-            uploadImgToSupabase(imageBase64, 'labels').then(url => {
-                 console.log("Image uploaded:", url); 
-            });
+            // 1. Upload Image to Supabase
+            const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
+            console.log("Image uploaded:", hostedImageUrl);
 
             const langInstruction = currentLang === 'zh' 
                 ? "Output Language: Traditional Chinese (Hong Kong style). Use terms like '悶蒸', '手沖', '果酸感'." 
@@ -529,9 +574,9 @@
 
             【Mission】
             1. Analyze the bean label (Roast, Origin, Process).
-            2. Check Freshness: Look for roast date. 
+            2. Check Freshness: Look for roast date in the image. 
                - If too fresh (<7 days): Suggest longer bloom (degassing).
-               - If old (>60 days): Be creative! Suggest lower temp or "slow brew" to extract sweetness, avoid astringency. Don't be negative, be helpful.
+               - If old (>60 days): Be creative! Suggest lower temp or "slow brew" to extract sweetness, avoid astringency.
             3. Create a recipe.
 
             【Format JSON】
@@ -545,6 +590,7 @@
             }
             `;
 
+            // 2. Call AI (FIXED MODEL NAME)
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -554,19 +600,23 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "anthropic/claude-sonnet-4.5", // Or generic model
+                    "model": "anthropic/claude-3.5-sonnet", // CORRECTED MODEL NAME
                     "temperature": 0.5,
-                    "max_tokens": 1200,
+                    "max_tokens": 1500,
                     "messages": [ 
                         { "role": "user", "content": [ 
                             { "type": "text", "text": prompt }, 
-                            { "type": "image_url", "image_url": { "url": imageBase64 } } 
+                            { "type": "image_url", "image_url": { "url": hostedImageUrl || imageBase64 } } 
                         ]} 
                     ]
                 })
             });
 
-            if (!res.ok) throw new Error("AI API Error");
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error?.message || "AI API Error");
+            }
+
             const data = await res.json();
             
             // Parse JSON
@@ -587,7 +637,7 @@
             console.error(e);
             els.viewLoading.classList.add('hidden');
             els.viewUpload.classList.remove('hidden');
-            els.errorMsg.innerText = "Connection failed. Please try again.";
+            els.errorMsg.innerText = "Error: " + e.message;
             els.errorMsg.style.display = 'block';
         }
     }
@@ -602,7 +652,7 @@
         const tags = document.getElementById('resTags');
         tags.innerHTML = '';
         data.bean.tags.forEach(t => {
-            tags.innerHTML += `<span style="background:var(--brand-primary); color:#fff; padding:2px 8px; font-size:10px; border-radius:4px;">${t}</span>`;
+            tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
         });
 
         const tl = document.getElementById('resTimeline');
@@ -612,7 +662,7 @@
                 <div class="recipe-step">
                     <span class="step-time">${s.time}</span>
                     <div>
-                        <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#666;">➔ ${s.weight}</span></div>
+                        <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#888;">➔ ${s.weight}</span></div>
                         <div class="step-desc">${s.detail}</div>
                         <div class="step-tip">💡 ${s.tip}</div>
                     </div>
@@ -640,7 +690,7 @@
             bean_origin: result.bean.origin,
             ai_strategy: result.strategy,
             dose_grams: els.inputDose.value,
-            full_chat_history: result // Save full JSON as backup
+            full_chat_history: result 
         }]);
         if(error) console.error("DB Error", error);
     }
@@ -651,7 +701,7 @@
     function initChat(recipe) {
         chatHistory = [{
             "role": "system", 
-            "content": `You are the Bulu Coffee assistant. Current recipe: ${JSON.stringify(recipe)}. Answer concisely.`
+            "content": `You are the Bulu Coffee assistant. Current recipe context: ${JSON.stringify(recipe)}. Answer concisely in the user's preferred language.`
         }];
         
         // Initial Rating Request
@@ -666,10 +716,17 @@
         stars.className = 'rating-container';
         for(let i=1; i<=5; i++) {
             const s = document.createElement('div');
-            s.innerHTML = '★'; // Simple star
+            s.innerHTML = '★'; 
             s.className = 'star-icon';
-            s.style.fontSize = '20px';
-            s.onclick = () => handleRating(i);
+            s.onclick = (e) => {
+                // Visual feedback
+                const allStars = e.target.parentNode.children;
+                for(let j=0; j<5; j++) {
+                    if(j < i) allStars[j].classList.add('filled');
+                    else allStars[j].classList.remove('filled');
+                }
+                handleRating(i);
+            };
             stars.appendChild(s);
         }
         msgDiv.appendChild(stars);
@@ -678,17 +735,17 @@
 
     function handleRating(score) {
         const win = document.getElementById('chatWindow');
-        win.innerHTML += `<div class="chat-msg msg-user">${score} Stars</div>`;
+        // Prevent double rating visual spam, just clear instructions
         
         let reply = "";
         let issues = [];
         
         if(score >= 4) {
-            reply = currentLang === 'zh' ? "太棒了！有什麼特別喜歡的風味嗎？" : "Great! What did you like?";
-            issues = currentLang === 'zh' ? ["甜感明顯", "乾淨", "果酸明亮"] : ["Sweet", "Clean", "Bright"];
+            reply = currentLang === 'zh' ? `太棒了 (${score}星)！有什麼特別喜歡的風味嗎？` : `Great (${score} stars)! What did you like?`;
+            issues = currentLang === 'zh' ? ["甜感明顯", "乾淨", "果酸明亮", "尾韻長"] : ["Sweet", "Clean", "Bright", "Long Finish"];
         } else {
-            reply = currentLang === 'zh' ? "沒關係，我們來調整。覺得哪裡不足？" : "Let's fix it. What was wrong?";
-            issues = currentLang === 'zh' ? ["太苦/乾", "太酸/尖銳", "水感太重"] : ["Too Bitter", "Too Sour", "Watery"];
+            reply = currentLang === 'zh' ? `收到 (${score}星)。我們來調整，覺得哪裡不足？` : `Got it (${score} stars). Let's fix it. What was wrong?`;
+            issues = currentLang === 'zh' ? ["太苦/乾", "太酸/尖銳", "水感太重", "味道平淡"] : ["Too Bitter", "Too Sour", "Watery", "Flat"];
         }
 
         const aiDiv = document.createElement('div');
@@ -726,17 +783,25 @@
         // API Call
         chatHistory.push({ "role": "user", "content": text });
         
+        // Add Loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'chat-msg msg-ai';
+        loadingDiv.innerText = "...";
+        win.appendChild(loadingDiv);
+
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "model": "anthropic/claude-sonnet-4.5",
+                    "model": "anthropic/claude-3.5-sonnet", // Use the correct model for chat too
                     "messages": chatHistory
                 })
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
+            
+            loadingDiv.remove(); // Remove loading
             
             chatHistory.push({ "role": "assistant", "content": reply });
             win.innerHTML += `<div class="chat-msg msg-ai">${reply}</div>`;
@@ -744,6 +809,7 @@
 
         } catch(e) {
             console.error(e);
+            loadingDiv.innerText = "Connection error.";
         }
     }
 </script>
