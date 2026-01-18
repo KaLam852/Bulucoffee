@@ -532,37 +532,6 @@
         reader.readAsDataURL(file);
     }
 
-    // ---------------------------------------------------------
-    // 4. BULU HEAD SCIENTIST LOGIC (GPT-4o)
-    // ---------------------------------------------------------
-    async function startAnalysis() {
-        const dose = els.inputDose.value;
-        const grinder = document.getElementById('inputGrinder').value || "Generic";
-        const paper = document.getElementById('inputPaper').value || "Standard";
-        
-        // 1. UI 切換
-        els.viewUpload.classList.add('hidden');
-        els.viewLoading.classList.remove('hidden');
-        
-        // 動態載入文字
-        els.loadingText.innerText = currentLang === 'zh' 
-            ? `正在掃描烘焙日期並校正 ${grinder} 物理參數...` 
-            : `Scanning Roast Date & Calibrating ${grinder}...`;
-
-        try {
-            // 2. 上傳圖片
-            const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
-            console.log("Image uploaded:", hostedImageUrl);
-
-            // 3. 系統參數
-            const targetWater = Math.round(dose * 15); // 自動計算 1:15
-            const today = new Date().toISOString().split('T')[0];
-            
-            // 語言設定
-            const langInstruction = currentLang === 'zh' 
-                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
-                : "OUTPUT LANGUAGE: English.";
-
  // ---------------------------------------------------------
     // 👑 究極完全體 v7：豆性知識庫 + 器材物理引擎 + 全變數矩陣
     // ---------------------------------------------------------
