@@ -11,20 +11,15 @@
     
     <style>
         :root {
-            /* --- 品牌配色 --- */
             --brand-primary: #5468AA;
             --brand-secondary: #F0F2F9;
             --brand-accent: #FFA07A;
             --bg-color: #FAFAFC;
             --text-main: #2D3436;
             --text-light: #636E72;
-            
-            /* --- 字體 --- */
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Noto Sans TC', sans-serif;
-            
-            /* --- 尺寸變數 --- */
-            --circle-size: 220px; 
+            --circle-size: 240px; 
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,8 +27,7 @@
         body {
             margin: 0; padding: 0;
             font-family: var(--font-sans);
-            /* 放射狀背景：營造光暈感 */
-            background: radial-gradient(circle at 50% 30%, #F0F2F9 0%, #FAFAFC 70%);
+            background: radial-gradient(circle at 50% 20%, #F0F2F9 0%, #FAFAFC 70%);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
@@ -41,18 +35,21 @@
         }
 
         .content-wrap { 
-            max-width: 500px; margin: 0 auto; 
+            max-width: 500px; 
+            margin: 0 auto; 
             padding: 20px 24px 120px 24px;
             display: flex; flex-direction: column; align-items: center;
         }
 
         .hidden { display: none !important; }
 
-        /* --- Header --- */
+        /* Header */
         .brand-header {
             padding: 40px 0 10px 0;
-            text-align: center; width: 100%;
-            position: relative; z-index: 10;
+            text-align: center;
+            width: 100%;
+            position: relative;
+            z-index: 10;
         }
         .brand-logo {
             font-size: 10px; font-weight: 700; letter-spacing: 3px;
@@ -69,66 +66,44 @@
             border-radius: 20px; font-size: 10px; font-weight: 700; cursor: pointer;
         }
 
-        /* --- 1. Dose: The Sun (核心圓盤) --- */
-        .dose-section {
+        /* --- 1. Dose: The Sun (修復滑桿問題) --- */
+        .dose-planet-wrap {
             position: relative;
-            margin: 30px auto 40px auto;
-            text-align: center;
-            z-index: 5;
+            width: var(--circle-size);
+            height: var(--circle-size);
+            margin: 30px auto 50px auto;
+            /* 讓這層是定位基準 */
         }
-
+        
+        /* 視覺層：顯示數字與圓圈 */
         .dose-planet {
-            width: var(--circle-size); height: var(--circle-size);
+            width: 100%; height: 100%;
             background: #fff;
             border-radius: 50%;
-            /* 強烈的浮起陰影 */
-            box-shadow: 0 20px 60px rgba(84, 104, 170, 0.15), inset 0 0 0 1px rgba(255,255,255,0.5);
+            box-shadow: 0 20px 60px rgba(84, 104, 170, 0.15), 
+                        inset 0 0 0 1px rgba(255,255,255,0.5);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            margin: 0 auto 20px auto; /* 圓盤與滑桿的距離 */
-            position: relative;
+            position: absolute; top: 0; left: 0;
+            z-index: 1; /* 在滑桿下面 */
+            pointer-events: none; /* 讓點擊穿透 */
         }
 
-        .dose-label { 
-            font-size: 11px; letter-spacing: 2px; color: var(--text-light); 
-            text-transform: uppercase; margin-bottom: 5px; 
-        }
-        .dose-display { 
-            font-family: var(--font-serif); 
-            font-size: 80px; font-weight: 600; 
-            color: var(--brand-accent); line-height: 1; 
-        }
-        .dose-unit { 
-            font-size: 14px; color: var(--brand-primary); font-weight: 600; 
+        /* 觸控層：隱形滑桿 (修復重點) */
+        .dose-slider-control {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0; /* 完全透明 */
+            z-index: 10; /* 最上層，接收觸控 */
+            cursor: ew-resize; 
+            margin: 0; padding: 0;
+            -webkit-appearance: none;
         }
 
-        /* --- 滑桿樣式修復 --- */
-        .slider-container {
-            width: 240px; 
-            margin: 0 auto; 
-            display: flex; align-items: center; justify-content: center;
-        }
-        input[type=range] { 
-            width: 100%; -webkit-appearance: none; background: transparent; cursor: pointer;
-        }
-        input[type=range]:focus { outline: none; }
-        
-        /* 滑軌 */
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 6px; 
-            background: #E0E4EB; border-radius: 10px;
-            cursor: pointer;
-        }
-        /* 滑塊 (圓點) */
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            height: 24px; width: 24px; border-radius: 50%;
-            background: var(--brand-primary); 
-            margin-top: -9px; /* 用來對齊軌道中間 */
-            border: 4px solid #fff; 
-            box-shadow: 0 4px 10px rgba(84, 104, 170, 0.3);
-        }
+        .dose-label { font-size: 11px; letter-spacing: 2px; color: var(--text-light); text-transform: uppercase; margin-bottom: 5px; }
+        .dose-display { font-family: var(--font-serif); font-size: 80px; font-weight: 600; color: var(--brand-accent); line-height: 1; }
+        .dose-unit { font-size: 14px; color: var(--brand-primary); font-weight: 600; }
 
-        /* 背景軌道線 (裝飾用) */
+        /* 背景軌道裝飾 */
         .orbit-ring {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0; pointer-events: none;
@@ -136,7 +111,7 @@
         .orbit-1 { width: 340px; height: 340px; opacity: 0.6; }
         .orbit-2 { width: 480px; height: 480px; opacity: 0.3; }
 
-        /* --- 2. Dripper: Planets (濾杯選擇) --- */
+        /* --- 2. Dripper: Planets --- */
         .section-label {
             text-align: center; font-size: 12px; letter-spacing: 1.5px; 
             color: var(--text-light); text-transform: uppercase; margin-bottom: 20px;
@@ -146,7 +121,7 @@
         .gear-orbit-grid {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
             max-width: 400px; margin: 0 auto 40px auto;
-            position: relative; z-index: 20; /* 確保在最上層可點擊 */
+            position: relative; z-index: 5;
         }
         
         .gear-planet {
@@ -155,12 +130,11 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; border: 2px solid transparent;
-            transition: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .gear-planet i { margin-bottom: 4px; color: #CBD2E0; transition: 0.2s; }
+        .gear-planet i { margin-bottom: 4px; color: #CBD2E0; transition: 0.3s; }
         .gear-planet span { font-size: 9px; font-weight: 700; color: var(--text-light); }
 
-        /* 選中狀態 */
         .gear-planet.selected {
             border-color: var(--brand-primary); transform: scale(1.1);
             box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
@@ -168,10 +142,10 @@
         .gear-planet.selected i { color: var(--brand-primary); }
         .gear-planet.selected span { color: var(--brand-primary); }
 
-        /* --- 3. Inputs (選單) --- */
+        /* --- 3. Inputs --- */
         .input-pill-group {
             width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
-            max-width: 360px; position: relative; z-index: 10;
+            max-width: 360px; position: relative; z-index: 5;
         }
         .custom-select {
             width: 100%; padding: 16px 20px;
@@ -182,7 +156,7 @@
         }
         .custom-select:focus { border-color: var(--brand-primary); outline: none; }
 
-        /* --- Floating Button (懸浮按鈕) --- */
+        /* --- Floating Button (修復樣式) --- */
         .btn-orbit {
             width: 64px; height: 64px; border-radius: 50%;
             background: var(--brand-primary); color: #fff;
@@ -193,11 +167,14 @@
             z-index: 100;
         }
         .btn-orbit:active { transform: translateX(-50%) scale(0.95); }
-        /* 禁用狀態：變灰但保持可見 */
+        /* 禁用狀態也要好看一點 */
         .btn-orbit:disabled { 
-            background: #E0E4EB; box-shadow: none; opacity: 1; cursor: not-allowed;
+            background: #E0E4EB; 
+            box-shadow: none; 
+            cursor: not-allowed;
+            opacity: 1; /* 保持顯示，只是變灰 */
         }
-        .btn-orbit:disabled i { opacity: 0.4; }
+        .btn-orbit:disabled i { opacity: 0.3; }
 
         /* --- Upload View --- */
         .upload-circle {
@@ -244,7 +221,7 @@
             padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
         }
         .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
-        
+
         .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 80px; }
         .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
         .msg-ai { background: #fff; border: 1px solid #eee; }
@@ -267,15 +244,13 @@
             <div class="orbit-ring orbit-1"></div>
             <div class="orbit-ring orbit-2"></div>
 
-            <div class="dose-section">
+            <div class="dose-planet-wrap">
+                <input type="range" id="inputDose" class="dose-slider-control" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                
                 <div class="dose-planet">
                     <span class="dose-label" data-i18n="sec_dose">DOSE</span>
                     <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
                     <div style="font-size:10px; color:#aaa; margin-top:8px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
-                </div>
-                
-                <div class="slider-container">
-                    <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
                 </div>
             </div>
 
@@ -417,3 +392,16 @@
         <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #888;">CALCULATING ORBIT...</div>
     </div>
 </div>
+
+<script>
+    // 這裡放入您的 JavaScript 代碼...
+    // 為了確保按鈕圖標顯示，我在這裡多加一行：
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+    });
+    
+    // ... (您的其餘 JS 代碼) ...
+</script>
+
+</body>
+</html>
