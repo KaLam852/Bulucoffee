@@ -11,10 +11,10 @@
         /* --- 全局設定 (與首頁一致) --- */
          :root {
             /* --- Bulu Coffee 品牌專屬配色 (源自 Logo) --- */ 
-            --bg-color: #F0F2F9; /* Logo 藍紫色 (Periwinkle Blue) */
-            --text-color: #5468AA; /* 極淡藍色背景 */
+            --bg-color: #F0F2F9; /* 極淡藍色背景 */
+            --text-color: #5468AA; /* Logo 藍紫色 (Periwinkle Blue) */
             --accent-color: #FFA07A;  /* Logo 臉頰珊瑚橘 (Coral) */
-             --nav-bg: rgba(17, 17, 17, 0.95)
+             --nav-bg: #F0F2F9; /* 極淡藍色背景 */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -70,7 +70,7 @@
             text-align: center;
             margin-bottom: 40px;
         }
-        .page-header h1 { font-size: 3.5rem; margin-bottom: 10px; color: var(--bg-color); }
+        .page-header h1 { font-size: 3.5rem; margin-bottom: 10px; color: var(text-color); }
         .page-header h3 { font-size: 1.2rem; color: #aaa; letter-spacing: 3px; font-weight: 300; text-transform: uppercase; }
 
         /* --- 內容 Grid 排版 --- */
@@ -101,7 +101,7 @@
 
         /* --- 頁尾 --- */
         footer {
-            background: #0a0a0a;
+            background: var(--bg-color);
             padding: 60px 20px;
             text-align: center;
             border-top: 1px solid #333;
