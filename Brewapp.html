@@ -505,6 +505,7 @@
 // ---------------------------------------------------------
     //4：Bulu Head Scientist (全產區/全處理法/全變數矩陣)
     // ---------------------------------------------------------
+// ---------------------------------------------------------
     async function startAnalysis() {
         const dose = els.inputDose.value;
         const grinder = document.getElementById('inputGrinder').value || "Generic";
@@ -516,8 +517,8 @@
         
         // 動態載入文字
         els.loadingText.innerText = currentLang === 'zh' 
-            ? "正在分析產區風土、處理法與物理結構..." 
-            : "Analyzing Terroir, Processing & Physical Structure...";
+            ? `正在讀取烘焙日期並校正 ${grinder} 刻度...` 
+            : `Reading Roast Date & Calibrating ${grinder}...`;
 
         try {
             // 2. 上傳圖片
@@ -525,84 +526,70 @@
             console.log("Image uploaded:", hostedImageUrl);
 
             // 3. 系統參數
+            const targetWater = Math.round(dose * 15); // 預設 1:15
             const today = new Date().toISOString().split('T')[0];
             
             // 語言設定
             const langInstruction = currentLang === 'zh' 
-                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style). Use terms: '4:6法', '滲透壓', '擾動', 'TDS', '梅納反應', '厭氧', '濕剝法'." 
-                : "OUTPUT LANGUAGE: English. Use terms: '4:6 Method', 'Osmotic Flow', 'Agitation', 'TDS', 'Anaerobic', 'Wet-Hulled'.";
+                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
+                : "OUTPUT LANGUAGE: English.";
 
-            // 4. 定義「全知全能」Prompt (大腦核心)
+            // 4. 定義「全知全能」Prompt
             const prompt = `
-            You are the **World Barista Champion & Head Scientist** at Bulu Coffee. 
-            Your task is to generate the **Ultimate Brewing Recipe** by cross-referencing Origin, Process, Roast, and Gear.
+            You are the **Head of Coffee Science**. 
+            Generate a recipe that adapts to the **Roast Date**, **Grinder Physics**, and **Dripper Dynamics**.
 
             【SYSTEM CONSTRAINTS】
-            1. **${langInstruction}** (CRITICAL).
-            2. **Current Date**: ${today}.
-            3. **Target Yield**: Ratio 1:15 ~ 1:16.6 (Auto-calc water: ${dose} * 15).
+            1. **${langInstruction}**
+            2. **Target Water**: ${targetWater}g.
+            3. **Current Date**: ${today}.
 
-            【INPUT VARIABLES】
-            - Gear: ${selectedGear}
-            - Grinder: ${grinder}
-            - Image: Extract ALL text (Origin, Region, Varietal, Process, Altitude, Roast Date).
+            【PHASE 1: BEAN & DATE DIAGNOSIS (Crucial)】
+            - **OCR SCAN**: Look for YYYY/MM/DD or "Roasted on". 
+            - **CALCULATION**: Days Old = [${today} - Roast Date].
+            - **Logic**: 
+               - If <10 days (Fresh): High CO2 -> Needs long bloom.
+               - If >60 days (Aged): Oxidized -> Needs lower temp, gentle pour.
+            - **Origin/Process**: Ethiopia (Dense) vs Brazil (Porous).
 
-            【PHASE 1: THE KNOWLEDGE BASE (Logic Matrix)】
-            Analyze the bean based on these rules:
+            【PHASE 2: GEAR & GRINDER PHYSICS】
+            - **Comandante C40**: Output "Clicks" (e.g. 24).
+            - **1Zpresso K-Ultra**: Output "Number" (e.g. 7.5).
+            - **Niche Zero**: Output "Mark" (e.g. 45). Go coarser for flow.
+            - **Fellow Ode**: Output "Dial" (e.g. 5.0).
+            - **EK43**: Output "Dial" (e.g. 9.5).
+            - **Chemex Filter**: Thick paper -> Coarser grind + High Temp.
+            - **Sibarist Filter**: Fast flow -> Finer grind.
+            - **Hario Switch**: Immersion -> Finer grind + Steep time.
 
-            👉 **A. PROCESSING METHOD RULES**:
-               - **Washed (水洗)**: Clean structure. Needs **High Agitation** & Finer Grind to extract complex acidity.
-               - **Natural (日曬)**: High fines, heavy body. Needs **Coarser Grind** & Controlled Flow to prevent clogging/astringency.
-               - **Honey (蜜處理)**: Balance. Treat as hybrid (Medium grind, steady pour).
-               - **Anaerobic/Infused (厭氧/特殊發酵)**: Volatile compounds. Risk of "funkiness". Strategy: **Lower Temp (90-92°C)** & **Low Agitation** to keep clarity.
-               - **Wet-Hulled (濕剝/蘇門答臘)**: Earthy, low acid. Strategy: **Coarser grind, Pulse pour** to open up flavors.
+            【PHASE 3: RECIPE LOGIC】
+            - Combine [Age] + [Density] + [Gear] to determine the protocol.
+            - E.g. Aged Bean + V60 -> "Rescue Protocol" (Low agitation).
 
-            👉 **B. ORIGIN & DENSITY RULES**:
-               - **Africa (Kenya/Ethiopia/Rwanda)**: EXTREME High Density. Hard to extract. **Needs 93°C - 96°C** + High Turbulence.
-               - **South America (Colombia/Peru)**: High Density. Standard 92°C - 94°C.
-               - **Brazil/Island (Kona/Jamaica)**: Low Density (Soft). Easy to over-extract. **Needs 88°C - 90°C**.
-               - **Panama (Geisha)**: Delicate florals. Needs **Gentle extraction** (90-92°C) to avoid masking tea-like notes.
-               - **Asia (Yunnan/Indonesia)**: Varied. Watch for roast level closely.
-
-            👉 **C. ROAST LEVEL & FRESHNESS**:
-               - **Light**: High Temp, Finer Grind.
-               - **Dark**: Low Temp (85-88°C), Coarser Grind, Osmotic Flow (Center pour).
-               - **Age**: If >60 days, drop temp by 2°C and grind finer.
-
-            【PHASE 2: SELECT BREWING PROTOCOL】
-            Based on the Matrix above, create a specific step-by-step plan.
-            - If **V60 + Light Kenya**: Use "Multi-Pour High Agitation" (Push extraction).
-            - If **V60 + Anaerobic**: Use "Gentle Pour" (Protect volatile aromatics).
-            - If **Switch + Natural**: Use "Hybrid Steep" (Immersion mitigates clogging risk).
-            - If **Flat Bottom (Kalita/Orea)**: Use "Heavy Center Pour" (Increase flow rate).
-
-            【PHASE 3: RECIPE GENERATION (JSON)】
-            Output valid JSON only.
+            【PHASE 4: RECIPE GENERATION (JSON)】
+            Output valid JSON only. Ensure 'roast_date' is extracted.
 
             {
                 "bean": { 
-                    "origin": "Detected Origin (e.g. Kenya Nyeri)", 
-                    "tags": ["Roast", "Process (e.g. Anaerobic)", "Varietal (e.g. SL28)"] 
+                    "origin": "Detected Origin", 
+                    "roast_date": "Detected Date (e.g. 2023/10/05) or 'Unknown'",
+                    "days_old": "Calculated Number (e.g. 45)",
+                    "tags": ["Roast Level", "Process", "Age: X days", "Paper/Gear Type"] 
                 },
-                "strategy": "Professional 80-word analysis. EXPLAIN: 'Detected [Origin/Process]. Because this is [Process], I recommend [Technique] to avoid [Risk]. Water temp is set to [Temp] due to [Density].'",
+                "strategy": "Professional 80-word analysis. MUST START WITH: 'Detected roast date [Date] (X days old)...' Then explain why the specific [Grind Setting] and [Temp] were chosen for this [Gear].",
                 "prep": { 
-                    "grind": "Specific setting for ${grinder}. Ex: '24 Clicks'. Reason: 'Natural process creates fines, go coarser'.", 
-                    "temp": "Specific °C" 
+                    "grind": "EXACT SETTING for ${grinder}. (e.g. 'C40: 24 Clicks').", 
+                    "temp": "Specific °C",
+                    "water_total": "${targetWater}g",
+                    "time_total": "e.g. '2:45 - 3:00'"
                 },
                 "steps": [
                     { 
                         "time": "0:00", 
                         "action": "悶蒸 (Bloom)", 
                         "weight": "Target: ${dose * 2}g", 
-                        "detail": "Action (e.g. Swirl or Excavate)...", 
-                        "tip": "Physics: Why this agitation level?" 
-                    },
-                    { 
-                        "time": "0:45", 
-                        "action": "Step Name (e.g. Acid Extraction)", 
-                        "weight": "Target: ...g", 
-                        "detail": "Flow rate & Pattern...", 
-                        "tip": "Why this flow rate? (e.g. 'To breakdown high density cell walls')" 
+                        "detail": "Technique (Center/Spiral)...", 
+                        "tip": "Physics: Why this duration based on bean age?" 
                     },
                     { 
                         "time": "...", 
@@ -670,13 +657,19 @@
     // ---------------------------------------------------------
     // 5. RENDER FUNCTIONS 
     // ---------------------------------------------------------
+// 5. RENDER FUNCTIONS (升級版：支援四格 UI)
+    // ---------------------------------------------------------
     function renderResult(data) {
         // 1. 填入基本資訊
         document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Origin";
         document.getElementById('resDoseRef').innerText = els.inputDose.value;
         document.getElementById('resStrategy').innerText = data.strategy;
+        
+        // ★ 填入四格資訊
         document.getElementById('resGrind').innerText = data.prep.grind;
         document.getElementById('resTemp').innerText = data.prep.temp;
+        document.getElementById('resWaterTotal').innerText = data.prep.water_total || "--"; // 總水量
+        document.getElementById('resTotalTime').innerText = data.prep.time_total || "--";   // 總時間
 
         // 2. 渲染標籤 (Tags)
         const tags = document.getElementById('resTags');
