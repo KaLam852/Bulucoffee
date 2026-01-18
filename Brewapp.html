@@ -664,6 +664,7 @@
             4. **Gear Specifics**:
                - Flat Bottom (Kalita/Orea): Focus on raising bed level.
                - Cone (V60): Focus on center vs edge pouring to control bypass.
+               - Adjust grind specific to ${grinder}.
 
             【OUTPUT JSON REQUIREMENTS】
             Strictly follow this JSON structure. Do not use Markdown inside the JSON values.
@@ -671,7 +672,7 @@
                 "bean": { "origin": "Detected Origin", "roast_date": "YYYY-MM-DD", "days_old": "Num", "tags": ["Flavor1","Flavor2","Acid/Body"] },
                 "strategy": "Pro Analysis (80-100 words): Explain the bean density and why this specific temperature/grind combo was chosen.",
                 "prep": { 
-                    "grind": "Specific Clicks/Number for ${grinder} (e.g., '24 Clicks', 'Setting 6'). Give a range if unsure.", 
+                    "grind": "grind": "Specific numeric setting/clicks for ${grinder} (e.g., '24 Clicks', 'Setting 6'). Give a range if unsure.", 
                     "temp": "XX°C", 
                     "water_total": "${targetWater}g", 
                     "time_total": "Target mm:ss" 
