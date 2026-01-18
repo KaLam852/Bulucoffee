@@ -7,30 +7,27 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">  
     
     <style>
         :root {
-            /* --- 保留原品牌配色 --- */
-            --brand-primary: #5468AA; /* Logo 藍紫色 */
-            --brand-secondary: #F0F2F9; /* 極淡藍色背景 */
-            --brand-accent: #FFA07A;  /* Logo 珊瑚橘 */
+            /* --- [保留] 品牌配色 --- */
+            --brand-primary: #5468AA;
+            --brand-secondary: #F0F2F9;
+            --brand-accent: #FFA07A;
             
-            /* --- 新版介面變數 --- */
+            /* --- [保留] 基礎顏色 --- */
             --bg-color: #FAFAFC;
             --text-main: #2D3436;
-            --text-light: #8898AA;
+            --text-light: #636E72;
             --card-bg: #FFFFFF;
             
-            /* 更大的圓角與更柔和的陰影 */
-            --radius-l: 32px;
-            --radius-m: 16px;
-            --shadow-float: 0 20px 40px -10px rgba(84, 104, 170, 0.15);
-            --shadow-soft: 0 4px 12px rgba(84, 104, 170, 0.05);
-
-            /* 字體定義 */
+            /* 新增排版變數 */
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Noto Sans TC', sans-serif;
+            
+            /* 放射式設計專用 */
+            --circle-size: 240px; /* 主圓盤大小 */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -38,439 +35,407 @@
         body {
             margin: 0; padding: 0;
             font-family: var(--font-sans);
-            background: linear-gradient(180deg, #F8F9FE 0%, #FAFAFC 100%); /* 微漸層背景 */
+            background: radial-gradient(circle at top center, #F0F2F9 0%, #FAFAFC 70%); /* 放射狀背景 */
             color: var(--text-main);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- Header: 雜誌標題風格 --- */
-        .brand-header {
-            padding: 40px 24px 20px 24px;
-            background: transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        /* --- Layout: Centered & Radial --- */
+        .content-wrap { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            padding: 20px 24px 100px 24px; 
+            display: flex; flex-direction: column; align-items: center;
         }
-        .header-left { display: flex; flex-direction: column; gap: 5px; }
+
+        .hidden { display: none !important; }
+
+        /* --- Header: Center Alignment --- */
+        .brand-header {
+            padding: 40px 0 20px 0;
+            text-align: center;
+            width: 100%;
+        }
         
         .brand-logo {
-            font-family: var(--font-sans);
-            font-size: 10px; font-weight: 700; letter-spacing: 2px;
-            color: var(--brand-accent); text-transform: uppercase;
+            font-size: 10px; font-weight: 700; letter-spacing: 3px;
+            color: var(--brand-primary); text-transform: uppercase; margin-bottom: 5px;
         }
-        
         .brand-title {
             margin: 0; 
             font-family: var(--font-serif);
-            font-size: 36px; 
-            color: var(--brand-primary);
+            font-size: 32px; 
+            color: var(--brand-accent);
             font-weight: 700;
-            font-style: italic;
-            line-height: 1;
         }
 
         .btn-lang {
-            background: transparent;
-            border: 1px solid var(--brand-primary);
-            color: var(--brand-primary);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 12px;
-            font-family: var(--font-sans);
-            font-weight: 600;
+            position: absolute; top: 20px; right: 20px;
+            background: transparent; border: 1px solid #E0E4EB;
+            color: var(--text-light); padding: 5px 12px;
+            border-radius: 20px; font-size: 10px; font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
         }
-        .btn-lang:active { background: var(--brand-secondary); transform: scale(0.95); }
 
-        /* --- Layout --- */
-        .content-wrap { max-width: 600px; margin: 0 auto; padding: 0 24px 100px 24px; }
-        .hidden { display: none !important; }
-
-        /* --- Section Titles: 更加低調優雅 --- */
-        .section-title {
-            font-family: var(--font-sans);
-            font-size: 13px; 
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin: 40px 0 15px 5px; 
-            color: var(--text-light);
-            display: flex; align-items: center; gap: 8px; font-weight: 700;
-        }
-        .section-title i { color: var(--brand-accent); }
-
-        /* --- 1. Dose: 極簡大數字 --- */
-        .dose-container {
-            background: var(--card-bg);
-            padding: 40px 20px;
-            border-radius: var(--radius-l);
-            box-shadow: var(--shadow-float);
-            text-align: center;
+        /* --- 1. Dose: The "Sun" (Central Dial) --- */
+        /* 這是放射式的核心：巨大的圓形控制器 */
+        .dose-planet-wrap {
             position: relative;
-            overflow: hidden;
+            width: var(--circle-size);
+            height: var(--circle-size);
+            margin: 20px auto 40px auto;
+            display: flex; justify-content: center; align-items: center;
         }
-        /* 裝飾性背景圓 */
-        .dose-container::before {
-            content: ''; position: absolute; top: -50px; right: -50px;
-            width: 150px; height: 150px; background: var(--brand-secondary);
-            border-radius: 50%; opacity: 0.5; z-index: 0;
+        
+        .dose-planet {
+            width: 100%; height: 100%;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 20px 50px rgba(84, 104, 170, 0.15), 
+                        inset 0 0 0 1px rgba(84, 104, 170, 0.05); /* 外光暈 */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
+        /* 裝飾軌道線 */
+        .orbit-ring {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0;
+            pointer-events: none;
+        }
+        .orbit-1 { width: 320px; height: 320px; opacity: 0.6; }
+        .orbit-2 { width: 450px; height: 450px; opacity: 0.3; }
+
+        .dose-label {
+            font-size: 11px; letter-spacing: 2px; color: var(--text-light); 
+            text-transform: uppercase; margin-bottom: 5px;
+        }
         .dose-display { 
             font-family: var(--font-serif);
-            font-size: 80px; 
-            font-weight: 600; 
-            color: var(--brand-primary); 
-            line-height: 1;
-            position: relative; z-index: 1;
+            font-size: 80px; font-weight: 600; 
+            color: var(--brand-accent); line-height: 1;
         }
-        
-        /* 重新設計 Range Slider */
-        input[type=range] {
-            -webkit-appearance: none; width: 100%; margin: 30px 0; background: transparent; position: relative; z-index: 1;
+        .dose-unit { font-size: 14px; color: var(--brand-primary); font-weight: 600; }
+
+        /* 將 Slider 隱藏在圓盤下方，作為互動層 */
+        .slider-wrapper {
+            position: absolute; bottom: -40px; width: 200px; text-align: center;
+        }
+        input[type=range] { 
+            width: 100%; -webkit-appearance: none; background: transparent;
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 6px; background: #EDEFF5; border-radius: 10px;
+            height: 4px; background: #E0E4EB; border-radius: 2px;
         }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 28px; width: 28px; border-radius: 50%;
-            background: var(--brand-primary);
-            box-shadow: 0 4px 10px rgba(84, 104, 170, 0.4);
-            margin-top: -11px;
-            border: 4px solid #fff;
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+            background: var(--brand-primary); margin-top: -8px; 
+            border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* --- 2. Dripper: 膠囊網格 --- */
-        .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .gear-item {
+        /* --- 2. Gear: The "Planets" (Floating Circles) --- */
+        .section-label {
+            text-align: center; font-size: 12px; letter-spacing: 1.5px; 
+            color: var(--text-light); text-transform: uppercase; margin-bottom: 20px;
+        }
+
+        .gear-orbit-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
+            max-width: 400px; margin: 0 auto 40px auto;
+        }
+        
+        .gear-planet {
+            width: 80px; height: 80px;
+            border-radius: 50%;
             background: #fff;
-            border: 1px solid transparent;
-            padding: 20px 10px;
-            border-radius: var(--radius-m);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: var(--shadow-soft);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-        }
-        .gear-item i { color: #CBD2E0; transition: 0.3s; }
-        
-        /* 選中狀態：變成實心色塊 */
-        .gear-item.selected {
-            background: var(--brand-primary);
-            box-shadow: 0 10px 20px rgba(84, 104, 170, 0.3);
-            transform: translateY(-4px);
-        }
-        .gear-item.selected i { color: #fff; }
-        .gear-item.selected .gear-name { color: #fff; }
-        
-        .gear-name { 
-            font-size: 12px; font-weight: 600; color: var(--text-main); 
-            transition: 0.3s; letter-spacing: 0.5px;
-        }
-
-        /* --- 3. Select Inputs: 現代按鈕式下拉 --- */
-        .custom-select {
-            width: 100%; padding: 20px; 
-            border: none; background: #fff;
-            border-radius: var(--radius-m); 
-            font-size: 15px; font-weight: 500;
-            color: var(--text-main);
-            margin-bottom: 15px; 
-            box-shadow: var(--shadow-soft);
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235468AA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 20px center;
-            background-size: 10px;
-        }
-
-        /* --- Buttons: 漸層光暈 --- */
-        .btn-brand {
-            width: 100%; padding: 22px; 
-            background: linear-gradient(135deg, var(--brand-primary) 0%, #435490 100%);
-            color: #fff; border: none; border-radius: var(--radius-l);
-            font-size: 16px; font-weight: 600; letter-spacing: 0.5px;
-            cursor: pointer; margin-top: 40px;
-            display: flex; justify-content: center; align-items: center; gap: 12px;
-            box-shadow: 0 15px 30px rgba(84, 104, 170, 0.3);
-            transition: all 0.2s;
-        }
-        .btn-brand:active { transform: scale(0.98); box-shadow: 0 5px 15px rgba(84, 104, 170, 0.2); }
-        .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: #ccc; }
-        
-        .btn-outline {
-            width: 100%; padding: 18px; background: transparent;
-            border: 2px solid var(--brand-secondary); color: var(--text-light);
-            border-radius: var(--radius-l); margin-top: 20px; 
-            cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-        .btn-outline:hover { color: var(--brand-primary); border-color: var(--brand-primary); }
-
-        /* --- Upload: 虛線框優化 --- */
-        .upload-box {
-            height: 360px; background: #fff; 
-            border: 2px dashed #E0E4EB;
-            border-radius: var(--radius-l); 
-            position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.3s;
-        }
-        .upload-box:hover { border-color: var(--brand-primary); background: var(--brand-secondary); }
-
-        /* --- Loading Screen: 品牌色 --- */
-        .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 200;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .loading-pulse {
-            width: 80px; height: 80px; background: var(--brand-accent);
-            border-radius: 50%; animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* --- Results: 雜誌排版 --- */
-        .res-header { text-align: left; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-        .res-dose-tag {
-            font-size: 11px; letter-spacing: 2px; color: var(--brand-accent); 
-            text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block;
-        }
-        .res-origin { 
-            font-family: var(--font-serif);
-            font-size: 42px; line-height: 1.1;
-            font-weight: 700; color: var(--brand-primary); 
-            margin: 0 0 15px 0; 
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 彈性動畫 */
         }
         
-        /* 策略卡片：像便條紙 */
-        .strategy-box {
-            background: #FFFAF5; /* 微微的暖色背景 */
-            padding: 30px; 
-            border-left: none; /* 移除邊框 */
-            border-radius: var(--radius-m);
-            font-family: var(--font-serif);
-            font-size: 18px; color: #4A4A4A; 
-            margin-bottom: 30px; 
-            line-height: 1.8;
-            position: relative;
+        .gear-planet i { margin-bottom: 5px; color: #CBD2E0; }
+        .gear-planet span { font-size: 10px; font-weight: 600; color: var(--text-light); }
+
+        .gear-planet.selected {
+            border-color: var(--brand-primary);
+            background: #fff;
+            transform: scale(1.1); /* 選中時放大 */
+            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
         }
-        .strategy-box::before {
-            content: '“'; position: absolute; top: 10px; left: 15px;
-            font-size: 60px; color: var(--brand-accent); opacity: 0.3; font-family: sans-serif;
+        .gear-planet.selected i { color: var(--brand-primary); }
+        .gear-planet.selected span { color: var(--brand-primary); }
+
+        /* --- 3. Inputs: Rounded Pills --- */
+        .input-pill-group {
+            width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+        }
+        .custom-select {
+            width: 100%; padding: 15px 20px;
+            background: #fff; border: 1px solid transparent;
+            border-radius: 50px; /* 藥丸形狀 */
+            font-size: 14px; text-align: center; text-align-last: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            appearance: none; color: var(--text-main); font-weight: 500;
+        }
+        .custom-select:focus { border-color: var(--brand-primary); outline: none; }
+
+        /* --- Button: Floating Action --- */
+        .btn-orbit {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: var(--brand-primary); color: #fff;
+            border: none; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.3);
+            cursor: pointer; transition: 0.3s;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 100;
+        }
+        .btn-orbit:active { transform: translateX(-50%) scale(0.9); }
+        .btn-orbit:disabled { background: #CBD2E0; box-shadow: none; }
+        
+        /* 為了讓按鈕不擋住內容 */
+        .spacer { height: 80px; }
+
+        /* --- Upload View: Circular Focus --- */
+        .upload-circle {
+            width: 280px; height: 280px; border-radius: 50%;
+            background: #fff; border: 2px dashed #DDE1E8;
+            margin: 20px auto; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        .upload-label { text-align: center; }
+
+        /* --- Result View: Radial Stats --- */
+        .res-top { text-align: center; margin-bottom: 40px; }
+        .res-origin { 
+            font-family: var(--font-serif); font-size: 32px; 
+            color: var(--brand-primary); margin: 10px 0; 
         }
 
-        /* 數據儀表板 (橫向) */
-        .info-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+        /* 圓形數據環 */
+        .stats-orbit-container {
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
             margin-bottom: 40px;
         }
-        .info-card {
-            background: #fff; padding: 20px; border-radius: var(--radius-m);
-            text-align: left; box-shadow: var(--shadow-soft);
-            display: flex; flex-direction: column; justify-content: space-between;
+        .stat-circle {
+            width: 85px; height: 85px; border-radius: 50%;
+            background: #fff; border: 1px solid #F0F2F9;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .info-label { font-size: 10px; color: var(--text-light); margin-bottom: 5px; font-weight: 700; letter-spacing: 1px; }
-        .info-val { 
-            font-weight: 600; color: var(--text-main); font-size: 16px; 
-            border-bottom: 2px solid var(--brand-secondary); padding-bottom: 5px; width: fit-content;
+        .stat-label { font-size: 9px; color: var(--text-light); margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-size: 13px; font-weight: 700; color: var(--text-main); text-align: center; padding: 0 5px; line-height: 1.2;}
+
+        .strategy-bubble {
+            background: #fff; padding: 25px; border-radius: 20px;
+            text-align: center; margin-bottom: 30px;
+            font-family: var(--font-serif); font-size: 18px; color: #444;
+            box-shadow: var(--shadow); position: relative;
+        }
+        /* 對話框尖角 */
+        .strategy-bubble::after {
+            content: ''; position: absolute; top: -10px; left: 50%; margin-left: -10px;
+            border-width: 0 10px 10px 10px; border-style: solid;
+            border-color: transparent transparent #fff transparent;
         }
 
-        /* 時間軸：更乾淨的線條 */
-        .recipe-timeline { border-left: 2px dashed #DDE1E8; margin-left: 10px; padding-left: 35px; }
-        .recipe-step { margin-bottom: 40px; }
-        .recipe-step::before {
-            content: ''; position: absolute; left: -42px; top: 0;
-            width: 16px; height: 16px; background: #fff; 
-            border: 4px solid var(--brand-primary); border-radius: 50%;
-            box-shadow: 0 0 0 4px var(--brand-secondary); /* 光暈效果 */
+        /* Timeline: Center Line */
+        .recipe-timeline { 
+            position: relative; padding: 0; margin-top: 20px;
         }
-        .step-time { 
-            font-family: var(--font-serif);
-            font-size: 20px; font-weight: 700; 
-            color: var(--brand-primary); display: block; margin-bottom: 8px;
+        .recipe-timeline::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 50%; 
+            width: 1px; background: #E0E4EB; transform: translateX(-50%);
         }
-        .step-title { font-weight: 700; font-size: 18px; margin: 0 0 8px 0; color: var(--text-main); }
-        .step-desc { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 12px; }
-        .step-tip { 
-            font-size: 13px; color: var(--brand-primary); 
-            background: var(--brand-secondary); padding: 10px 15px; 
-            border-radius: 8px; display: inline-block; font-weight: 500;
+        
+        .recipe-step { 
+            position: relative; margin-bottom: 40px; text-align: center; 
+            background: #fff; padding: 20px; border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            z-index: 2; /* 蓋住線 */
         }
+        .step-time {
+            display: inline-block; background: var(--brand-primary); color: #fff;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            margin-bottom: 10px; box-shadow: 0 4px 10px rgba(84, 104, 170, 0.3);
+        }
+        .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
+        
+        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); }
+        .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
 
-        /* Chat UI */
-        .chat-section { margin-top: 60px; background: #fff; padding: 25px; border-radius: var(--radius-l); box-shadow: var(--shadow-soft); }
-        .chat-window { background: #FAFAFC; border: none; box-shadow: inner 0 2px 5px rgba(0,0,0,0.05); }
-        .msg-ai { background: #fff; border: 1px solid #eee; color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .msg-user { background: var(--brand-primary); color: #fff; }
-
-        /* Footer */
-        .footer-brand { margin-top: 60px; padding-bottom: 20px; font-family: var(--font-serif); font-style: italic; font-size: 14px; }
-
-        @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.4); opacity: 0; } }
+        .loading-screen { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
 
 <div id="app">
     <header class="brand-header">
-        <div class="header-left">
-            <div class="brand-logo">BULU COFFEE</div>
-            <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
-        </div>
+        <div class="brand-logo">BULU COFFEE</div>
+        <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
         <button id="langToggle" class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
     </header>
 
     <div class="content-wrap">
         
         <section id="viewConfig">
+            <div class="orbit-ring orbit-1"></div>
+            <div class="orbit-ring orbit-2"></div>
+
+            <div class="dose-planet-wrap">
+                <div class="dose-planet">
+                    <span class="dose-label" data-i18n="sec_dose">DOSE</span>
+                    <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
+                    <div style="font-size:10px; color:#aaa; margin-top:5px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
+                </div>
+            </div>
             
-            <h2 class="section-title"><i data-lucide="sliders-horizontal" size="16"></i> <span data-i18n="sec_dose">1. Set Dose</span></h2>
-            <div class="dose-container">
-                <div><span id="doseDisplay" class="dose-display">20</span><span style="font-family: var(--font-serif); font-size: 24px; color: var(--text-light); font-style: italic;">g</span></div>
+            <div class="slider-wrapper">
                 <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
-                <div style="font-size: 13px; color: var(--text-light); letter-spacing: 0.5px;" data-i18n="dose_desc">Drag to adjust (10g - 30g)</div>
             </div>
 
-            <h2 class="section-title"><i data-lucide="coffee" size="16"></i> <span data-i18n="sec_dripper">2. Select Dripper</span></h2>
-            <div class="gear-grid">
-                <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
-                    <i data-lucide="filter" size="24"></i><span class="gear-name">V60</span>
+            <div class="section-label" data-i18n="sec_dripper">SELECT DRIPPER</div>
+            <div class="gear-orbit-grid">
+                <div class="gear-planet" onclick="selectGear(this, 'Hario V60')">
+                    <i data-lucide="filter" size="20"></i><span>V60</span>
                 </div>
-                <div class="gear-item" onclick="selectGear(this, 'Origami V')">
-                    <i data-lucide="star" size="24"></i><span class="gear-name">Origami</span>
+                <div class="gear-planet" onclick="selectGear(this, 'Origami V')">
+                    <i data-lucide="star" size="20"></i><span>Origami</span>
                 </div>
-                <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
-                    <i data-lucide="align-center" size="24"></i><span class="gear-name">Kalita</span>
+                <div class="gear-planet" onclick="selectGear(this, 'Kalita Wave')">
+                    <i data-lucide="align-center" size="20"></i><span>Kalita</span>
                 </div>
-                <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
-                    <i data-lucide="toggle-right" size="24"></i><span class="gear-name">Switch</span>
+                <div class="gear-planet" onclick="selectGear(this, 'Hario Switch')">
+                    <i data-lucide="toggle-right" size="20"></i><span>Switch</span>
                 </div>
-                <div class="gear-item" onclick="selectGear(this, 'Chemex')">
-                    <i data-lucide="flask-conical" size="24"></i><span class="gear-name">Chemex</span>
+                <div class="gear-planet" onclick="selectGear(this, 'Chemex')">
+                    <i data-lucide="flask-conical" size="20"></i><span>Chemex</span>
                 </div>
-                 <div class="gear-item" onclick="selectGear(this, 'Other')">
-                    <i data-lucide="more-horizontal" size="24"></i><span class="gear-name" data-i18n="gear_other">Other</span>
+                 <div class="gear-planet" onclick="selectGear(this, 'Other')">
+                    <i data-lucide="more-horizontal" size="20"></i><span data-i18n="gear_other">Other</span>
                 </div>
             </div>
 
-            <h2 class="section-title"><i data-lucide="settings-2" size="16"></i> <span data-i18n="sec_grinder">3. Grinder & Paper</span></h2>
-            <select id="inputGrinder" class="custom-select">
-                <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
-                <option value="Comandante C40">Comandante C40</option>
-                <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-                <option value="Niche Zero">Niche Zero</option>
-                <option value="Fellow Ode">Fellow Ode</option>
-                <option value="EK43">Mahlkonig EK43</option>
-                <option value="Generic">Other / Generic</option>
-            </select>
+            <div class="section-label" data-i18n="sec_grinder">GRINDER & PAPER</div>
+            <div class="input-pill-group">
+                <select id="inputGrinder" class="custom-select">
+                    <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
+                    <option value="Comandante C40">Comandante C40</option>
+                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                    <option value="Niche Zero">Niche Zero</option>
+                    <option value="Fellow Ode">Fellow Ode</option>
+                    <option value="EK43">Mahlkonig EK43</option>
+                    <option value="Generic">Other / Generic</option>
+                </select>
 
-            <select id="inputPaper" class="custom-select">
-                <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
-                <option value="Hario V60">Hario V60 Standard</option>
-                <option value="Cafec Abaca">Cafec Abaca</option>
-                <option value="Cafec T-92">Cafec T-92</option>
-                <option value="Sibarist">Sibarist FAST</option>
-                <option value="Kalita Wave">Kalita Wave</option>
-                <option value="Chemex">Chemex Bonded</option>
-                 <option value="Other">Other</option>
-            </select>
+                <select id="inputPaper" class="custom-select">
+                    <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
+                    <option value="Hario V60">Hario V60 Standard</option>
+                    <option value="Cafec Abaca">Cafec Abaca</option>
+                    <option value="Cafec T-92">Cafec T-92</option>
+                    <option value="Sibarist">Sibarist FAST</option>
+                    <option value="Kalita Wave">Kalita Wave</option>
+                    <option value="Chemex">Chemex Bonded</option>
+                     <option value="Other">Other</option>
+                </select>
+            </div>
 
-            <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
-                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="18"></i>
+            <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
+                <i data-lucide="arrow-right" size="24"></i>
             </button>
+            <div class="spacer"></div>
         </section>
 
-        <section id="viewUpload" class="hidden">
-            <button class="btn-outline" style="width:auto; border:none; padding-left:0; margin-bottom:10px; color:var(--text-light);" onclick="backToConfig()">
-                <i data-lucide="arrow-left" size="18"></i> <span data-i18n="btn_back">Back</span>
+        <section id="viewUpload" class="hidden" style="text-align:center;">
+             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px;" onclick="backToConfig()">
+                <i data-lucide="arrow-left" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_back">BACK</span>
             </button>
             
-            <h2 class="section-title" data-i18n="sec_scan" style="margin-top:10px;">4. Scan Bean Label</h2>
-            <p style="font-size: 15px; color: var(--text-light); margin-bottom: 25px; line-height: 1.6;" data-i18n="scan_desc">
-                Take a photo of your coffee bag. AI will analyze the roast level, origin, and freshness.
+            <h2 class="section-label" data-i18n="sec_scan" style="font-size:16px;">SCAN BEAN LABEL</h2>
+            <p style="font-size: 14px; color: #888; margin-bottom: 30px; padding: 0 20px;" data-i18n="scan_desc">
+                AI will analyze the roast level, origin, and freshness.
             </p>
-            
-            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+
+            <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
                 <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
-                <div class="upload-ui" style="text-align: center;">
-                    <div style="background:var(--brand-secondary); padding:25px; border-radius:50%; display:inline-block; margin-bottom:20px;">
-                        <i data-lucide="scan-line" size="40" color="#5468AA"></i>
-                    </div>
-                    <div style="font-weight:700; color:var(--brand-primary); font-size:18px;" data-i18n="tap_upload">Tap to Upload Photo</div>
+                <div class="upload-label">
+                    <i data-lucide="camera" size="48" color="#5468AA" style="margin-bottom:10px;"></i>
+                    <div style="font-weight:700; color:var(--brand-primary);" data-i18n="tap_upload">TAP TO UPLOAD</div>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
             </div>
             
-            <div id="errorMsg" style="color:#E53E3E; font-size:13px; margin-top:15px; display:none; background:#FFF5F5; padding:15px; border-radius:12px; text-align:center;"></div>
-            
-            <button id="btnAnalyze" class="btn-brand" disabled onclick="startAnalysis()">
-                <span data-i18n="btn_brew">Start Brewing</span> <i data-lucide="sparkles" size="18"></i>
+            <div id="errorMsg" style="color:red; font-size:12px; margin-top:20px; display:none;"></div>
+
+            <button id="btnAnalyze" class="btn-orbit" disabled onclick="startAnalysis()">
+                <i data-lucide="sparkles" size="24"></i>
             </button>
         </section>
 
         <section id="viewResult" class="hidden">
-            <div class="res-header">
-                <span class="res-dose-tag">RECIPE FOR <span id="resDoseRef"></span>G DOSE</span>
+            <div class="res-top">
+                <div style="font-size:10px; letter-spacing:2px; color:var(--brand-accent); font-weight:700;">RECIPE FOR <span id="resDoseRef"></span>G</div>
                 <h2 id="resOrigin" class="res-origin">--</h2>
-                <div id="resTags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                <div id="resTags" style="display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; margin-top:10px;"></div>
             </div>
 
-            <div class="strategy-box" id="resStrategy">--</div>
+            <div class="strategy-bubble" id="resStrategy">--</div>
 
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_grind">GRIND</div>
-                    <div id="resGrind" class="info-val">--</div>
+            <div class="stats-orbit-container">
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_grind">GRIND</div>
+                    <div id="resGrind" class="stat-val">--</div>
                 </div>
-
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_temp">TEMP</div>
-                    <div id="resTemp" class="info-val">--</div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_temp">TEMP</div>
+                    <div id="resTemp" class="stat-val">--</div>
                 </div>
-
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_water">WATER</div>
-                    <div id="resWaterTotal" class="info-val">--</div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_water">WATER</div>
+                    <div id="resWaterTotal" class="stat-val">--</div>
                 </div>
-
-                <div class="info-card">
-                    <div class="info-label" data-i18n="lbl_time">TIME</div>
-                    <div id="resTotalTime" class="info-val">--</div>
+                <div class="stat-circle">
+                    <div class="stat-label" data-i18n="lbl_time">TIME</div>
+                    <div id="resTotalTime" class="stat-val">--</div>
                 </div>
             </div>
 
-            <h3 style="font-family: var(--font-serif); font-size: 24px; margin-bottom: 30px; color:var(--brand-primary); font-weight:700; font-style:italic;" data-i18n="steps_title">Brewing Steps</h3>
+            <div class="section-label" style="margin-top:40px;" data-i18n="steps_title">BREWING STEPS</div>
             <div id="resTimeline" class="recipe-timeline"></div>
 
             <div class="chat-section">
                 <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px; color:var(--brand-primary);">
                     <i data-lucide="message-circle" size="18"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
                 </div>
-                <div id="chatWindow" class="chat-window"></div>
+                <div id="chatWindow" class="chat-window" style="height:300px; overflow-y:auto; padding:10px; margin-bottom:10px;"></div>
                 <div class="chat-input-box">
                     <input type="text" id="chatInput" class="chat-input" placeholder="...">
-                    <button class="btn-icon" style="background:var(--brand-primary); color:white; border:none; width:44px; height:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(84,104,170,0.3);" onclick="sendChat()">
-                        <i data-lucide="send" size="18"></i>
+                    <button style="background:var(--brand-primary); color:white; border:none; width:40px; height:40px; border-radius:50%;" onclick="sendChat()">
+                        <i data-lucide="send" size="16"></i>
                     </button>
                 </div>
             </div>
 
-            <button onclick="location.reload()" class="btn-outline">
-                <span data-i18n="btn_restart">Brew Another Bean</span> <i data-lucide="rotate-ccw" size="16"></i>
-            </button>
-
-            <div class="footer-brand">
-                © Bulu Coffee | Art of Beverages<br>
-                <a href="https://bulucoffee.com" target="_blank" style="color:#aaa; text-decoration:none;">bulucoffee.com</a>
+            <div style="text-align:center; margin-top:40px;">
+                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700;">
+                    <i data-lucide="rotate-ccw" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_restart">BREW AGAIN</span>
+                </button>
             </div>
+            
+            <div style="text-align:center; margin-top:30px; font-size:10px; color:#ccc;">© BULU COFFEE</div>
         </section>
 
     </div>
 
     <div id="viewLoading" class="loading-screen hidden">
         <div class="loading-pulse"></div>
-        <div style="margin-top:30px; font-family:var(--font-serif); font-weight:700; font-size:24px; color:var(--brand-primary); letter-spacing:1px; font-style:italic;">Bulu Lab</div>
-        <div id="loadingText" style="font-size: 13px; letter-spacing: 1px; margin-top: 10px; color: #888; text-transform:uppercase;">Analyzing...</div>
+        <div style="margin-top:25px; font-family:var(--font-serif); font-weight:700; font-size:20px; color:var(--brand-primary);">BULU LAB</div>
+        <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #888;">CALCULATING ORBIT...</div>
     </div>
 </div>
 
