@@ -574,22 +574,26 @@
             3. **Current Date**: ${today}.
 
             【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
-            Analyze the bean image based on these STRICT rules:
-
-            👉 **A. PROCESSING METHOD RULES**:
+               Analyze the bean image based on these STRICT rules:
+             👉 **A. ROAST DATE OCR
+                **: Look for YYYY/MM/DD. Calculate Age = [${today} - Roast Date].
+               - If Fresh (<10 days): Needs high turbulence to degas.
+               - If Aged (>60 days): Needs LOW turbulence, Lower Temp, Finer Grind.            
+               
+               👉 **B. PROCESSING METHOD RULES**:
                - **Washed (水洗)**: Clean structure. Needs **High Agitation** & Finer Grind to extract complex acidity.
                - **Natural (日曬)**: High fines, heavy body. Needs **Coarser Grind** & Controlled Flow to prevent clogging.
                - **Honey (蜜處理)**: Balance. Treat as hybrid (Medium grind, steady pour).
                - **Anaerobic/Infused (厭氧/特殊)**: Volatile compounds. Risk of "funkiness". Strategy: **Lower Temp (90-92°C)** & **Low Agitation**.
                - **Wet-Hulled (濕剝)**: Earthy, low acid. Strategy: **Coarser grind, Pulse pour**.
 
-            👉 **B. ORIGIN & DENSITY RULES**:
+            👉 **C. ORIGIN & DENSITY RULES**:
                - **Africa (Kenya/Ethiopia)**: EXTREME High Density. Hard to extract. **Needs 93°C - 96°C** + High Turbulence.
                - **South America (Colombia)**: High Density. Standard 92°C - 94°C.
                - **Brazil/Island**: Low Density (Soft). Easy to over-extract. **Needs 88°C - 90°C**.
                - **Panama (Geisha)**: Delicate florals. Needs **Gentle extraction** (90-92°C).
 
-            👉 **C. ROAST LEVEL & FRESHNESS**:
+            👉 **D. ROAST LEVEL**:
                - **Light**: High Temp, Finer Grind.
                - **Dark**: Low Temp (85-88°C), Coarser Grind, Center pour.
                - **Age**: Fresh (<14 days) = High Gas. Aged (>60 days) = Oxidized. >60 days (Stale), drop temp by 2°C and grind slightly finer (to resist flow).
@@ -724,6 +728,11 @@
     // 5. RENDER FUNCTIONS (修復版：確保 4 格 UI 正常運作)
     // ---------------------------------------------------------
     function renderResult(data) {
+                    // 語言設定
+            const langInstruction = currentLang === 'zh' 
+                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style)." 
+                : "OUTPUT LANGUAGE: English.";
+        
         // 1. 填入基本資訊
         document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Origin";
         document.getElementById('resDoseRef').innerText = els.inputDose.value;
