@@ -11,392 +11,618 @@
     
     <style>
         :root {
+            /* --- Bulu Coffee 品牌專屬配色 (保持不變) --- */
             --brand-primary: #5468AA;
             --brand-secondary: #F0F2F9;
             --brand-accent: #FFA07A;
+            
+            /* --- 介面基礎設定 --- */
             --bg-color: #FAFAFC;
             --text-main: #2D3436;
             --text-light: #636E72;
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'Noto Sans TC', sans-serif;
-            --circle-size: 240px; 
+            --card-bg: #FFFFFF;
+            --radius: 24px; /*稍微圓潤一點以符合現代感*/
+            --shadow: 0 10px 40px -10px rgba(84, 104, 170, 0.15);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             margin: 0; padding: 0;
-            font-family: var(--font-sans);
-            background: radial-gradient(circle at 50% 20%, #F0F2F9 0%, #FAFAFC 70%);
+            font-family: "SF Pro Text", 'Noto Sans TC', sans-serif;
+            background: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            height: 100vh;
+            overflow: hidden; /* 禁止整體網頁捲動，改為區域捲動 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .content-wrap { 
-            max-width: 500px; 
-            margin: 0 auto; 
-            padding: 20px 24px 120px 24px;
-            display: flex; flex-direction: column; align-items: center;
+        /* --- 全新佈局容器: 左側導航 + 右側內容 --- */
+        #app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            background: var(--bg-color);
+        }
+
+        /* --- 左側邊欄 (Left Sidebar) --- */
+        .sidebar {
+            width: 280px;
+            padding: 40px 30px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.04);
+            z-index: 10;
+        }
+
+        .brand-area { margin-bottom: 60px; }
+        .brand-logo {
+            font-size: 12px; font-weight: 800; letter-spacing: 2px;
+            color: var(--brand-primary); text-transform: uppercase;
+            margin-bottom: 10px; display: block;
+        }
+        .brand-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px; font-weight: 700;
+            color: var(--brand-accent);
+            line-height: 1; margin: 0;
+        }
+
+        /* 進度指示器 (由上而下的左側導引) */
+        .step-nav { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px;
+            color: var(--text-light); opacity: 0.5; transition: 0.3s;
+        }
+        .nav-item.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
+        .nav-num {
+            font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700;
+        }
+        .nav-label { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+        .sidebar-footer { margin-top: auto; }
+        .btn-lang {
+            background: transparent; border: 1px solid var(--brand-primary);
+            color: var(--brand-primary); padding: 8px 16px;
+            border-radius: 20px; font-size: 12px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; width: 100%;
+        }
+
+        /* --- 右側主內容區 (Right Main Content) --- */
+        .main-stage {
+            flex: 1;
+            position: relative;
+            padding: 40px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 放射性/中心化設計 (Radial Elements) --- */
+        /* 用於粉量設定 */
+        .radial-section {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px 0;
+        }
+        
+        .dose-dial {
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 
+                0 0 0 10px var(--brand-secondary),
+                var(--shadow);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative;
+            margin-bottom: 40px;
+            transition: transform 0.2s;
+        }
+        .dose-dial:active { transform: scale(0.98); }
+        .dose-val {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 80px; font-weight: 700;
+            color: var(--brand-primary);
+            line-height: 1;
+        }
+        .dose-unit { font-size: 18px; color: #999; font-weight: 300; margin-top: -5px; }
+
+        /* 滑桿改為圍繞或下方 */
+        .range-wrapper { width: 300px; max-width: 100%; text-align: center; }
+        input[type=range] {
+            width: 100%; height: 6px; background: #E0E4EB;
+            border-radius: 5px; outline: none; appearance: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 24px; height: 24px;
+            background: var(--brand-accent); border: 4px solid #fff;
+            border-radius: 50%; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- 水平流動設計 (Horizontal Flow) --- */
+        /* 用於濾杯選擇 */
+        .h-scroll-section { margin-bottom: 40px; }
+        .section-header {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px; color: var(--text-main); margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-header i { color: var(--brand-accent); }
+
+        .horizontal-list {
+            display: flex; gap: 20px; overflow-x: auto;
+            padding-bottom: 20px; /* 預留滾動條空間或陰影 */
+            scroll-behavior: smooth;
+            -ms-overflow-style: none; scrollbar-width: none; /* 隱藏滾動條 */
+        }
+        .horizontal-list::-webkit-scrollbar { display: none; }
+
+        .gear-card {
+            min-width: 140px; height: 160px;
+            background: #fff; border-radius: var(--radius);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            border: 2px solid transparent;
+            transition: 0.3s; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .gear-card:hover { transform: translateY(-5px); }
+        .gear-card.selected {
+            border-color: var(--brand-primary);
+            background: var(--brand-secondary);
+            box-shadow: 0 8px 20px rgba(84, 104, 170, 0.2);
+        }
+        .gear-card i { color: var(--text-light); transition: 0.3s; }
+        .gear-card.selected i { color: var(--brand-primary); transform: scale(1.2); }
+        .gear-name { margin-top: 15px; font-weight: 500; font-size: 14px; }
+
+        /* --- 輸入與按鈕區 --- */
+        .controls-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            max-width: 800px;
+        }
+        .custom-select {
+            width: 100%; padding: 20px; border: none; background: #fff;
+            border-radius: var(--radius); font-size: 15px; color: var(--text-main);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); appearance: none;
+            cursor: pointer;
+        }
+
+        /* 懸浮動作條 (Bottom Action Bar) */
+        .action-bar {
+            position: fixed; bottom: 30px; right: 40px;
+            display: flex; gap: 15px; align-items: center;
+            z-index: 50;
+        }
+        .btn-fab {
+            height: 60px; padding: 0 30px;
+            background: var(--brand-primary); color: #fff;
+            border: none; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(84, 104, 170, 0.4);
+            display: flex; align-items: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .btn-fab:hover { transform: scale(1.05); }
+        .btn-fab:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* --- 上傳介面 (Overlay Style) --- */
+        .overlay-view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 20;
+            padding: 40px;
+            display: flex; flex-direction: column;
+            animation: slideInRight 0.4s ease-out;
+        }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        
+        .upload-split {
+            display: flex; height: 100%; gap: 40px; align-items: center;
+        }
+        .upload-left { flex: 1; }
+        .upload-right { flex: 1; height: 100%; }
+        
+        .upload-zone {
+            width: 100%; height: 100%; background: #fff;
+            border: 3px dashed #DDE1E8; border-radius: var(--radius);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; overflow: hidden; cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--brand-primary); background: var(--brand-secondary); }
+
+        /* --- 結果頁面 (Dashboard Grid) --- */
+        .result-dashboard {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 25px; height: 100%;
+            padding-bottom: 80px;
+        }
+
+        /* 資訊卡片 */
+        .card { background: #fff; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
+        
+        .origin-card {
+            grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(135deg, var(--brand-primary) 0%, #3a4b8a 100%);
+            color: #fff;
+        }
+        .res-origin { font-family: 'Cormorant Garamond', serif; font-size: 36px; margin: 0; }
+        
+        .stats-panel { grid-row: 2; display: flex; flex-direction: column; gap: 15px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .stat-label { font-size: 12px; color: #999; letter-spacing: 1px; font-weight: 700; }
+        .stat-val { font-weight: 700; color: var(--brand-primary); font-size: 16px; }
+
+        .timeline-panel { grid-row: 2; overflow-y: auto; }
+        
+        /* 聊天室改為懸浮按鈕或右下角 */
+        .chat-float {
+            position: fixed; bottom: 100px; right: 40px;
+            width: 50px; height: 50px; background: #fff;
+            border-radius: 50%; box-shadow: var(--shadow);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--brand-primary); cursor: pointer; z-index: 60;
+        }
+
+        /* Loading */
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         .hidden { display: none !important; }
 
-        /* Header */
-        .brand-header {
-            padding: 40px 0 10px 0;
-            text-align: center;
-            width: 100%;
-            position: relative;
-            z-index: 10;
+        /* RWD: Mobile Adaption (Stacked but keeps the style) */
+        @media (max-width: 768px) {
+            #app-container { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: auto; padding: 15px 20px;
+                flex-direction: row; justify-content: space-between; align-items: center;
+                border-bottom: 1px solid #eee; border-right: none;
+            }
+            .brand-area { margin: 0; }
+            .step-nav, .sidebar-footer { display: none; } /* 手機版簡化導航 */
+            
+            .main-stage { padding: 20px; }
+            .dose-dial { width: 160px; height: 160px; margin-bottom: 20px; }
+            .dose-val { font-size: 50px; }
+            
+            .upload-split { flex-direction: column-reverse; }
+            .result-dashboard { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+            .action-bar { width: 100%; bottom: 0; right: 0; padding: 15px; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); justify-content: center; }
+            .btn-fab { width: 100%; justify-content: center; }
         }
-        .brand-logo {
-            font-size: 10px; font-weight: 700; letter-spacing: 3px;
-            color: var(--brand-accent); text-transform: uppercase; margin-bottom: 5px;
-        }
-        .brand-title {
-            margin: 0; font-family: var(--font-serif);
-            font-size: 32px; color: var(--brand-primary); font-weight: 700;
-        }
-        .btn-lang {
-            position: absolute; top: 20px; right: 20px;
-            background: transparent; border: 1px solid #E0E4EB;
-            color: var(--text-light); padding: 5px 12px;
-            border-radius: 20px; font-size: 10px; font-weight: 700; cursor: pointer;
-        }
-
-        /* --- 1. Dose: The Sun (修復滑桿問題) --- */
-        .dose-planet-wrap {
-            position: relative;
-            width: var(--circle-size);
-            height: var(--circle-size);
-            margin: 30px auto 50px auto;
-            /* 讓這層是定位基準 */
-        }
-        
-        /* 視覺層：顯示數字與圓圈 */
-        .dose-planet {
-            width: 100%; height: 100%;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 20px 60px rgba(84, 104, 170, 0.15), 
-                        inset 0 0 0 1px rgba(255,255,255,0.5);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: absolute; top: 0; left: 0;
-            z-index: 1; /* 在滑桿下面 */
-            pointer-events: none; /* 讓點擊穿透 */
-        }
-
-        /* 觸控層：隱形滑桿 (修復重點) */
-        .dose-slider-control {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0; /* 完全透明 */
-            z-index: 10; /* 最上層，接收觸控 */
-            cursor: ew-resize; 
-            margin: 0; padding: 0;
-            -webkit-appearance: none;
-        }
-
-        .dose-label { font-size: 11px; letter-spacing: 2px; color: var(--text-light); text-transform: uppercase; margin-bottom: 5px; }
-        .dose-display { font-family: var(--font-serif); font-size: 80px; font-weight: 600; color: var(--brand-accent); line-height: 1; }
-        .dose-unit { font-size: 14px; color: var(--brand-primary); font-weight: 600; }
-
-        /* 背景軌道裝飾 */
-        .orbit-ring {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0; pointer-events: none;
-        }
-        .orbit-1 { width: 340px; height: 340px; opacity: 0.6; }
-        .orbit-2 { width: 480px; height: 480px; opacity: 0.3; }
-
-        /* --- 2. Dripper: Planets --- */
-        .section-label {
-            text-align: center; font-size: 12px; letter-spacing: 1.5px; 
-            color: var(--text-light); text-transform: uppercase; margin-bottom: 20px;
-            position: relative; z-index: 5;
-        }
-
-        .gear-orbit-grid {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
-            max-width: 400px; margin: 0 auto 40px auto;
-            position: relative; z-index: 5;
-        }
-        
-        .gear-planet {
-            width: 75px; height: 75px;
-            border-radius: 50%; background: #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; border: 2px solid transparent;
-            transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .gear-planet i { margin-bottom: 4px; color: #CBD2E0; transition: 0.3s; }
-        .gear-planet span { font-size: 9px; font-weight: 700; color: var(--text-light); }
-
-        .gear-planet.selected {
-            border-color: var(--brand-primary); transform: scale(1.1);
-            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
-        }
-        .gear-planet.selected i { color: var(--brand-primary); }
-        .gear-planet.selected span { color: var(--brand-primary); }
-
-        /* --- 3. Inputs --- */
-        .input-pill-group {
-            width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
-            max-width: 360px; position: relative; z-index: 5;
-        }
-        .custom-select {
-            width: 100%; padding: 16px 20px;
-            background: #fff; border: 1px solid transparent; border-radius: 50px;
-            font-size: 14px; text-align: center; text-align-last: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            appearance: none; color: var(--text-main); font-weight: 500;
-        }
-        .custom-select:focus { border-color: var(--brand-primary); outline: none; }
-
-        /* --- Floating Button (修復樣式) --- */
-        .btn-orbit {
-            width: 64px; height: 64px; border-radius: 50%;
-            background: var(--brand-primary); color: #fff;
-            border: none; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 15px 35px rgba(84, 104, 170, 0.3);
-            cursor: pointer; transition: 0.3s;
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 100;
-        }
-        .btn-orbit:active { transform: translateX(-50%) scale(0.95); }
-        /* 禁用狀態也要好看一點 */
-        .btn-orbit:disabled { 
-            background: #E0E4EB; 
-            box-shadow: none; 
-            cursor: not-allowed;
-            opacity: 1; /* 保持顯示，只是變灰 */
-        }
-        .btn-orbit:disabled i { opacity: 0.3; }
-
-        /* --- Upload View --- */
-        .upload-circle {
-            width: 260px; height: 260px; border-radius: 50%;
-            background: #fff; border: 2px dashed #DDE1E8;
-            margin: 40px auto; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05); cursor: pointer;
-        }
-        
-        /* --- Results --- */
-        .res-top { text-align: center; margin-bottom: 30px; margin-top: 20px; }
-        .res-origin { font-family: var(--font-serif); font-size: 36px; color: var(--brand-primary); margin: 10px 0; font-weight: 700; }
-        
-        .stats-orbit-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; }
-        .stat-circle {
-            width: 80px; height: 80px; border-radius: 50%; background: #fff;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-        }
-        .stat-label { font-size: 8px; color: var(--text-light); margin-bottom: 3px; letter-spacing: 1px; font-weight: 700; }
-        .stat-val { font-size: 12px; font-weight: 700; color: var(--brand-primary); text-align: center; }
-
-        .strategy-bubble {
-            background: #fff; padding: 25px; border-radius: 20px;
-            text-align: center; margin-bottom: 40px; font-family: var(--font-serif); font-size: 18px; color: #444; line-height: 1.6;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative;
-        }
-        .strategy-bubble::after {
-            content: ''; position: absolute; top: -10px; left: 50%; margin-left: -10px;
-            border-width: 0 10px 10px 10px; border-style: solid; border-color: transparent transparent #fff transparent;
-        }
-
-        .recipe-timeline { position: relative; padding: 0; margin-top: 20px; }
-        .recipe-timeline::before {
-            content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #E0E4EB; transform: translateX(-50%);
-        }
-        .recipe-step { 
-            position: relative; margin-bottom: 40px; text-align: center; background: #fff; padding: 20px; border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); z-index: 2;
-        }
-        .step-time {
-            display: inline-block; background: var(--brand-primary); color: #fff;
-            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
-        }
-        .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
-
-        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 80px; }
-        .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
-        .msg-ai { background: #fff; border: 1px solid #eee; }
-        .msg-user { background: var(--brand-primary); color: #fff; }
-        .loading-screen { background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <header class="brand-header">
-        <div class="brand-logo">BULU COFFEE</div>
-        <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
-        <button id="langToggle" class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
-    </header>
+<div id="app-container">
+    
+    <aside class="sidebar">
+        <div class="brand-area">
+            <span class="brand-logo">Bulu Coffee</span>
+            <h1 class="brand-title">Brew<br>Lab.</h1>
+        </div>
 
-    <div class="content-wrap">
+        <div class="step-nav">
+            <div class="nav-item active" id="navStep1">
+                <span class="nav-num">01</span>
+                <span class="nav-label">Config</span>
+            </div>
+            <div class="nav-item" id="navStep2">
+                <span class="nav-num">02</span>
+                <span class="nav-label">Scan</span>
+            </div>
+            <div class="nav-item" id="navStep3">
+                <span class="nav-num">03</span>
+                <span class="nav-label">Brew</span>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
+        </div>
+    </aside>
+
+    <main class="main-stage">
         
-        <section id="viewConfig">
-            <div class="orbit-ring orbit-1"></div>
-            <div class="orbit-ring orbit-2"></div>
+        <div id="viewConfig">
+            <div class="radial-section">
+                <div class="dose-dial">
+                    <span id="doseDisplay" class="dose-val">20</span>
+                    <span class="dose-unit">grams</span>
+                </div>
+                <div class="range-wrapper">
+                    <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                </div>
+            </div>
 
-            <div class="dose-planet-wrap">
-                <input type="range" id="inputDose" class="dose-slider-control" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+            <div class="h-scroll-section">
+                <div class="section-header">
+                    <i data-lucide="filter" size="20"></i> <span data-i18n="sec_dripper">Select Dripper</span>
+                </div>
+                <div class="horizontal-list">
+                    <div class="gear-card" onclick="selectGear(this, 'Hario V60')">
+                        <i data-lucide="filter" size="32"></i><span class="gear-name">V60</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Origami V')">
+                        <i data-lucide="star" size="32"></i><span class="gear-name">Origami</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')">
+                        <i data-lucide="align-center" size="32"></i><span class="gear-name">Kalita</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Hario Switch')">
+                        <i data-lucide="toggle-right" size="32"></i><span class="gear-name">Switch</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Chemex')">
+                        <i data-lucide="flask-conical" size="32"></i><span class="gear-name">Chemex</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Other')">
+                        <i data-lucide="more-horizontal" size="32"></i><span class="gear-name">Other</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-scroll-section">
+                <div class="section-header">
+                     <i data-lucide="settings-2" size="20"></i> <span data-i18n="sec_grinder">Grinder & Paper</span>
+                </div>
+                <div class="controls-grid">
+                    <select id="inputGrinder" class="custom-select">
+                        <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
+                        <option value="Comandante C40">Comandante C40</option>
+                        <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                        <option value="Niche Zero">Niche Zero</option>
+                        <option value="Fellow Ode">Fellow Ode</option>
+                        <option value="Generic">Other / Generic</option>
+                    </select>
+                    <select id="inputPaper" class="custom-select">
+                        <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
+                        <option value="Hario V60">Hario V60 Standard</option>
+                        <option value="Cafec Abaca">Cafec Abaca</option>
+                        <option value="Sibarist">Sibarist FAST</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="height: 100px;"></div> </div>
+
+        <div id="viewUpload" class="overlay-view hidden">
+            <div class="upload-split">
+                <div class="upload-left">
+                    <h2 class="brand-title" style="color:var(--text-main); font-size:42px; margin-bottom:20px;">AI Scan.</h2>
+                    <p style="color:#666; line-height:1.6; margin-bottom:30px;" data-i18n="scan_desc">
+                        Our AI analyzes roast level and origin to calibrate the perfect recipe.
+                    </p>
+                    <button class="btn-lang" style="width:auto; border:none; padding-left:0;" onclick="backToConfig()">
+                        ← <span data-i18n="btn_back">Go Back</span>
+                    </button>
+                    <div id="errorMsg" style="color:red; margin-top:20px;"></div>
+                </div>
                 
-                <div class="dose-planet">
-                    <span class="dose-label" data-i18n="sec_dose">DOSE</span>
-                    <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
-                    <div style="font-size:10px; color:#aaa; margin-top:8px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
+                <div class="upload-right">
+                    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
+                        <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px;"></i>
+                        <span style="font-weight:bold; color:var(--brand-primary);">Upload Photo</span>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="section-label" data-i18n="sec_dripper">SELECT DRIPPER</div>
-            <div class="gear-orbit-grid">
-                <div class="gear-planet" onclick="selectGear(this, 'Hario V60')">
-                    <i data-lucide="filter" size="20"></i><span>V60</span>
+        <div id="viewResult" class="hidden">
+            <div class="result-dashboard">
+                <div class="card origin-card">
+                    <div>
+                        <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
+                        <h2 id="resOrigin" class="res-origin">Ethiopia Yirgacheffe</h2>
+                    </div>
+                    <div style="text-align:right;">
+                        <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
+                    </div>
                 </div>
-                <div class="gear-planet" onclick="selectGear(this, 'Origami V')">
-                    <i data-lucide="star" size="20"></i><span>Origami</span>
-                </div>
-                <div class="gear-planet" onclick="selectGear(this, 'Kalita Wave')">
-                    <i data-lucide="align-center" size="20"></i><span>Kalita</span>
-                </div>
-                <div class="gear-planet" onclick="selectGear(this, 'Hario Switch')">
-                    <i data-lucide="toggle-right" size="20"></i><span>Switch</span>
-                </div>
-                <div class="gear-planet" onclick="selectGear(this, 'Chemex')">
-                    <i data-lucide="flask-conical" size="20"></i><span>Chemex</span>
-                </div>
-                 <div class="gear-planet" onclick="selectGear(this, 'Other')">
-                    <i data-lucide="more-horizontal" size="20"></i><span data-i18n="gear_other">Other</span>
-                </div>
-            </div>
 
-            <div class="section-label" data-i18n="sec_grinder">GRINDER & PAPER</div>
-            <div class="input-pill-group">
-                <select id="inputGrinder" class="custom-select">
-                    <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
-                    <option value="Comandante C40">Comandante C40</option>
-                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-                    <option value="Niche Zero">Niche Zero</option>
-                    <option value="Fellow Ode">Fellow Ode</option>
-                    <option value="EK43">Mahlkonig EK43</option>
-                    <option value="Generic">Other / Generic</option>
-                </select>
+                <div class="card stats-panel">
+                    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">GRIND SIZE</span>
+                        <span id="resGrind" class="stat-val">24 Clicks</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">TEMPERATURE</span>
+                        <span id="resTemp" class="stat-val">92°C</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">TOTAL WATER</span>
+                        <span id="resWaterTotal" class="stat-val">320ml</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">EST. TIME</span>
+                        <span id="resTotalTime" class="stat-val">02:45</span>
+                    </div>
 
-                <select id="inputPaper" class="custom-select">
-                    <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
-                    <option value="Hario V60">Hario V60 Standard</option>
-                    <option value="Cafec Abaca">Cafec Abaca</option>
-                    <option value="Cafec T-92">Cafec T-92</option>
-                    <option value="Sibarist">Sibarist FAST</option>
-                    <option value="Kalita Wave">Kalita Wave</option>
-                    <option value="Chemex">Chemex Bonded</option>
-                     <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
-                <i data-lucide="arrow-right" size="28"></i>
-            </button>
-        </section>
-
-        <section id="viewUpload" class="hidden" style="text-align:center;">
-             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px; cursor:pointer;" onclick="backToConfig()">
-                <i data-lucide="arrow-left" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_back">BACK</span>
-            </button>
-            
-            <h2 class="section-label" data-i18n="sec_scan" style="font-size:16px;">SCAN BEAN LABEL</h2>
-            <p style="font-size: 14px; color: #888; margin-bottom: 20px; padding: 0 20px;" data-i18n="scan_desc">
-                AI will analyze the roast level, origin, and freshness.
-            </p>
-
-            <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
-                <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
-                <div class="upload-label">
-                    <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px; display:block; margin:0 auto 10px auto;"></i>
-                    <div style="font-weight:700; color:var(--brand-primary); font-size:14px;" data-i18n="tap_upload">TAP TO UPLOAD</div>
-                </div>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
-            </div>
-            
-            <div id="errorMsg" style="color:red; font-size:12px; margin-top:20px; display:none;"></div>
-
-            <button id="btnAnalyze" class="btn-orbit" disabled onclick="startAnalysis()">
-                <i data-lucide="sparkles" size="28"></i>
-            </button>
-        </section>
-
-        <section id="viewResult" class="hidden" style="width:100%;">
-            <div class="res-top">
-                <div style="font-size:10px; letter-spacing:2px; color:var(--brand-accent); font-weight:700;">RECIPE FOR <span id="resDoseRef"></span>G</div>
-                <h2 id="resOrigin" class="res-origin">--</h2>
-                <div id="resTags" style="display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; margin-top:10px;"></div>
-            </div>
-
-            <div class="strategy-bubble" id="resStrategy">--</div>
-
-            <div class="stats-orbit-container">
-                <div class="stat-circle">
-                    <div class="stat-label" data-i18n="lbl_grind">GRIND</div>
-                    <div id="resGrind" class="stat-val">--</div>
-                </div>
-                <div class="stat-circle">
-                    <div class="stat-label" data-i18n="lbl_temp">TEMP</div>
-                    <div id="resTemp" class="stat-val">--</div>
-                </div>
-                <div class="stat-circle">
-                    <div class="stat-label" data-i18n="lbl_water">WATER</div>
-                    <div id="resWaterTotal" class="stat-val">--</div>
-                </div>
-                <div class="stat-circle">
-                    <div class="stat-label" data-i18n="lbl_time">TIME</div>
-                    <div id="resTotalTime" class="stat-val">--</div>
-                </div>
-            </div>
-
-            <div class="section-label" style="margin-top:40px;" data-i18n="steps_title">BREWING STEPS</div>
-            <div id="resTimeline" class="recipe-timeline"></div>
-
-            <div class="chat-section">
-                <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px; color:var(--brand-primary);">
-                    <i data-lucide="message-circle" size="18"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
-                </div>
-                <div id="chatWindow" class="chat-window" style="height:300px; overflow-y:auto; padding:10px; margin-bottom:10px;"></div>
-                <div class="chat-input-box">
-                    <input type="text" id="chatInput" class="chat-input" placeholder="...">
-                    <button style="background:var(--brand-primary); color:white; border:none; width:40px; height:40px; border-radius:50%;" onclick="sendChat()">
-                        <i data-lucide="send" size="16"></i>
+                    <div style="margin-top:20px; padding:15px; background:#fafafa; border-radius:12px; font-style:italic; font-size:13px; line-height:1.5; color:#666;">
+                        " <span id="resStrategy">Strategy here...</span> "
+                    </div>
+                    
+                    <button onclick="location.reload()" class="btn-lang" style="margin-top:auto; text-align:center;">
+                        Start Over
                     </button>
                 </div>
-            </div>
 
-            <div style="text-align:center; margin-top:40px;">
-                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
-                    <i data-lucide="rotate-ccw" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_restart">BREW AGAIN</span>
-                </button>
+                <div class="card timeline-panel">
+                    <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);">Brewing Steps</h3>
+                    <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;">
+                        </div>
+                </div>
             </div>
-            
-            <div style="text-align:center; margin-top:30px; font-size:10px; color:#ccc;">© BULU COFFEE</div>
-        </section>
+        </div>
 
+    </main>
+
+    <div class="action-bar" id="actionBar">
+        <button id="btnNext" class="btn-fab" disabled onclick="goToUpload()">
+            <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
+        </button>
+        <button id="btnAnalyze" class="btn-fab hidden" disabled onclick="startAnalysis()">
+             <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
+        </button>
     </div>
 
     <div id="viewLoading" class="loading-screen hidden">
-        <div class="loading-pulse"></div>
-        <div style="margin-top:25px; font-family:var(--font-serif); font-weight:700; font-size:20px; color:var(--brand-primary);">BULU LAB</div>
-        <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #888;">CALCULATING ORBIT...</div>
+        <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
+            <i data-lucide="loader-2" size="30" class="spin"></i>
+        </div>
+        <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);">AI PROCESSING</div>
     </div>
 </div>
 
 <script>
-    // 這裡放入您的 JavaScript 代碼...
-    // 為了確保按鈕圖標顯示，我在這裡多加一行：
-    document.addEventListener('DOMContentLoaded', () => {
+    // --- Icons Init ---
+    lucide.createIcons();
+
+    // --- State Management ---
+    let config = { dose: 20, gear: '', grinder: '', paper: '' };
+    
+    // --- UI Functions ---
+    function updateDose(val) {
+        document.getElementById('doseDisplay').innerText = val;
+        document.getElementById('resDoseRef').innerText = val;
+        config.dose = val;
+    }
+
+    function selectGear(el, gearName) {
+        document.querySelectorAll('.gear-card').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+        config.gear = gearName;
+        checkConfig();
+    }
+    
+    document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
+    document.getElementById('inputPaper').addEventListener('change', (e) => { config.paper = e.target.value; checkConfig(); });
+
+    function checkConfig() {
+        const isValid = config.gear && config.grinder && config.paper;
+        document.getElementById('btnNext').disabled = !isValid;
+    }
+
+    // --- Navigation Logic ---
+    function goToUpload() {
+        document.getElementById('viewConfig').classList.add('hidden');
+        document.getElementById('viewUpload').classList.remove('hidden');
+        document.getElementById('btnNext').classList.add('hidden');
+        document.getElementById('btnAnalyze').classList.remove('hidden');
+        
+        updateNav(2);
+    }
+    
+    function backToConfig() {
+        document.getElementById('viewConfig').classList.remove('hidden');
+        document.getElementById('viewUpload').classList.add('hidden');
+        document.getElementById('btnNext').classList.remove('hidden');
+        document.getElementById('btnAnalyze').classList.add('hidden');
+        
+        updateNav(1);
+    }
+
+    function updateNav(step) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('navStep' + step).classList.add('active');
+    }
+
+    // --- Image & Analysis Mock ---
+    function handleImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('imgPreview');
+                img.src = e.target.result;
+                img.style.opacity = 1;
+                document.getElementById('btnAnalyze').disabled = false;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function startAnalysis() {
+        document.getElementById('viewLoading').classList.remove('hidden');
+        
+        // Mock API Latency
+        setTimeout(() => {
+            showResults();
+        }, 2000);
+    }
+
+    function showResults() {
+        document.getElementById('viewLoading').classList.add('hidden');
+        document.getElementById('viewUpload').classList.add('hidden');
+        document.getElementById('actionBar').classList.add('hidden'); // Hide FAB on result
+        document.getElementById('viewResult').classList.remove('hidden');
+        
+        updateNav(3);
+        
+        // Mock Data Population
+        document.getElementById('resOrigin').innerText = "Ethiopia Guji Natural";
+        document.getElementById('resGrind').innerText = "22 Clicks (CMD)";
+        document.getElementById('resTemp').innerText = "93°C";
+        
+        // Calculate Water based on ratio 1:16
+        const water = config.dose * 16;
+        document.getElementById('resWaterTotal').innerText = water + "ml";
+        
+        document.getElementById('resStrategy').innerText = `Using the ${config.gear}, we employ a high-agitation bloom to highlight the floral notes of this Ethiopian natural, followed by a slow center pour.`;
+
+        // Render Timeline
+        const steps = [
+            { time: "0:00", title: "Bloom", desc: `Pour ${config.dose * 3}g water aggressively. Swirl.` },
+            { time: "0:45", title: "First Pour", desc: `Pour up to ${Math.floor(water * 0.6)}g in circles.` },
+            { time: "1:30", title: "Second Pour", desc: `Pour up to ${water}g slowly in center.` },
+            { time: "2:45", title: "Draw Down", desc: "Swirl gently and wait for drain." }
+        ];
+
+        let html = '';
+        steps.forEach(s => {
+            html += `
+                <div style="margin-bottom:30px; position:relative;">
+                    <div style="position:absolute; left:-31px; top:5px; width:10px; height:10px; background:#fff; border:2px solid var(--brand-primary); border-radius:50%;"></div>
+                    <span style="background:#FFF4E6; color:var(--brand-accent); font-weight:bold; font-size:12px; padding:2px 6px; border-radius:4px;">${s.time}</span>
+                    <div style="font-weight:700; font-size:18px; margin:5px 0; color:var(--text-main);">${s.title}</div>
+                    <div style="color:#666; font-size:14px; line-height:1.5;">${s.desc}</div>
+                </div>
+            `;
+        });
+        document.getElementById('resTimeline').innerHTML = html;
+    }
+    
+    // Mock Lang Toggle
+    function toggleLanguage() {
+        alert("Language toggle logic here");
+    }
+    
+    // Add CSS Animation for spin
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+        .spin { animation: spin 2s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    `;
+    document.head.appendChild(styleSheet);
+
+</script>
+<script>
         lucide.createIcons();
 
     // ---------------------------------------------------------
