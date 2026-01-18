@@ -22,7 +22,7 @@
             --text-light: #636E72;
             --card-bg: #FFFFFF;
             
-            /* 新增排版變數 */
+            /* 排版變數 */
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Noto Sans TC', sans-serif;
             
@@ -39,13 +39,14 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
         /* --- Layout: Centered & Radial --- */
         .content-wrap { 
             max-width: 500px; 
             margin: 0 auto; 
-            padding: 20px 24px 100px 24px; 
+            padding: 20px 24px 120px 24px; /* 底部留白給按鈕 */
             display: flex; flex-direction: column; align-items: center;
         }
 
@@ -56,6 +57,7 @@
             padding: 40px 0 20px 0;
             text-align: center;
             width: 100%;
+            position: relative;
         }
         
         .brand-logo {
@@ -79,24 +81,36 @@
         }
 
         /* --- 1. Dose: The "Sun" (Central Dial) --- */
-        /* 這是放射式的核心：巨大的圓形控制器 */
         .dose-planet-wrap {
             position: relative;
             width: var(--circle-size);
             height: var(--circle-size);
-            margin: 20px auto 40px auto;
+            margin: 20px auto 50px auto; /* 增加下方間距 */
             display: flex; justify-content: center; align-items: center;
         }
         
+        /* 視覺上的圓盤 */
         .dose-planet {
             width: 100%; height: 100%;
             background: #fff;
             border-radius: 50%;
             box-shadow: 0 20px 50px rgba(84, 104, 170, 0.15), 
-                        inset 0 0 0 1px rgba(84, 104, 170, 0.05); /* 外光暈 */
+                        inset 0 0 0 1px rgba(84, 104, 170, 0.05);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             position: relative;
-            z-index: 2;
+            z-index: 1;
+            pointer-events: none; /* 讓點擊穿透到下方的 input */
+        }
+
+        /* 隱形的控制滑桿 - 這是修復的關鍵 */
+        .dose-slider-control {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0; /* 完全透明 */
+            z-index: 10; /* 放在最上層 */
+            cursor: ew-resize; /* 顯示左右拖曳游標 */
+            margin: 0; padding: 0;
         }
 
         /* 裝飾軌道線 */
@@ -115,25 +129,9 @@
         .dose-display { 
             font-family: var(--font-serif);
             font-size: 80px; font-weight: 600; 
-            color: var(--brand-primary); line-height: 1;
+            color: var(--brand-accent); line-height: 1; /* 改為強調色 */
         }
-        .dose-unit { font-size: 14px; color: var(--brand-accent); font-weight: 600; }
-
-        /* 將 Slider 隱藏在圓盤下方，作為互動層 */
-        .slider-wrapper {
-            position: absolute; bottom: -40px; width: 200px; text-align: center;
-        }
-        input[type=range] { 
-            width: 100%; -webkit-appearance: none; background: transparent;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            height: 4px; background: #E0E4EB; border-radius: 2px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-            background: var(--brand-primary); margin-top: -8px; 
-            border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .dose-unit { font-size: 14px; color: var(--brand-primary); font-weight: 600; }
 
         /* --- 2. Gear: The "Planets" (Floating Circles) --- */
         .section-label {
@@ -144,6 +142,7 @@
         .gear-orbit-grid {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
             max-width: 400px; margin: 0 auto 40px auto;
+            position: relative; z-index: 5;
         }
         
         .gear-planet {
@@ -154,7 +153,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 彈性動畫 */
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
         .gear-planet i { margin-bottom: 5px; color: #CBD2E0; }
@@ -163,7 +162,7 @@
         .gear-planet.selected {
             border-color: var(--brand-primary);
             background: #fff;
-            transform: scale(1.1); /* 選中時放大 */
+            transform: scale(1.1);
             box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
         }
         .gear-planet.selected i { color: var(--brand-primary); }
@@ -172,52 +171,55 @@
         /* --- 3. Inputs: Rounded Pills --- */
         .input-pill-group {
             width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+            max-width: 400px;
         }
         .custom-select {
-            width: 100%; padding: 15px 20px;
+            width: 100%; padding: 18px 20px;
             background: #fff; border: 1px solid transparent;
-            border-radius: 50px; /* 藥丸形狀 */
+            border-radius: 50px;
             font-size: 14px; text-align: center; text-align-last: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             appearance: none; color: var(--text-main); font-weight: 500;
+            transition: 0.2s;
         }
         .custom-select:focus { border-color: var(--brand-primary); outline: none; }
 
         /* --- Button: Floating Action --- */
         .btn-orbit {
-            width: 64px; height: 64px; border-radius: 50%;
+            width: 70px; height: 70px; border-radius: 50%;
             background: var(--brand-primary); color: #fff;
             border: none; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.3);
+            box-shadow: 0 15px 35px rgba(84, 104, 170, 0.3);
             cursor: pointer; transition: 0.3s;
+            /* 固定在螢幕下方 */
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             z-index: 100;
         }
-        .btn-orbit:active { transform: translateX(-50%) scale(0.9); }
-        .btn-orbit:disabled { background: #CBD2E0; box-shadow: none; }
+        .btn-orbit:active { transform: translateX(-50%) scale(0.95); }
+        .btn-orbit:disabled { background: #E0E4EB; box-shadow: none; opacity: 0.7; }
         
-        /* 為了讓按鈕不擋住內容 */
-        .spacer { height: 80px; }
+        /* 佔位符，防止內容被懸浮按鈕擋住 */
+        .spacer { height: 100px; }
 
-        /* --- Upload View: Circular Focus --- */
+        /* --- Upload View --- */
         .upload-circle {
-            width: 280px; height: 280px; border-radius: 50%;
+            width: 260px; height: 260px; border-radius: 50%;
             background: #fff; border: 2px dashed #DDE1E8;
-            margin: 20px auto; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow);
+            margin: 40px auto; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             cursor: pointer;
+            transition: 0.3s;
         }
-        .upload-label { text-align: center; }
+        .upload-circle:active { transform: scale(0.98); background: #fafafa; }
 
-        /* --- Result View: Radial Stats --- */
-        .res-top { text-align: center; margin-bottom: 40px; }
+        /* --- Result View --- */
+        .res-top { text-align: center; margin-bottom: 30px; margin-top: 20px; }
         .res-origin { 
-            font-family: var(--font-serif); font-size: 32px; 
-            color: var(--brand-primary); margin: 10px 0; 
+            font-family: var(--font-serif); font-size: 36px; 
+            color: var(--brand-primary); margin: 10px 0; font-weight: 700;
         }
 
-        /* 圓形數據環 */
         .stats-orbit-container {
             display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
             margin-bottom: 40px;
@@ -226,50 +228,48 @@
             width: 85px; height: 85px; border-radius: 50%;
             background: #fff; border: 1px solid #F0F2F9;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
         }
-        .stat-label { font-size: 9px; color: var(--text-light); margin-bottom: 4px; letter-spacing: 1px; }
-        .stat-val { font-size: 13px; font-weight: 700; color: var(--text-main); text-align: center; padding: 0 5px; line-height: 1.2;}
+        .stat-label { font-size: 9px; color: var(--text-light); margin-bottom: 4px; letter-spacing: 1px; font-weight: 700; }
+        .stat-val { font-size: 13px; font-weight: 700; color: var(--brand-primary); text-align: center; line-height: 1.2;}
 
         .strategy-bubble {
             background: #fff; padding: 25px; border-radius: 20px;
-            text-align: center; margin-bottom: 30px;
-            font-family: var(--font-serif); font-size: 18px; color: #444;
-            box-shadow: var(--shadow); position: relative;
+            text-align: center; margin-bottom: 40px;
+            font-family: var(--font-serif); font-size: 18px; color: #444; line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative;
         }
-        /* 對話框尖角 */
         .strategy-bubble::after {
             content: ''; position: absolute; top: -10px; left: 50%; margin-left: -10px;
             border-width: 0 10px 10px 10px; border-style: solid;
             border-color: transparent transparent #fff transparent;
         }
 
-        /* Timeline: Center Line */
         .recipe-timeline { 
             position: relative; padding: 0; margin-top: 20px;
         }
         .recipe-timeline::before {
             content: ''; position: absolute; top: 0; bottom: 0; left: 50%; 
-            width: 1px; background: #E0E4EB; transform: translateX(-50%);
+            width: 2px; background: #E0E4EB; transform: translateX(-50%);
         }
         
         .recipe-step { 
             position: relative; margin-bottom: 40px; text-align: center; 
             background: #fff; padding: 20px; border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            z-index: 2; /* 蓋住線 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            z-index: 2;
         }
         .step-time {
             display: inline-block; background: var(--brand-primary); color: #fff;
             padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
-            margin-bottom: 10px; box-shadow: 0 4px 10px rgba(84, 104, 170, 0.3);
+            margin-bottom: 10px;
         }
         .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
         
-        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); }
+        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 80px; }
         .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
 
-        .loading-screen { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
+        .loading-screen { background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
@@ -288,15 +288,13 @@
             <div class="orbit-ring orbit-2"></div>
 
             <div class="dose-planet-wrap">
+                <input type="range" id="inputDose" class="dose-slider-control" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                
                 <div class="dose-planet">
                     <span class="dose-label" data-i18n="sec_dose">DOSE</span>
                     <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
-                    <div style="font-size:10px; color:#aaa; margin-top:5px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
+                    <div style="font-size:10px; color:#aaa; margin-top:8px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
                 </div>
-            </div>
-            
-            <div class="slider-wrapper">
-                <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
             </div>
 
             <div class="section-label" data-i18n="sec_dripper">SELECT DRIPPER</div>
@@ -345,27 +343,27 @@
                 </select>
             </div>
 
-            <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
-                <i data-lucide="arrow-right" size="24"></i>
-            </button>
             <div class="spacer"></div>
+            <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
+                <i data-lucide="arrow-right" size="28"></i>
+            </button>
         </section>
 
         <section id="viewUpload" class="hidden" style="text-align:center;">
-             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px;" onclick="backToConfig()">
+             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px; font-size:12px; cursor:pointer;" onclick="backToConfig()">
                 <i data-lucide="arrow-left" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_back">BACK</span>
             </button>
             
             <h2 class="section-label" data-i18n="sec_scan" style="font-size:16px;">SCAN BEAN LABEL</h2>
-            <p style="font-size: 14px; color: #888; margin-bottom: 30px; padding: 0 20px;" data-i18n="scan_desc">
+            <p style="font-size: 14px; color: #888; margin-bottom: 10px; padding: 0 20px; line-height:1.5;" data-i18n="scan_desc">
                 AI will analyze the roast level, origin, and freshness.
             </p>
 
             <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
                 <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
                 <div class="upload-label">
-                    <i data-lucide="camera" size="48" color="#5468AA" style="margin-bottom:10px;"></i>
-                    <div style="font-weight:700; color:var(--brand-primary);" data-i18n="tap_upload">TAP TO UPLOAD</div>
+                    <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px; display:block; margin:0 auto 10px auto;"></i>
+                    <div style="font-weight:700; color:var(--brand-primary); font-size:14px;" data-i18n="tap_upload">TAP TO UPLOAD</div>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
             </div>
@@ -373,11 +371,11 @@
             <div id="errorMsg" style="color:red; font-size:12px; margin-top:20px; display:none;"></div>
 
             <button id="btnAnalyze" class="btn-orbit" disabled onclick="startAnalysis()">
-                <i data-lucide="sparkles" size="24"></i>
+                <i data-lucide="sparkles" size="28"></i>
             </button>
         </section>
 
-        <section id="viewResult" class="hidden">
+        <section id="viewResult" class="hidden" style="width:100%;">
             <div class="res-top">
                 <div style="font-size:10px; letter-spacing:2px; color:var(--brand-accent); font-weight:700;">RECIPE FOR <span id="resDoseRef"></span>G</div>
                 <h2 id="resOrigin" class="res-origin">--</h2>
@@ -422,7 +420,7 @@
             </div>
 
             <div style="text-align:center; margin-top:40px;">
-                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700;">
+                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
                     <i data-lucide="rotate-ccw" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_restart">BREW AGAIN</span>
                 </button>
             </div>
@@ -438,6 +436,5 @@
         <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #888;">CALCULATING ORBIT...</div>
     </div>
 </div>
-
 </body>
 </html>
