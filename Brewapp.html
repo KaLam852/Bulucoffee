@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bulu Coffee Lab | Smart Brewer</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            /* Bulu Coffee 品牌色系：自然、工藝、可持續 */
+            --brand-primary: #2C4A3B; /* 森林綠 */
+            --brand-secondary: #D4C5B0; /* 暖沙色 */
+            --brand-accent: #E67E22;  /* 活力橘 (用於強調) */
+            --bg-color: #F9F9F7;      /* 米白紙質感 */
+            --text-main: #2D2D2D;
+            --text-light: #888888;
+            --card-bg: #FFFFFF;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(44, 74, 59, 0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* --- Header --- */
+        .brand-header {
+            padding: 20px;
+            background: var(--bg-color);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; flex-direction: column; }
+        .brand-logo {
+            font-size: 12px; font-weight: 700; letter-spacing: 2px;
+            color: var(--brand-accent); text-transform: uppercase;
+        }
+        .brand-title {
+            margin: 5px 0 0 0; font-size: 20px; font-family: 'Times New Roman', serif;
+            color: var(--brand-primary);
+        }
+        .btn-lang {
+            background: transparent; border: 1px solid var(--brand-primary);
+            color: var(--brand-primary); padding: 5px 10px;
+            border-radius: 20px; font-size: 11px; font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Layout --- */
+        .content-wrap { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 80px; }
+        .hidden { display: none !important; }
+        .section-title {
+            font-size: 16px; margin: 30px 0 15px 0; color: var(--brand-primary);
+            display: flex; align-items: center; gap: 8px; font-weight: 600;
+        }
+
+        /* --- Config Controls --- */
+        .dose-container {
+            background: var(--card-bg); padding: 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow); text-align: center;
+        }
+        .dose-display { font-size: 48px; font-weight: 300; color: var(--brand-primary); }
+        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--brand-primary); cursor: pointer; }
+
+        .gear-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .gear-item {
+            background: var(--card-bg); border: 1px solid transparent;
+            padding: 15px 10px; border-radius: var(--radius); cursor: pointer;
+            text-align: center; transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .gear-item.selected {
+            border-color: var(--brand-primary); background: #EAF2EE;
+        }
+        .gear-name { display: block; font-size: 12px; font-weight: bold; margin-top: 5px; }
+        
+        .custom-select {
+            width: 100%; padding: 15px; border: 1px solid #ddd;
+            border-radius: var(--radius); font-size: 14px; background: #fff;
+            margin-bottom: 10px; appearance: none;
+        }
+
+        /* --- Buttons --- */
+        .btn-brand {
+            width: 100%; padding: 18px; background: var(--brand-primary);
+            color: #fff; border: none; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 5px 15px rgba(44, 74, 59, 0.3);
+        }
+        .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-outline {
+            width: 100%; padding: 15px; background: transparent;
+            border: 1px solid var(--brand-primary); color: var(--brand-primary);
+            border-radius: 30px; margin-top: 15px; cursor: pointer;
+        }
+
+        /* --- Upload & Loading --- */
+        .upload-box {
+            height: 300px; background: #fff; border: 2px dashed #ccc;
+            border-radius: var(--radius); position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loading-pulse {
+            width: 60px; height: 60px; background: var(--brand-primary);
+            border-radius: 50%; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
+
+        /* --- Results --- */
+        .res-header { text-align: center; margin-bottom: 20px; }
+        .res-origin { font-size: 28px; font-family: 'Times New Roman', serif; color: var(--brand-primary); margin: 5px 0; }
+        
+        .strategy-box {
+            background: #fff; padding: 20px; border-left: 4px solid var(--brand-accent);
+            font-style: italic; color: #555; margin-bottom: 20px; border-radius: 0 8px 8px 0;
+            line-height: 1.6;
+        }
+
+        .recipe-timeline { border-left: 2px solid #ddd; margin-left: 10px; padding-left: 20px; }
+        .recipe-step { margin-bottom: 25px; position: relative; }
+        .recipe-step::before {
+            content: ''; position: absolute; left: -26px; top: 5px;
+            width: 10px; height: 10px; background: var(--brand-primary); border-radius: 50%;
+        }
+        .step-time { font-size: 12px; font-weight: bold; color: var(--brand-accent); }
+        .step-title { font-weight: bold; font-size: 16px; margin: 2px 0; }
+        .step-desc { font-size: 14px; color: #666; margin-bottom: 5px; }
+        .step-tip { font-size: 12px; color: #888; background: #eee; padding: 5px 10px; border-radius: 4px; display: inline-block; }
+
+        /* --- Chat --- */
+        .chat-section { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+        .chat-window { height: 300px; overflow-y: auto; background: #fff; border-radius: var(--radius); padding: 15px; border: 1px solid #eee; margin-bottom: 10px; }
+        .chat-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.5; }
+        .msg-ai { background: #f0f4f2; color: #1a1a1a; align-self: flex-start; }
+        .msg-user { background: var(--brand-primary); color: #fff; margin-left: auto; }
+        .chat-input-box { display: flex; gap: 10px; }
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; }
+        
+        /* Rating Stars */
+        .rating-container { display: flex; gap: 5px; margin-top: 10px; cursor: pointer; }
+        .star-icon { color: #ddd; transition: 0.2s; }
+        .star-icon.filled { color: var(--brand-accent); fill: var(--brand-accent); }
+        
+        .feedback-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .feedback-chip { 
+            background: #fff; border: 1px solid #ddd; padding: 5px 10px; 
+            border-radius: 15px; font-size: 11px; cursor: pointer; 
+        }
+        .feedback-chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+        /* Footer */
+        .footer-brand { text-align: center; font-size: 11px; color: #aaa; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header class="brand-header">
+        <div class="header-left">
+            <div class="brand-logo">BULU COFFEE</div>
+            <h1 class="brand-title" data-i18n="title">Brewing Lab</h1>
+        </div>
+        <button id="langToggle" class="btn-lang" onclick="toggleLanguage()">EN / 中</button>
+    </header>
+
+    <div class="content-wrap">
+        
+        <section id="viewConfig">
+            <h2 class="section-title"><i data-lucide="sliders-horizontal" size="18"></i> <span data-i18n="sec_dose">1. Set Dose</span></h2>
+            <div class="dose-container">
+                <div><span id="doseDisplay" class="dose-display">20</span><span style="font-size: 16px; color: #999;">g</span></div>
+                <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                <div style="font-size: 11px; color: #aaa;" data-i18n="dose_desc">Drag to adjust (10g - 30g)</div>
+            </div>
+
+            <h2 class="section-title"><i data-lucide="coffee" size="18"></i> <span data-i18n="sec_dripper">2. Select Dripper</span></h2>
+            <div class="gear-grid">
+                <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
+                    <i data-lucide="filter"></i><span class="gear-name">V60</span>
+                </div>
+                <div class="gear-item" onclick="selectGear(this, 'Origami')">
+                    <i data-lucide="star"></i><span class="gear-name">Origami</span>
+                </div>
+                <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
+                    <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
+                </div>
+                <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
+                    <i data-lucide="toggle-right"></i><span class="gear-name">Switch</span>
+                </div>
+                <div class="gear-item" onclick="selectGear(this, 'Chemex')">
+                    <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
+                </div>
+                 <div class="gear-item" onclick="selectGear(this, 'Other')">
+                    <i data-lucide="more-horizontal"></i><span class="gear-name" data-i18n="gear_other">Other</span>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i data-lucide="settings-2" size="18"></i> <span data-i18n="sec_grinder">3. Grinder & Paper</span></h2>
+            <select id="inputGrinder" class="custom-select">
+                <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
+                <option value="Comandante C40">Comandante C40</option>
+                <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                <option value="Timemore C2/C3">Timemore C2/C3</option>
+                <option value="Fellow Ode">Fellow Ode</option>
+                <option value="EK43">Mahlkonig EK43</option>
+                <option value="Other">Other / Generic</option>
+            </select>
+            <select id="inputPaper" class="custom-select">
+                <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
+                <option value="Cafec Abaca">Cafec Abaca</option>
+                <option value="Hario V60">Hario V60 Standard</option>
+                <option value="Sibarist">Sibarist FAST</option>
+                <option value="Kalita Wave">Kalita Wave</option>
+                <option value="Standard">Standard Generic</option>
+            </select>
+
+            <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
+                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="16"></i>
+            </button>
+        </section>
+
+        <section id="viewUpload" class="hidden">
+            <button class="btn-outline" style="width:auto; border:none; padding-left:0; margin-bottom:10px;" onclick="backToConfig()">
+                <i data-lucide="arrow-left" size="14"></i> <span data-i18n="btn_back">Back</span>
+            </button>
+            
+            <h2 class="section-title" data-i18n="sec_scan">4. Scan Bean Label</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px; line-height: 1.5;" data-i18n="scan_desc">
+                Take a photo of your coffee bag. AI will analyze the roast level, origin, and freshness to design the perfect recipe.
+            </p>
+            
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
+                <div class="upload-ui" style="text-align: center;">
+                    <i data-lucide="scan-line" size="32" color="#2C4A3B"></i>
+                    <div style="margin-top:10px; font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Tap to Upload Photo</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
+            </div>
+            
+            <div id="errorMsg" style="color:red; font-size:12px; margin-top:10px; display:none;"></div>
+            
+            <button id="btnAnalyze" class="btn-brand" disabled onclick="startAnalysis()">
+                <span data-i18n="btn_brew">Start Brewing</span> <i data-lucide="sparkles" size="16"></i>
+            </button>
+        </section>
+
+        <section id="viewResult" class="hidden">
+            <div class="res-header">
+                <div style="font-size:10px; letter-spacing:1px; color:#999;">CUSTOM RECIPE FOR <span id="resDoseRef"></span>G</div>
+                <h2 id="resOrigin" class="res-origin">--</h2>
+                <div id="resTags" style="display: flex; justify-content: center; gap: 8px;"></div>
+            </div>
+
+            <div class="strategy-box" id="resStrategy">--</div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="background:#fff; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                    <div style="font-size:11px; color:#999; margin-bottom:5px;">GRIND</div>
+                    <div id="resGrind" style="font-weight:bold; color:var(--brand-primary);">--</div>
+                </div>
+                <div style="background:#fff; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                    <div style="font-size:11px; color:#999; margin-bottom:5px;">TEMP</div>
+                    <div id="resTemp" style="font-weight:bold; color:var(--brand-primary);">--</div>
+                </div>
+            </div>
+
+            <h3 style="font-family: 'Times New Roman'; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;" data-i18n="steps_title">Brewing Steps</h3>
+            <div id="resTimeline" class="recipe-timeline"></div>
+
+            <div class="chat-section">
+                <div style="font-weight:bold; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
+                    <i data-lucide="message-circle" size="16"></i> <span data-i18n="chat_title">Ask Bulu Barista</span>
+                </div>
+                <div id="chatWindow" class="chat-window"></div>
+                <div class="chat-input-box">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="...">
+                    <button class="btn-icon" style="background:var(--brand-primary); color:white; border:none; width:40px; border-radius:50%; cursor:pointer;" onclick="sendChat()">
+                        <i data-lucide="send" size="14"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="btn-outline">
+                <span data-i18n="btn_restart">Brew Another Bean</span> <i data-lucide="rotate-ccw" size="14"></i>
+            </button>
+
+            <div class="footer-brand">
+                © Bulu Coffee | Art of Beverages<br>
+                <a href="https://bulucoffee.com" target="_blank" style="color:#888; text-decoration:none;">bulucoffee.com</a>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="viewLoading" class="loading-screen hidden">
+        <div class="loading-pulse"></div>
+        <div style="margin-top:20px; font-weight:bold; color:var(--brand-primary);">BULU LAB</div>
+        <div id="loadingText" style="font-size: 11px; letter-spacing: 1px; margin-top: 10px; color: #999;">ANALYZING...</div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // ---------------------------------------------------------
+    // 1. CONFIGURATION (KEYS & SUPABASE)
+    // ---------------------------------------------------------
+    const API_KEY = "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";
+    const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
+    const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM';
+    
+    const _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
+
+    // ---------------------------------------------------------
+    // 2. LANGUAGE & TRANSLATIONS
+    // ---------------------------------------------------------
+    let currentLang = 'zh'; // Default: Traditional Chinese (HK)
+
+    const translations = {
+        en: {
+            title: "Brewing Lab",
+            sec_dose: "1. Set Dose",
+            dose_desc: "Drag to adjust (10g - 30g)",
+            sec_dripper: "2. Select Dripper",
+            gear_other: "Other",
+            sec_grinder: "3. Grinder & Paper",
+            sel_grinder: "Select Grinder",
+            sel_paper: "Select Filter Paper",
+            btn_next: "Next Step",
+            btn_back: "Back",
+            sec_scan: "4. Scan Bean Label",
+            scan_desc: "Take a photo of your coffee bag. AI will analyze the roast level, origin, and freshness to design the perfect recipe.",
+            tap_upload: "Tap to Upload Photo",
+            btn_brew: "Start Brewing",
+            steps_title: "Brewing Steps",
+            chat_title: "Ask Bulu Barista",
+            btn_restart: "Brew Another Bean",
+            loading: "AI IS THINKING...",
+            chat_placeholder: "e.g., The flow is too slow..."
+        },
+        zh: {
+            title: "沖煮實驗室",
+            sec_dose: "1. 設定粉重",
+            dose_desc: "拖曳調整 (10g - 30g)",
+            sec_dripper: "2. 選擇濾杯",
+            gear_other: "其他",
+            sec_grinder: "3. 磨豆機與濾紙",
+            sel_grinder: "選擇磨豆機型號",
+            sel_paper: "選擇濾紙類型",
+            btn_next: "下一步",
+            btn_back: "返回",
+            sec_scan: "4. 掃描咖啡豆包裝",
+            scan_desc: "請拍攝咖啡豆包裝袋。AI 將分析烘焙度、產地與新鮮度，為您設計專屬沖煮方案。",
+            tap_upload: "點擊上傳照片",
+            btn_brew: "開始沖煮",
+            steps_title: "沖煮步驟",
+            chat_title: "詢問 Bulu 咖啡師",
+            btn_restart: "沖煮另一支豆",
+            loading: "AI 正在思考風味架構...",
+            chat_placeholder: "例如：流速太慢了怎麼辦..."
+        }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'zh' : 'en';
+        document.getElementById('langToggle').innerText = currentLang === 'en' ? 'EN' : '中';
+        updateUIText();
+    }
+
+    function updateUIText() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[currentLang][key]) {
+                el.innerText = translations[currentLang][key];
+            }
+        });
+        document.getElementById('chatInput').placeholder = translations[currentLang]['chat_placeholder'];
+    }
+
+    // Initialize UI
+    updateUIText();
+
+
+    // ---------------------------------------------------------
+    // 3. CORE APP LOGIC
+    // ---------------------------------------------------------
+    
+    // State
+    let selectedGear = null;
+    let imageBase64 = null;
+    let currentBrewLogId = null;
+    let chatHistory = [];
+
+    // Persist Anon ID
+    function getAnonId() {
+        let id = localStorage.getItem('bulu_anon_id');
+        if (!id) {
+            id = 'u_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('bulu_anon_id', id);
+        }
+        return id;
+    }
+
+    // Elements
+    const els = {
+        viewConfig: document.getElementById('viewConfig'),
+        viewUpload: document.getElementById('viewUpload'),
+        viewResult: document.getElementById('viewResult'),
+        viewLoading: document.getElementById('viewLoading'),
+        loadingText: document.getElementById('loadingText'),
+        inputDose: document.getElementById('inputDose'),
+        doseDisplay: document.getElementById('doseDisplay'),
+        imgPreview: document.getElementById('imgPreview'),
+        btnNext: document.getElementById('btnNext'),
+        btnAnalyze: document.getElementById('btnAnalyze'),
+        errorMsg: document.getElementById('errorMsg')
+    };
+
+    function updateDose(val) {
+        els.doseDisplay.innerText = val;
+    }
+
+    function selectGear(el, name) {
+        document.querySelectorAll('.gear-item').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedGear = name;
+        els.btnNext.disabled = false;
+    }
+
+    function goToUpload() {
+        els.viewConfig.classList.add('hidden');
+        els.viewUpload.classList.remove('hidden');
+    }
+
+    function backToConfig() {
+        els.viewUpload.classList.add('hidden');
+        els.viewConfig.classList.remove('hidden');
+    }
+
+    function handleImage(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                let width = img.width; let height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                imageBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                els.imgPreview.src = imageBase64;
+                els.imgPreview.style.opacity = '1';
+                els.btnAnalyze.disabled = false;
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ---------------------------------------------------------
+    // 4. AI ANALYSIS (MODIFIED FOR BULU + BILINGUAL)
+    // ---------------------------------------------------------
+    async function startAnalysis() {
+        const dose = els.inputDose.value;
+        const grinder = document.getElementById('inputGrinder').value || "Generic";
+        const paper = document.getElementById('inputPaper').value || "Standard";
+        
+        els.viewUpload.classList.add('hidden');
+        els.viewLoading.classList.remove('hidden');
+        els.loadingText.innerText = translations[currentLang]['loading'];
+
+        try {
+            // Upload Image first (Background)
+            uploadImgToSupabase(imageBase64, 'labels').then(url => {
+                 console.log("Image uploaded:", url); 
+            });
+
+            const langInstruction = currentLang === 'zh' 
+                ? "Output Language: Traditional Chinese (Hong Kong style). Use terms like '悶蒸', '手沖', '果酸感'." 
+                : "Output Language: English.";
+
+            const prompt = `
+            You are the "Creative Brewing Partner" of **Bulu Coffee** (Hong Kong).
+            Our values: Sustainability, Creativity, Passion.
+            ${langInstruction}
+
+            【Context】
+            - Dose: ${dose}g
+            - Dripper: ${selectedGear}
+            - Grinder: ${grinder}
+            - Paper: ${paper}
+
+            【Mission】
+            1. Analyze the bean label (Roast, Origin, Process).
+            2. Check Freshness: Look for roast date. 
+               - If too fresh (<7 days): Suggest longer bloom (degassing).
+               - If old (>60 days): Be creative! Suggest lower temp or "slow brew" to extract sweetness, avoid astringency. Don't be negative, be helpful.
+            3. Create a recipe.
+
+            【Format JSON】
+            {
+                "bean": { "origin": "e.g. Ethiopia", "tags": ["Washed", "Light Roast"] },
+                "strategy": "A short, inspiring description of the flavor goal.",
+                "prep": { "grind": "Setting for ${grinder}", "temp": "93°C" },
+                "steps": [
+                    { "time": "0:00", "action": "Bloom", "weight": "40g", "detail": "Instruction...", "tip": "Why this matters" }
+                ]
+            }
+            `;
+
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://bulucoffee.com",
+                    "X-Title": "Bulu Coffee App"
+                },
+                body: JSON.stringify({
+                    "model": "anthropic/claude-sonnet-4.5", // Or generic model
+                    "temperature": 0.5,
+                    "max_tokens": 1200,
+                    "messages": [ 
+                        { "role": "user", "content": [ 
+                            { "type": "text", "text": prompt }, 
+                            { "type": "image_url", "image_url": { "url": imageBase64 } } 
+                        ]} 
+                    ]
+                })
+            });
+
+            if (!res.ok) throw new Error("AI API Error");
+            const data = await res.json();
+            
+            // Parse JSON
+            let raw = data.choices[0].message.content;
+            const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
+            if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
+            const result = JSON.parse(raw);
+
+            // Render & Save
+            renderResult(result);
+            saveToSupabase(result);
+            initChat(result);
+
+            els.viewLoading.classList.add('hidden');
+            els.viewResult.classList.remove('hidden');
+
+        } catch (e) {
+            console.error(e);
+            els.viewLoading.classList.add('hidden');
+            els.viewUpload.classList.remove('hidden');
+            els.errorMsg.innerText = "Connection failed. Please try again.";
+            els.errorMsg.style.display = 'block';
+        }
+    }
+
+    function renderResult(data) {
+        document.getElementById('resOrigin').innerText = data.bean.origin;
+        document.getElementById('resDoseRef').innerText = els.inputDose.value;
+        document.getElementById('resStrategy').innerText = data.strategy;
+        document.getElementById('resGrind').innerText = data.prep.grind;
+        document.getElementById('resTemp').innerText = data.prep.temp;
+
+        const tags = document.getElementById('resTags');
+        tags.innerHTML = '';
+        data.bean.tags.forEach(t => {
+            tags.innerHTML += `<span style="background:var(--brand-primary); color:#fff; padding:2px 8px; font-size:10px; border-radius:4px;">${t}</span>`;
+        });
+
+        const tl = document.getElementById('resTimeline');
+        tl.innerHTML = '';
+        data.steps.forEach(s => {
+            tl.innerHTML += `
+                <div class="recipe-step">
+                    <span class="step-time">${s.time}</span>
+                    <div>
+                        <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#666;">➔ ${s.weight}</span></div>
+                        <div class="step-desc">${s.detail}</div>
+                        <div class="step-tip">💡 ${s.tip}</div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // ---------------------------------------------------------
+    // 5. DATABASE & STORAGE
+    // ---------------------------------------------------------
+    async function uploadImgToSupabase(base64, folder) {
+        try {
+            const res = await fetch(base64);
+            const blob = await res.blob();
+            const fileName = `${folder}/${getAnonId()}_${Date.now()}.jpg`;
+            await _supabase.storage.from('coffee-images').upload(fileName, blob);
+            const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
+            return data.publicUrl;
+        } catch(e) { console.error("Upload Error", e); return null; }
+    }
+
+    async function saveToSupabase(result) {
+        const { error } = await _supabase.from('coffee_brewing_logs').insert([{
+            user_id: getAnonId(),
+            bean_origin: result.bean.origin,
+            ai_strategy: result.strategy,
+            dose_grams: els.inputDose.value,
+            full_chat_history: result // Save full JSON as backup
+        }]);
+        if(error) console.error("DB Error", error);
+    }
+
+    // ---------------------------------------------------------
+    // 6. CHAT / RATING SYSTEM
+    // ---------------------------------------------------------
+    function initChat(recipe) {
+        chatHistory = [{
+            "role": "system", 
+            "content": `You are the Bulu Coffee assistant. Current recipe: ${JSON.stringify(recipe)}. Answer concisely.`
+        }];
+        
+        // Initial Rating Request
+        const win = document.getElementById('chatWindow');
+        win.innerHTML = '';
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-msg msg-ai';
+        msgDiv.innerHTML = `<div>${currentLang === 'zh' ? '喜歡這個配方嗎？請評分：' : 'How was the brew? Rate it:'}</div>`;
+        
+        const stars = document.createElement('div');
+        stars.className = 'rating-container';
+        for(let i=1; i<=5; i++) {
+            const s = document.createElement('div');
+            s.innerHTML = '★'; // Simple star
+            s.className = 'star-icon';
+            s.style.fontSize = '20px';
+            s.onclick = () => handleRating(i);
+            stars.appendChild(s);
+        }
+        msgDiv.appendChild(stars);
+        win.appendChild(msgDiv);
+    }
+
+    function handleRating(score) {
+        const win = document.getElementById('chatWindow');
+        win.innerHTML += `<div class="chat-msg msg-user">${score} Stars</div>`;
+        
+        let reply = "";
+        let issues = [];
+        
+        if(score >= 4) {
+            reply = currentLang === 'zh' ? "太棒了！有什麼特別喜歡的風味嗎？" : "Great! What did you like?";
+            issues = currentLang === 'zh' ? ["甜感明顯", "乾淨", "果酸明亮"] : ["Sweet", "Clean", "Bright"];
+        } else {
+            reply = currentLang === 'zh' ? "沒關係，我們來調整。覺得哪裡不足？" : "Let's fix it. What was wrong?";
+            issues = currentLang === 'zh' ? ["太苦/乾", "太酸/尖銳", "水感太重"] : ["Too Bitter", "Too Sour", "Watery"];
+        }
+
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'chat-msg msg-ai';
+        aiDiv.innerHTML = `<div>${reply}</div>`;
+        
+        const chips = document.createElement('div');
+        chips.className = 'feedback-chips';
+        issues.forEach(tag => {
+            const c = document.createElement('div');
+            c.className = 'feedback-chip';
+            c.innerText = tag;
+            c.onclick = () => {
+                document.getElementById('chatInput').value = tag;
+                sendChat();
+            };
+            chips.appendChild(c);
+        });
+        aiDiv.appendChild(chips);
+        win.appendChild(aiDiv);
+        win.scrollTop = win.scrollHeight;
+    }
+
+    async function sendChat() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        // UI Update
+        const win = document.getElementById('chatWindow');
+        win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
+        input.value = '';
+        win.scrollTop = win.scrollHeight;
+
+        // API Call
+        chatHistory.push({ "role": "user", "content": text });
+        
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "model": "anthropic/claude-sonnet-4.5",
+                    "messages": chatHistory
+                })
+            });
+            const data = await res.json();
+            const reply = data.choices[0].message.content;
+            
+            chatHistory.push({ "role": "assistant", "content": reply });
+            win.innerHTML += `<div class="chat-msg msg-ai">${reply}</div>`;
+            win.scrollTop = win.scrollHeight;
+
+        } catch(e) {
+            console.error(e);
+        }
+    }
+</script>
+
+</body>
+</html>
