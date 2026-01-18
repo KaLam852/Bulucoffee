@@ -567,11 +567,19 @@
             const prompt = `
             You are the **Head of Coffee Science**. 
             Generate a recipe by synthesizing **Bean Knowledge** (Phase 1) with **Gear Physics** (Phase 2).
-
+           
+            【INPUT VARIABLES】
+            - Dose: ${dose}g
+            - Dripper: ${selectedGear}
+            - Grinder: ${grinder} 
+            - Paper: ${paper}
+            
+            
             【SYSTEM CONSTRAINTS】
-            1. **${langInstruction}**
+            1. **${langInstruction}** (CRITICAL).
             2. **Target Water**: ${targetWater}g.
             3. **Current Date**: ${today}.
+            4. **Strict Step Logic**: You MUST output at least 4 distinct steps (Bloom -> Pour 1 -> Pour 2 -> Drawdown).
 
             【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
                Analyze the bean image based on these STRICT rules:
