@@ -534,307 +534,146 @@
 
  // ---------------------------------------------------------
     // 👑 究極完全體 v7：豆性知識庫 + 器材物理引擎 + 全變數矩陣
-    // ---------------------------------------------------------
-    async function startAnalysis() {
-    // 語言設定
-       const langInstruction = currentLang === 'zh' 
-                ? "OUTPUT LANGUAGE: Traditional Chinese (Hong Kong style). Use terms: '4:6法', '滲透壓', '擾動', 'TDS', '梅納反應', '厭氧', '濕剝法'."
-                : "OUTPUT LANGUAGE: English. Use terms: '4:6 Method', 'Osmotic Flow', 'Agitation', 'TDS', 'Anaerobic', 'Wet-Hulled'.";
-        const dose = els.inputDose.value;
-        const grinder = document.getElementById('inputGrinder').value || "Generic";
-        const paper = document.getElementById('inputPaper').value || "Standard";
-           
-        // 1. UI 切換
-        els.viewUpload.classList.add('hidden');
-        els.viewLoading.classList.remove('hidden');
+ async function startAnalysis() {
+    const dose = els.inputDose.value;
+    const grinder = document.getElementById('inputGrinder').value || "Generic";
+    const paper = document.getElementById('inputPaper').value || "Standard";
+    const targetWater = Math.round(dose * 15);
+    const today = new Date().toISOString().split('T')[0];
+
+    // UI 切換
+    els.viewUpload.classList.add('hidden');
+    els.viewLoading.classList.remove('hidden');
+    els.loadingText.innerText = currentLang === 'zh' ? "AI 正在分析..." : "AI Analyzing...";
+
+    // 簡化的語言指令
+    const lang = currentLang === 'zh' 
+        ? "OUTPUT: Traditional Chinese (HK). Terms: '4:6法', '滲透壓', '梅納反應', '濕剝法'."
+        : "OUTPUT: English. Terms: '4:6 Method', 'Osmotic Flow', 'Maillard', 'Wet-Hulled'.";
+
+    try {
+        const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
+
+        // 🔥 壓縮後的 Prompt：移除重複定義，依賴 AI 內建知識庫
+        const prompt = `
+        Role: World Barista Champion. Task: Create Ultimate Recipe.
         
-        // 動態載入文字
-        els.loadingText.innerText = currentLang === 'zh' 
-            ? `正在交叉比對產區密度、處理法結構與 ${grinder} 物理特性...` 
-            : `Cross-referencing Origin Density, Process Structure & ${grinder} Physics...`;
+        【INPUTS】
+        Dose:${dose}g, Water:${targetWater}g, Gear:${selectedGear}, Grinder:${grinder}, Paper:${paper}, Date:${today}.
+        Image: Extract origin/roast/process/date.
 
-        try {
-            // 2. 上傳圖片
-            const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
-            console.log("Image uploaded:", hostedImageUrl);
+        【LOGIC KERNEL】
+        1. **${lang}** (Strict).
+        2. **Physics**: 
+           - **High Density (Africa/Light)**: High Temp (93-96), High Agitation.
+           - **Low Density (Brazil/Dark)**: Low Temp (88-90), Low Agitation.
+           - **Natural/Honey**: Coarser grind, steady flow (avoid clogging).
+           - **Washed**: Finer grind, pulse pour.
+        3. **Freshness**: 
+           - <10 days: High turbulence (degas). 
+           - >60 days: Low temp, gentle pour. *Tone: Use "Extended Resting" (positive), never "Expired".*
+        4. **Gear**:
+           - Flat Bottom/Switch: Immersion/Hybrid logic.
+           - Cone/Chemex: Flow restriction logic.
+           - Adjust grind specific to ${grinder}.
 
-            // 3. 系統參數
-            const targetWater = Math.round(dose * 15); // 預設 1:15
-            const today = new Date().toISOString().split('T')[0];
-            
-      
-            // 4. 定義「全知全能」Prompt
-            const prompt = `
-            You are the **World Barista Champion & Head Scientist** at Bulu Coffee. 
-            Generate **Ultimate Brewing Recipe** by cross-referencing and synthesizing **Bean Knowledge** (Phase 1) with **Gear Physics** (Phase 2).
-           
-            【INPUT VARIABLES】
-            - Dose: ${dose}g
-            - Dripper: ${selectedGear}
-            - Grinder: ${grinder} 
-            - Paper: ${paper}
-            - Image: Extract ALL text (Origin, Roast, Varietal, Process, Altitude, Roast Date).
-            
-            
-            【SYSTEM CONSTRAINTS】
-            1. **${langInstruction}** (CRITICAL).
-            2. **Target Water**: ${targetWater}g.
-            3. **Current Date**: ${today}.
-            4. **Target Yield**: Ratio 1:15 ~ 1:16.6 (Auto-calc water: ${dose} * 15).
-            5. **Water Target Check**: The weight in the final step MUST match the calculated Total Water (${targetWater}g).
-            6. **Completeness**: Do not summarize. Write out every single pour clearly.
-            7. **Tone Guard**: For beans >60 days, NEVER use words like "Expired", "Stale", "Old", "過期", "陳年". Instead, use positive framing: "Extended Resting (長養豆)", "Fully Degassed (完全排氣)"
+        【OUTPUT JSON ONLY】
+        {
+            "bean": { "origin": "Txt", "roast_date": "YYYY-MM-DD", "days_old": "Num", "tags": ["Tag1","Tag2"] },
+            "strategy": "80-word pro analysis. Why this path?",
+            "prep": { "grind": "Setting for ${grinder}", "temp": "XX°C", "water_total": "${targetWater}g", "time_total": "Time" },
+            "steps": [
+                { "time": "0:00", "action": "Step Name", "weight": "Target g", "detail": "Technique", "tip": "Physics tip" }
+            ]
+        }`;
 
-            【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
-               Analyze the bean image based on these STRICT rules:
-             👉 **A. ROAST DATE OCR
-                **: Look for YYYY/MM/DD. Calculate Age = [${today} - Roast Date].
-               - If Fresh (<10 days): Needs high turbulence to degas.
-               - If Aged (>60 days): Needs LOW turbulence, Lower Temp, Finer Grind.            
-               
-               👉 **B. PROCESSING METHOD RULES**:
-               - **Washed (水洗)**: Clean structure. Needs **High Agitation** & Finer Grind to extract complex acidity.
-               - **Natural (日曬)**: High fines, heavy body. Needs **Coarser Grind** & Controlled Flow to prevent clogging.
-               - **Honey (蜜處理)**: Balance. Treat as hybrid (Medium grind, steady pour).
-               - **Anaerobic/Infused (厭氧/特殊)**: Volatile compounds. Risk of "funkiness". Strategy: **Lower Temp (90-92°C)** & **Low Agitation**.
-               - **Wet-Hulled (濕剝)**: Earthy, low acid. Strategy: **Coarser grind, Pulse pour**.
-
-            👉 **C. ORIGIN & DENSITY RULES**:
-               - **Africa (Kenya/Ethiopia)**: EXTREME High Density. Hard to extract. **Needs 93°C - 96°C** + High Turbulence.
-               - **South America (Colombia)**: High Density. Standard 92°C - 94°C.
-               - **Brazil/Island**: Low Density (Soft). Easy to over-extract. **Needs 88°C - 90°C**.
-               - **Panama (Geisha)**: Delicate florals. Needs **Gentle extraction** (90-92°C).
-
-            👉 **D. ROAST LEVEL**:
-               - **Light**: High Temp, Finer Grind.
-               - **Dark**: Low Temp (85-88°C), Coarser Grind, Center pour.
-               - **Age**: Fresh (<14 days) = High Gas. Aged (>60 days) = Oxidized. >60 days (Stale), drop temp by 2°C and grind slightly finer (to resist flow).
-
-
-            【PHASE 2: GEAR PHYSICS ENGINE (Variable Isolation)】
-
-            ### PART A: GRINDER PHYSICS (Input: "${grinder}")
-            Determine Base Setting:
-            - **Comandante C40**: "Clicks" (22-28).
-            - **1Zpresso K-Ultra**: "Numbers" (7.0-8.5).
-            - **Niche Zero**: "Mark" (40-55). *Conical high fines.*
-            - **Fellow Ode**: "Dial" (4.0-6.0). *Flat low fines.*
-            - **EK43**: "Dial" (9.0-11.5).
-            - **Generic/Other**: "Desc". *Assume High Fines.*
-
-            ### PART B: FILTER MEDIA PHYSICS (Input: "${paper}")
-            Adjust Grind based on Flow Resistance:
-            - **Chemex Bonded**: EXTREME THICKNESS. **Action: Coarsen Grind (+5 clicks) & High Temp.**
-            - **Sibarist FAST**: ZERO RESISTANCE. **Action: Fine Grind (-4 clicks) & Fast Pour.**
-            - **Cafec Abaca**: FAST FLOW (Osmotic). **Action: Fine Grind (-2 clicks).**
-            - **Cafec T-92**: MEDIUM-SLOW (Density). **Action: Standard/Coarse (+1 click).**
-            - **Hario V60 Standard**: NEUTRAL. **Action: Base Setting.**
-            - **Kalita Wave**: RESTRICTED GEOMETRY. **Action: Coarsen (+1 click).**
-            - **Other**: UNKNOWN. **Action: Safety Coarsen (+1 click).**
-
-            ### PART C: DRIPPER GEOMETRY (Input: "${selectedGear}")
-            Determine Pouring Protocol:
-            - **Hario Switch**: HYBRID/IMMERSION. **Strategy: "Steep & Release" (2:00 hold).**
-            - **Chemex**: DEEP BED/AIRLOCK RISK. **Strategy: "Pulse Pouring" (Lift filter).**
-            - **Kalita Wave**: FLAT BOTTOM/CLOG RISK. **Strategy: "Gentle Center Pour" (Don't swirl).**
-            - **Origami V**: DEEP GROOVES/HIGH BYPASS. **Strategy: "Center + Circle Pours" (Fast flow).**
-            - **Hario V60**: CONICAL/RIBS. **Strategy: "Spiral Pour" (Standard).**
-            - **Other**: GENERIC. **Strategy: "Standard Spiral".**
-
-           Based on the Gear + Bean + Roast combination, select the BEST brewing Path:
-
-            👉 **PATH A: The "Complexity" (Light Roast + V60 / Origami)**
-               - **Trigger**: Light Roast + Conical Dripper.
-               - **Structure**: Bloom + 3 Aggressive Pours (4:6 Method style).
-               - **Goal**: High agitation to extract acidity and floral notes.
-
-            👉 **PATH B: The "Sweetness" (Medium/Dark Roast + V60 / Kalita)**
-               - **Trigger**: Medium/Dark Roast + Any Dripper.
-               - **Structure**: Bloom + 1 Steady Continuous Center Pour (Osmotic Flow).
-               - **Goal**: Minimize agitation to keep fines in the bed, reducing astringency and boosting sweetness.
-
-            👉 **PATH C: The "Hybrid" (Hario Switch / Clever)**
-               - **Trigger**: Gear is Switch or Clever.
-               - **Structure**: Bloom -> Pour All Water -> **Close Switch/Steep 2:00** -> Release.
-               - **Goal**: High body, 100% consistent extraction.
-
-            👉 **PATH D: The "Rescue" (Aged Beans > 60 Days)**
-               - **Trigger**: Calculated Age > 60 days.
-               - **Structure**: Short Bloom -> Lower Temp (88-90°C) -> Gentle Center Pours.
-               - **Goal**: Avoid extracting oxidized lipids (rancid flavors).
-
-            👉 **PATH E: The "Stability" (Light Roast + Kalita / Orea / Flat Bottom)**
-               - **Trigger**: Light Roast + Flat Bottom Dripper.
-               - **Structure**: Bloom + 2 Spiral Pours (Gentle).
-               - **Physics**: Flat bottoms stall easily. Do NOT use high agitation. Keep the bed flat to ensure even water distribution.
-
-            👉 **PATH F: The "Deep Bed" (Chemex)**
-               - **Trigger**: Gear is Chemex.
-               - **Structure**: Bloom + 4 Pulse Pours (Keep water level high).
-               - **Physics**: Thick paper requires **High Thermal Mass** (High water level) to push water through. Grind COARSE.
-
-            👉 **PATH G: The "Standard" (Generic / Other)**
-               - **Trigger**: Gear is "Other" or Unknown.
-               - **Structure**: Bloom + 2 Equal Pours (1:1).
-               - **Goal**: The safest method that works for any cone or flat dripper.
-               
-            【PHASE 3: RECIPE SYNTHESIS (The Logic Gate)】
-            Combine [Bean Rules] + [Gear Physics]. Resolve conflicts using **Priority Logic**:
-            
-            1. **The "Natural" Clog Rule**: If Bean is **Natural** AND Grinder is **Generic/Niche**, PRIORITY = FLOW. **Coarsen Grind** significantly.
-            2. **The "Density" Heat Rule**: If Bean is **Kenya** (High Density) BUT Roast is **Dark**, PRIORITY = ROAST. **Low Temp (88°C)** to avoid ashiness.
-            3. **The "Age" Rescue**: If Bean Age > 60 Days, PRIORITY = STRUCTURE. **Gentle Pours** regardless of dripper type.
-
-            【PHASE 4: RECIPE GENERATION (JSON)】
-            Output valid JSON only.
-
-            {
-                "bean": { 
-                    "origin": "Detected Origin", 
-                    "roast_date": "Detected Date",
-                    "days_old": "Calculated Days",
-                    "tags": ["Roast Level", "Process", "Calculated Age", "Density Estimate"] 
-                },
-                "strategy": "Professional analysis (~80 words). Explain WHY you chose this brewing method [A-G] and water temperature, and how specific variables (Dripper/Paper) influenced the decision.",
-                "prep": { 
-                    "grind": "Final Setting (e.g. 'C40: 24 Clicks - Coarsened for Natural')", 
-                    "temp": "XX°C",
-                    "water_total": "${targetWater}g",
-                    "time_total": "e.g. 2:30"
-                },
-                "steps": [
-                    { 
-                        "time": "0:00", 
-                        "action": "Bloom", 
-                        "weight": "Target g", 
-                        "detail": "Technique (Center/Spiral)...", 
-                        "tip": "Physics: (e.g. 'High agitation to release CO2.../'Why this duration based on bean age?')"
-                    },
-                    { 
-                        "time": "...", 
-                        "action": "Name of Step (e.g. Pour 1 or Immersion Acid Extraction or Acid/Sweetness)", 
-                        "weight": "Target: ...g", 
-                        "detail": "Flow rate & Pattern...", 
-                        "tip": "Chemistry: (e.g.'Extracting enzymatic flavors (acids/fruity notes).')""Why this flow rate? (e.g. 'To breakdown high density cell walls')" 
-                    }
-                    { 
-                        "time": "...", 
-                        "action": "Name of Step (e.g. Body/Balance)", 
-                        "weight": "Target: ...g", 
-                        "detail": "Gentle center pour to maintain water level...", 
-                        "tip": "Physics: (e.g.'Increasing osmosis pressure to extract heavier compounds.'" 
-                    },
-                    { 
-                        "time": "...", 
-                        "action": "Drawdown", 
-                        "weight": "Total: ${dose * 15}g", 
-                        "detail": "Wait for the bed to dry. Total time should be ~3:00.", 
-                        "tip": "Check: If >3:30, grind coarser next time."
-                    },
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://bulucoffee.com",
+                "X-Title": "Bulu App"
+            },
+            body: JSON.stringify({
+                "model": "openai/gpt-4o",
+                "temperature": 0.4,
+                "messages": [
+                    { "role": "user", "content": [
+                        { "type": "text", "text": prompt },
+                        { "type": "image_url", "image_url": { "url": hostedImageUrl || imageBase64 } }
+                    ]}
                 ]
-            }
-            `;
+            })
+        });
 
-            // 5. 呼叫 GPT-4o
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://bulucoffee.com",
-                    "X-Title": "Bulu Coffee App"
-                },
-                body: JSON.stringify({
-                    "model": "openai/gpt-4o", 
-                    "temperature": 0.4, 
-                    "max_tokens": 2500,
-                    "messages": [ 
-                        { "role": "user", "content": [ 
-                            { "type": "text", "text": prompt }, 
-                            { "type": "image_url", "image_url": { "url": hostedImageUrl || imageBase64 } } 
-                        ]} 
-                    ]
-                })
-            });
+        if (!res.ok) throw new Error("AI API Error");
+        const data = await res.json();
+        
+        let raw = data.choices[0].message.content;
+        const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
+        if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
+        
+        const result = JSON.parse(raw);
+        renderResult(result);
+        saveToSupabase(result);
+        initChat(result);
 
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error?.message || "AI API Error");
-            }
+        els.viewLoading.classList.add('hidden');
+        els.viewResult.classList.remove('hidden');
 
-            const data = await res.json();
-            
-            // JSON 解析
-            let raw = data.choices[0].message.content;
-            const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
-            if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
-            const result = JSON.parse(raw);
+    } catch (e) {
+        console.error(e);
+        els.viewLoading.classList.add('hidden');
+        els.viewUpload.classList.remove('hidden');
+        els.errorMsg.innerText = "Error: " + e.message;
+        els.errorMsg.style.display = 'block';
+    }
+}
 
-            // 渲染與儲存
-            renderResult(result);
-            saveToSupabase(result);
-            initChat(result);
+// ---------------------------------------------------------
+// Render Function (保持不變)
+// ---------------------------------------------------------
+function renderResult(data) {
+    document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown";
+    document.getElementById('resDoseRef').innerText = els.inputDose.value;
+    document.getElementById('resStrategy').innerText = data.strategy;
+    document.getElementById('langToggle').style.display = 'none';
 
-            els.viewLoading.classList.add('hidden');
-            els.viewResult.classList.remove('hidden');
+    const elGrind = document.getElementById('resGrind');
+    const elTemp = document.getElementById('resTemp');
+    const elWater = document.getElementById('resWaterTotal');
+    const elTime = document.getElementById('resTotalTime');
 
-        } catch (e) {
-            console.error(e);
-            els.viewLoading.classList.add('hidden');
-            els.viewUpload.classList.remove('hidden');
-            els.errorMsg.innerText = "Error: " + e.message;
-            els.errorMsg.style.display = 'block';
-        }
+    if(elGrind) elGrind.innerText = data.prep.grind;
+    if(elTemp) elTemp.innerText = data.prep.temp;
+    if(elWater) elWater.innerText = data.prep.water_total || "--";
+    if(elTime) elTime.innerText = data.prep.time_total || "--";
+
+    const tags = document.getElementById('resTags');
+    tags.innerHTML = '';
+    if (data.bean.tags) {
+        data.bean.tags.forEach(t => {
+            tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
+        });
     }
 
-    // ---------------------------------------------------------
-    // 5. RENDER FUNCTIONS (修復版：確保 4 格 UI 正常運作)
-    // ---------------------------------------------------------
-    function renderResult(data) {
-        
-        // 1. 填入基本資訊
-        document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Origin";
-        document.getElementById('resDoseRef').innerText = els.inputDose.value;
-        document.getElementById('resStrategy').innerText = data.strategy;
-        
-        // ★ 安全填入四格資訊 (防止 null 錯誤)
-        const elGrind = document.getElementById('resGrind');
-        const elTemp = document.getElementById('resTemp');
-        const elWater = document.getElementById('resWaterTotal');
-        const elTime = document.getElementById('resTotalTime');
-
-        if(elGrind) elGrind.innerText = data.prep.grind;
-        if(elTemp) elTemp.innerText = data.prep.temp;
-        if(elWater) elWater.innerText = data.prep.water_total || "--";
-        if(elTime) elTime.innerText = data.prep.time_total || "--";
-
-        // 2. 渲染標籤 (Tags)
-        const tags = document.getElementById('resTags');
-        tags.innerHTML = '';
-        if (data.bean.tags && Array.isArray(data.bean.tags)) {
-            data.bean.tags.forEach(t => {
-                tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
-            });
-        }
-
-        // 3. 渲染時間軸 (Timeline)
-        const tl = document.getElementById('resTimeline');
-        tl.innerHTML = '';
-        if (data.steps && Array.isArray(data.steps)) {
-            data.steps.forEach(s => {
-                tl.innerHTML += `
-                    <div class="recipe-step">
-                        <span class="step-time">${s.time}</span>
-                        <div>
-                            <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#888;">➔ ${s.weight}</span></div>
-                            <div class="step-desc">${s.detail}</div>
-                            <div class="step-tip">💡 ${s.tip}</div>
-                        </div>
-                    </div>`;
-            });
-        }
+    const tl = document.getElementById('resTimeline');
+    tl.innerHTML = '';
+    if (data.steps) {
+        data.steps.forEach(s => {
+            tl.innerHTML += `
+                <div class="recipe-step">
+                    <span class="step-time">${s.time}</span>
+                    <div>
+                        <div class="step-title">${s.action} <span style="font-weight:normal; font-size:14px; color:#888;">➔ ${s.weight}</span></div>
+                        <div class="step-desc">${s.detail}</div>
+                        <div class="step-tip">💡 ${s.tip}</div>
+                    </div>
+                </div>`;
+        });
     }
-
+}
     // ---------------------------------------------------------
     // 6. DATABASE & STORAGE
     // ---------------------------------------------------------
