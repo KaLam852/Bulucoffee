@@ -583,6 +583,7 @@
             4. **Target Yield**: Ratio 1:15 ~ 1:16.6 (Auto-calc water: ${dose} * 15).
             5. **Water Target Check**: The weight in the final step MUST match the calculated Total Water (${targetWater}g).
             6. **Completeness**: Do not summarize. Write out every single pour clearly.
+            7. **Tone Guard**: For beans >60 days, NEVER use words like "Expired", "Stale", "Old", "過期", "陳年". Instead, use positive framing: "Extended Resting (長養豆)", "Fully Degassed (完全排氣)"
 
             【PHASE 1: THE KNOWLEDGE BASE (Bean Logic Matrix)】
                Analyze the bean image based on these STRICT rules:
@@ -640,7 +641,7 @@
             - **Hario V60**: CONICAL/RIBS. **Strategy: "Spiral Pour" (Standard).**
             - **Other**: GENERIC. **Strategy: "Standard Spiral".**
 
-           Based on the Gear + Bean + Roast combination, select the BEST Path:
+           Based on the Gear + Bean + Roast combination, select the BEST brewing Path:
 
             👉 **PATH A: The "Complexity" (Light Roast + V60 / Origami)**
                - **Trigger**: Light Roast + Conical Dripper.
@@ -694,7 +695,7 @@
                     "days_old": "Calculated Days",
                     "tags": ["Roast Level", "Process", "Calculated Age", "Density Estimate"] 
                 },
-                "strategy": "Professional analysis (~80 words). Explain WHY you chose this brewing method "name" Path [A-G] and water temperature, and how specific variables (Dripper/Paper) influenced the decision.",
+                "strategy": "Professional analysis (~80 words). Explain WHY you chose this brewing method [A-G] and water temperature, and how specific variables (Dripper/Paper) influenced the decision.",
                 "prep": { 
                     "grind": "Final Setting (e.g. 'C40: 24 Clicks - Coarsened for Natural')", 
                     "temp": "XX°C",
@@ -706,16 +707,30 @@
                         "time": "0:00", 
                         "action": "Bloom", 
                         "weight": "Target g", 
-                        "detail": "Technique explanation", 
-                        "tip": "Physics tip" 
+                        "detail": "Technique (Center/Spiral)...", 
+                        "tip": "Physics: (e.g. 'High agitation to release CO2.../'Why this duration based on bean age?')"
                     },
                     { 
                         "time": "...", 
-                        "action": "Pour...", 
-                        "weight": "...", 
-                        "detail": "...", 
-                        "tip": "..." 
+                        "action": "Name of Step (e.g. Pour 1 or Immersion Acid Extraction or Acid/Sweetness)", 
+                        "weight": "Target: ...g", 
+                        "detail": "Flow rate & Pattern...", 
+                        "tip": "Chemistry: (e.g.'Extracting enzymatic flavors (acids/fruity notes).')""Why this flow rate? (e.g. 'To breakdown high density cell walls')" 
                     }
+                    { 
+                        "time": "...", 
+                        "action": "Name of Step (e.g. Body/Balance)", 
+                        "weight": "Target: ...g", 
+                        "detail": "Gentle center pour to maintain water level...", 
+                        "tip": "Physics: (e.g.'Increasing osmosis pressure to extract heavier compounds.'" 
+                    },
+                    { 
+                        "time": "...", 
+                        "action": "Drawdown", 
+                        "weight": "Total: ${dose * 15}g", 
+                        "detail": "Wait for the bed to dry. Total time should be ~3:00.", 
+                        "tip": "Check: If >3:30, grind coarser next time."
+                    },
                 ]
             }
             `;
