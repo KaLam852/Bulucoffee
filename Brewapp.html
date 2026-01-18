@@ -602,7 +602,7 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-pro-1.5", 
+                   "model": "google/gemini-flash-1.5",
                     "temperature": 0.5,
                     "max_tokens": 1500,
                     "messages": [ 
@@ -796,7 +796,7 @@
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "model": "google/gemini-pro-1.5",
+                   "model": "google/gemini-flash-1.5",
                     "messages": chatHistory
                 })
             });
