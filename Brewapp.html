@@ -533,7 +533,6 @@
     }
 
  // ---------------------------------------------------------
-    // 👑 究極完全體 v7：豆性知識庫 + 器材物理引擎 + 全變數矩陣
  async function startAnalysis() {
     const dose = els.inputDose.value;
     const grinder = document.getElementById('inputGrinder').value || "Generic";
@@ -546,17 +545,23 @@
     els.viewLoading.classList.remove('hidden');
     els.loadingText.innerText = currentLang === 'zh' ? "AI 正在分析..." : "AI Analyzing...";
 
-    // 簡化的語言指令
-    const lang = currentLang === 'zh' 
-        ? "OUTPUT: Traditional Chinese (HK)."
-        : "OUTPUT: English.";
+   const proTerms = {
+        zh: "必須使用術語：'TDS', '萃取'"
+        en: "MUST use terms: 'TDS', 'Extraction'"
+    };
+
+    // 設定語言指令 (預設英文，包含專業術語要求)
+    const langInstruction = currentLang === 'zh' 
+        ? `OUTPUT: Traditional Chinese (Hong Kong/Taiwan style). ${proTerms.zh} Tone: Scientific, Analytical, Precise.`
+        : `OUTPUT: English. ${proTerms.en} Tone: Scientific, Analytical, Precise.`;
 
     try {
         const hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels');
 
         // 🔥 壓縮後的 Prompt：移除重複定義，依賴 AI 內建知識庫
         const prompt = `
-        Role: World Barista Champion. Task: Create Ultimate Recipe.
+        Role: World Barista Champion. 
+        Task: Create an Ultimate Recipe using fluid dynamics and extraction chemistry.
         
         【INPUTS】
         Dose:${dose}g, Water:${targetWater}g, Gear:${selectedGear}, Grinder:${grinder}, Paper:${paper}, Date:${today}.
