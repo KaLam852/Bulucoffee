@@ -195,14 +195,14 @@
                 <div class="gear-item" onclick="selectGear(this, 'Hario V60')">
                     <i data-lucide="filter"></i><span class="gear-name">V60</span>
                 </div>
-                <div class="gear-item" onclick="selectGear(this, 'Origami')">
-                    <i data-lucide="star"></i><span class="gear-name">Origami</span>
+                <div class="gear-item" onclick="selectGear(this, 'Origami V')">
+                    <i data-lucide="star"></i><span class="gear-name">Origami V60</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Kalita Wave')">
                     <i data-lucide="align-center"></i><span class="gear-name">Kalita</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Hario Switch')">
-                    <i data-lucide="toggle-right"></i><span class="gear-name">Switch</span>
+                    <i data-lucide="toggle-right"></i><span class="gear-name">Hario Switch</span>
                 </div>
                 <div class="gear-item" onclick="selectGear(this, 'Chemex')">
                     <i data-lucide="flask-conical"></i><span class="gear-name">Chemex</span>
@@ -217,18 +217,20 @@
                 <option value="" disabled selected data-i18n="sel_grinder">Select Grinder</option>
                 <option value="Comandante C40">Comandante C40</option>
                 <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-                <option value="Timemore C2/C3">Timemore C2/C3</option>
+                <option value="Niche Zero">Niche Zero</option>
                 <option value="Fellow Ode">Fellow Ode</option>
                 <option value="EK43">Mahlkonig EK43</option>
                 <option value="Other">Other / Generic</option>
             </select>
             <select id="inputPaper" class="custom-select">
                 <option value="" disabled selected data-i18n="sel_paper">Select Filter Paper</option>
-                <option value="Cafec Abaca">Cafec Abaca</option>
                 <option value="Hario V60">Hario V60 Standard</option>
+                <option value="Cafec Abaca">Cafec Abaca</option>
+                <option value="Cafec T-92">Cafec T-92</option>
                 <option value="Sibarist">Sibarist FAST</option>
                 <option value="Kalita Wave">Kalita Wave</option>
-                <option value="Standard">Standard Generic</option>
+                <option value="Chemex">Chemex</option>
+                 <option value="Other">Other</option>
             </select>
 
             <button id="btnNext" class="btn-brand" disabled onclick="goToUpload()">
@@ -351,7 +353,7 @@
             tap_upload: "Tap to Upload Photo",
             btn_brew: "Start Brewing",
             steps_title: "Brewing Steps",
-            chat_title: "Ask Bulu Barista",
+            chat_title: "Ask Bulu",
             btn_restart: "Brew Another Bean",
             loading: "AI IS THINKING...",
             chat_placeholder: "e.g., The flow is too slow..."
