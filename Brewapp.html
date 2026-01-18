@@ -632,7 +632,7 @@
                     "X-Title": "Bulu Coffee App"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-exp", // 目前 OpenRouter 上最新的 Gemini Flash 版本 (通常會指向最新版)
+                    "model": "google/gemini-3-flash", // 目前 OpenRouter 上最新的 Gemini Flash 版本 (通常會指向最新版)
                     // 如果確定 "google/gemini-3-flash" 已上架，請改用 "google/gemini-3-flash"
                     "temperature": 0.4,       // 低溫以確保科學嚴謹性
                     "max_tokens": 2000,
@@ -799,7 +799,7 @@
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  "model": "google/gemini-2.0-flash-exp",
+                  "model": "google/gemini-3-flash",
                     "messages": chatHistory
                 })
             });
