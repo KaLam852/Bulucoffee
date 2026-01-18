@@ -11,23 +11,15 @@
     
     <style>
         :root {
-            /* --- [保留] 品牌配色 --- */
             --brand-primary: #5468AA;
             --brand-secondary: #F0F2F9;
             --brand-accent: #FFA07A;
-            
-            /* --- [保留] 基礎顏色 --- */
             --bg-color: #FAFAFC;
             --text-main: #2D3436;
             --text-light: #636E72;
-            --card-bg: #FFFFFF;
-            
-            /* 新增排版變數 */
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Noto Sans TC', sans-serif;
-            
-            /* 放射式設計專用 */
-            --circle-size: 240px; /* 主圓盤大小 */
+            --circle-size: 240px; 
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -35,241 +27,206 @@
         body {
             margin: 0; padding: 0;
             font-family: var(--font-sans);
-            background: radial-gradient(circle at top center, #F0F2F9 0%, #FAFAFC 70%); /* 放射狀背景 */
+            background: radial-gradient(circle at 50% 20%, #F0F2F9 0%, #FAFAFC 70%);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* --- Layout: Centered & Radial --- */
         .content-wrap { 
             max-width: 500px; 
             margin: 0 auto; 
-            padding: 20px 24px 100px 24px; 
+            padding: 20px 24px 120px 24px;
             display: flex; flex-direction: column; align-items: center;
         }
 
         .hidden { display: none !important; }
 
-        /* --- Header: Center Alignment --- */
+        /* Header */
         .brand-header {
-            padding: 40px 0 20px 0;
+            padding: 40px 0 10px 0;
             text-align: center;
             width: 100%;
+            position: relative;
+            z-index: 10;
         }
-        
         .brand-logo {
             font-size: 10px; font-weight: 700; letter-spacing: 3px;
-            color: var(--brand-primary); text-transform: uppercase; margin-bottom: 5px;
+            color: var(--brand-accent); text-transform: uppercase; margin-bottom: 5px;
         }
         .brand-title {
-            margin: 0; 
-            font-family: var(--font-serif);
-            font-size: 32px; 
-            color: var(--brand-accent);
-            font-weight: 700;
+            margin: 0; font-family: var(--font-serif);
+            font-size: 32px; color: var(--brand-primary); font-weight: 700;
         }
-
         .btn-lang {
             position: absolute; top: 20px; right: 20px;
             background: transparent; border: 1px solid #E0E4EB;
             color: var(--text-light); padding: 5px 12px;
-            border-radius: 20px; font-size: 10px; font-weight: 700;
-            cursor: pointer;
+            border-radius: 20px; font-size: 10px; font-weight: 700; cursor: pointer;
         }
 
-        /* --- 1. Dose: The "Sun" (Central Dial) --- */
-        /* 這是放射式的核心：巨大的圓形控制器 */
+        /* --- 1. Dose: The Sun (修復滑桿問題) --- */
         .dose-planet-wrap {
             position: relative;
             width: var(--circle-size);
             height: var(--circle-size);
-            margin: 20px auto 40px auto;
-            display: flex; justify-content: center; align-items: center;
+            margin: 30px auto 50px auto;
+            /* 讓這層是定位基準 */
         }
         
+        /* 視覺層：顯示數字與圓圈 */
         .dose-planet {
             width: 100%; height: 100%;
             background: #fff;
             border-radius: 50%;
-            box-shadow: 0 20px 50px rgba(84, 104, 170, 0.15), 
-                        inset 0 0 0 1px rgba(84, 104, 170, 0.05); /* 外光暈 */
+            box-shadow: 0 20px 60px rgba(84, 104, 170, 0.15), 
+                        inset 0 0 0 1px rgba(255,255,255,0.5);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative;
-            z-index: 2;
+            position: absolute; top: 0; left: 0;
+            z-index: 1; /* 在滑桿下面 */
+            pointer-events: none; /* 讓點擊穿透 */
         }
 
-        /* 裝飾軌道線 */
-        .orbit-ring {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0;
-            pointer-events: none;
+        /* 觸控層：隱形滑桿 (修復重點) */
+        .dose-slider-control {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0; /* 完全透明 */
+            z-index: 10; /* 最上層，接收觸控 */
+            cursor: ew-resize; 
+            margin: 0; padding: 0;
+            -webkit-appearance: none;
         }
-        .orbit-1 { width: 320px; height: 320px; opacity: 0.6; }
-        .orbit-2 { width: 450px; height: 450px; opacity: 0.3; }
 
-        .dose-label {
-            font-size: 11px; letter-spacing: 2px; color: var(--text-light); 
-            text-transform: uppercase; margin-bottom: 5px;
-        }
-        .dose-display { 
-            font-family: var(--font-serif);
-            font-size: 80px; font-weight: 600; 
-            color: var(--brand-accent); line-height: 1;
-        }
+        .dose-label { font-size: 11px; letter-spacing: 2px; color: var(--text-light); text-transform: uppercase; margin-bottom: 5px; }
+        .dose-display { font-family: var(--font-serif); font-size: 80px; font-weight: 600; color: var(--brand-accent); line-height: 1; }
         .dose-unit { font-size: 14px; color: var(--brand-primary); font-weight: 600; }
 
-        /* 將 Slider 隱藏在圓盤下方，作為互動層 */
-        .slider-wrapper {
-            position: absolute; bottom: -40px; width: 200px; text-align: center;
+        /* 背景軌道裝飾 */
+        .orbit-ring {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            border: 1px dashed #E0E4EB; border-radius: 50%; z-index: 0; pointer-events: none;
         }
-        input[type=range] { 
-            width: 100%; -webkit-appearance: none; background: transparent;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            height: 4px; background: #E0E4EB; border-radius: 2px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-            background: var(--brand-primary); margin-top: -8px; 
-            border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .orbit-1 { width: 340px; height: 340px; opacity: 0.6; }
+        .orbit-2 { width: 480px; height: 480px; opacity: 0.3; }
 
-        /* --- 2. Gear: The "Planets" (Floating Circles) --- */
+        /* --- 2. Dripper: Planets --- */
         .section-label {
             text-align: center; font-size: 12px; letter-spacing: 1.5px; 
             color: var(--text-light); text-transform: uppercase; margin-bottom: 20px;
+            position: relative; z-index: 5;
         }
 
         .gear-orbit-grid {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
             max-width: 400px; margin: 0 auto 40px auto;
+            position: relative; z-index: 5;
         }
         
         .gear-planet {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            background: #fff;
+            width: 75px; height: 75px;
+            border-radius: 50%; background: #fff;
             box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 彈性動畫 */
+            cursor: pointer; border: 2px solid transparent;
+            transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        
-        .gear-planet i { margin-bottom: 5px; color: #CBD2E0; }
-        .gear-planet span { font-size: 10px; font-weight: 600; color: var(--text-light); }
+        .gear-planet i { margin-bottom: 4px; color: #CBD2E0; transition: 0.3s; }
+        .gear-planet span { font-size: 9px; font-weight: 700; color: var(--text-light); }
 
         .gear-planet.selected {
-            border-color: var(--brand-primary);
-            background: #fff;
-            transform: scale(1.1); /* 選中時放大 */
+            border-color: var(--brand-primary); transform: scale(1.1);
             box-shadow: 0 10px 25px rgba(84, 104, 170, 0.2);
         }
         .gear-planet.selected i { color: var(--brand-primary); }
         .gear-planet.selected span { color: var(--brand-primary); }
 
-        /* --- 3. Inputs: Rounded Pills --- */
+        /* --- 3. Inputs --- */
         .input-pill-group {
             width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+            max-width: 360px; position: relative; z-index: 5;
         }
         .custom-select {
-            width: 100%; padding: 15px 20px;
-            background: #fff; border: 1px solid transparent;
-            border-radius: 50px; /* 藥丸形狀 */
+            width: 100%; padding: 16px 20px;
+            background: #fff; border: 1px solid transparent; border-radius: 50px;
             font-size: 14px; text-align: center; text-align-last: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             appearance: none; color: var(--text-main); font-weight: 500;
         }
         .custom-select:focus { border-color: var(--brand-primary); outline: none; }
 
-        /* --- Button: Floating Action --- */
+        /* --- Floating Button (修復樣式) --- */
         .btn-orbit {
             width: 64px; height: 64px; border-radius: 50%;
             background: var(--brand-primary); color: #fff;
             border: none; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(84, 104, 170, 0.3);
+            box-shadow: 0 15px 35px rgba(84, 104, 170, 0.3);
             cursor: pointer; transition: 0.3s;
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             z-index: 100;
         }
-        .btn-orbit:active { transform: translateX(-50%) scale(0.9); }
-        .btn-orbit:disabled { background: #CBD2E0; box-shadow: none; }
-        
-        /* 為了讓按鈕不擋住內容 */
-        .spacer { height: 80px; }
+        .btn-orbit:active { transform: translateX(-50%) scale(0.95); }
+        /* 禁用狀態也要好看一點 */
+        .btn-orbit:disabled { 
+            background: #E0E4EB; 
+            box-shadow: none; 
+            cursor: not-allowed;
+            opacity: 1; /* 保持顯示，只是變灰 */
+        }
+        .btn-orbit:disabled i { opacity: 0.3; }
 
-        /* --- Upload View: Circular Focus --- */
+        /* --- Upload View --- */
         .upload-circle {
-            width: 280px; height: 280px; border-radius: 50%;
+            width: 260px; height: 260px; border-radius: 50%;
             background: #fff; border: 2px dashed #DDE1E8;
-            margin: 20px auto; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-        }
-        .upload-label { text-align: center; }
-
-        /* --- Result View: Radial Stats --- */
-        .res-top { text-align: center; margin-bottom: 40px; }
-        .res-origin { 
-            font-family: var(--font-serif); font-size: 32px; 
-            color: var(--brand-primary); margin: 10px 0; 
-        }
-
-        /* 圓形數據環 */
-        .stats-orbit-container {
-            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
-            margin-bottom: 40px;
-        }
-        .stat-circle {
-            width: 85px; height: 85px; border-radius: 50%;
-            background: #fff; border: 1px solid #F0F2F9;
+            margin: 40px auto; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05); cursor: pointer;
         }
-        .stat-label { font-size: 9px; color: var(--text-light); margin-bottom: 4px; letter-spacing: 1px; }
-        .stat-val { font-size: 13px; font-weight: 700; color: var(--text-main); text-align: center; padding: 0 5px; line-height: 1.2;}
+        
+        /* --- Results --- */
+        .res-top { text-align: center; margin-bottom: 30px; margin-top: 20px; }
+        .res-origin { font-family: var(--font-serif); font-size: 36px; color: var(--brand-primary); margin: 10px 0; font-weight: 700; }
+        
+        .stats-orbit-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; }
+        .stat-circle {
+            width: 80px; height: 80px; border-radius: 50%; background: #fff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        .stat-label { font-size: 8px; color: var(--text-light); margin-bottom: 3px; letter-spacing: 1px; font-weight: 700; }
+        .stat-val { font-size: 12px; font-weight: 700; color: var(--brand-primary); text-align: center; }
 
         .strategy-bubble {
             background: #fff; padding: 25px; border-radius: 20px;
-            text-align: center; margin-bottom: 30px;
-            font-family: var(--font-serif); font-size: 18px; color: #444;
-            box-shadow: var(--shadow); position: relative;
+            text-align: center; margin-bottom: 40px; font-family: var(--font-serif); font-size: 18px; color: #444; line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative;
         }
-        /* 對話框尖角 */
         .strategy-bubble::after {
             content: ''; position: absolute; top: -10px; left: 50%; margin-left: -10px;
-            border-width: 0 10px 10px 10px; border-style: solid;
-            border-color: transparent transparent #fff transparent;
+            border-width: 0 10px 10px 10px; border-style: solid; border-color: transparent transparent #fff transparent;
         }
 
-        /* Timeline: Center Line */
-        .recipe-timeline { 
-            position: relative; padding: 0; margin-top: 20px;
-        }
+        .recipe-timeline { position: relative; padding: 0; margin-top: 20px; }
         .recipe-timeline::before {
-            content: ''; position: absolute; top: 0; bottom: 0; left: 50%; 
-            width: 1px; background: #E0E4EB; transform: translateX(-50%);
+            content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #E0E4EB; transform: translateX(-50%);
         }
-        
         .recipe-step { 
-            position: relative; margin-bottom: 40px; text-align: center; 
-            background: #fff; padding: 20px; border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            z-index: 2; /* 蓋住線 */
+            position: relative; margin-bottom: 40px; text-align: center; background: #fff; padding: 20px; border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); z-index: 2;
         }
         .step-time {
             display: inline-block; background: var(--brand-primary); color: #fff;
-            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
-            margin-bottom: 10px; box-shadow: 0 4px 10px rgba(84, 104, 170, 0.3);
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
         }
         .step-title { font-weight: 700; font-size: 16px; margin: 0 0 5px 0; }
-        
-        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow); }
-        .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
 
-        .loading-screen { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
+        .chat-section { background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 80px; }
+        .chat-window { border: none; background: #FAFAFC; border-radius: 16px; }
+        .msg-ai { background: #fff; border: 1px solid #eee; }
+        .msg-user { background: var(--brand-primary); color: #fff; }
+        .loading-screen { background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
@@ -288,15 +245,13 @@
             <div class="orbit-ring orbit-2"></div>
 
             <div class="dose-planet-wrap">
+                <input type="range" id="inputDose" class="dose-slider-control" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                
                 <div class="dose-planet">
                     <span class="dose-label" data-i18n="sec_dose">DOSE</span>
                     <div><span id="doseDisplay" class="dose-display">20</span><span class="dose-unit">g</span></div>
-                    <div style="font-size:10px; color:#aaa; margin-top:5px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
+                    <div style="font-size:10px; color:#aaa; margin-top:8px;" data-i18n="dose_desc">DRAG TO ADJUST</div>
                 </div>
-            </div>
-            
-            <div class="slider-wrapper">
-                <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
             </div>
 
             <div class="section-label" data-i18n="sec_dripper">SELECT DRIPPER</div>
@@ -346,26 +301,25 @@
             </div>
 
             <button id="btnNext" class="btn-orbit" disabled onclick="goToUpload()">
-                <i data-lucide="arrow-right" size="24"></i>
+                <i data-lucide="arrow-right" size="28"></i>
             </button>
-            <div class="spacer"></div>
         </section>
 
         <section id="viewUpload" class="hidden" style="text-align:center;">
-             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px;" onclick="backToConfig()">
+             <button style="background:none; border:none; color:var(--text-light); font-weight:700; margin-bottom:20px; cursor:pointer;" onclick="backToConfig()">
                 <i data-lucide="arrow-left" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_back">BACK</span>
             </button>
             
             <h2 class="section-label" data-i18n="sec_scan" style="font-size:16px;">SCAN BEAN LABEL</h2>
-            <p style="font-size: 14px; color: #888; margin-bottom: 30px; padding: 0 20px;" data-i18n="scan_desc">
+            <p style="font-size: 14px; color: #888; margin-bottom: 20px; padding: 0 20px;" data-i18n="scan_desc">
                 AI will analyze the roast level, origin, and freshness.
             </p>
 
             <div class="upload-circle" onclick="document.getElementById('fileInput').click()">
                 <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
                 <div class="upload-label">
-                    <i data-lucide="camera" size="48" color="#5468AA" style="margin-bottom:10px;"></i>
-                    <div style="font-weight:700; color:var(--brand-primary);" data-i18n="tap_upload">TAP TO UPLOAD</div>
+                    <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px; display:block; margin:0 auto 10px auto;"></i>
+                    <div style="font-weight:700; color:var(--brand-primary); font-size:14px;" data-i18n="tap_upload">TAP TO UPLOAD</div>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
             </div>
@@ -373,11 +327,11 @@
             <div id="errorMsg" style="color:red; font-size:12px; margin-top:20px; display:none;"></div>
 
             <button id="btnAnalyze" class="btn-orbit" disabled onclick="startAnalysis()">
-                <i data-lucide="sparkles" size="24"></i>
+                <i data-lucide="sparkles" size="28"></i>
             </button>
         </section>
 
-        <section id="viewResult" class="hidden">
+        <section id="viewResult" class="hidden" style="width:100%;">
             <div class="res-top">
                 <div style="font-size:10px; letter-spacing:2px; color:var(--brand-accent); font-weight:700;">RECIPE FOR <span id="resDoseRef"></span>G</div>
                 <h2 id="resOrigin" class="res-origin">--</h2>
@@ -422,7 +376,7 @@
             </div>
 
             <div style="text-align:center; margin-top:40px;">
-                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700;">
+                <button onclick="location.reload()" style="background:transparent; border:1px solid var(--brand-primary); color:var(--brand-primary); padding:10px 20px; border-radius:20px; font-weight:700; cursor:pointer;">
                     <i data-lucide="rotate-ccw" size="14" style="vertical-align:middle;"></i> <span data-i18n="btn_restart">BREW AGAIN</span>
                 </button>
             </div>
@@ -440,7 +394,10 @@
 </div>
 
 <script>
-    lucide.createIcons();
+    // 這裡放入您的 JavaScript 代碼...
+    // 為了確保按鈕圖標顯示，我在這裡多加一行：
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
 
     // ---------------------------------------------------------
     // 1. CONFIGURATION
