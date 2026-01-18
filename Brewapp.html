@@ -656,7 +656,11 @@
         const prompt = `
             Role: World Barista Champion & Coffee Scientist.
             Task: Create an EXTREMELY DETAILED, high-precision brewing recipe.
-
+            
+            【INPUTS】
+            Dose:${dose}g, Water:${targetWater}g, Gear:${selectedGear}, Grinder:${grinder}, Paper:${paper}, Date:${today}.
+            Image: Extract origin/roast/process/date.  
+            
             【LOGIC KERNEL & PHYSICS】
             1. **OUTPUT LANGUAGE: ${langInstruction}** (CRITICAL REQUIREMENT).
                - If Chinese: All values in "strategy", "detail", "tip", and "action" MUST be in Traditional Chinese.
