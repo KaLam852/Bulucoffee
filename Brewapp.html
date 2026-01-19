@@ -455,30 +455,29 @@
             </div>
 
         <div class="card stats-panel">
-            <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
-            
-            <div class="stat-row">
-                <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
-                <span id="resGrind" class="stat-val">--</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
-                <span id="resTemp" class="stat-val">--</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
-                <span id="resWaterTotal" class="stat-val">--</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
-                <span id="resTotalTime" class="stat-val">--</span>
-            </div>
+    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
+    
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
+        <span id="resGrind" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
+        <span id="resTemp" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
+        <span id="resWaterTotal" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
+        <span id="resTotalTime" class="stat-val">--</span>
+    </div>
 
-            <div style="margin-top:20px; padding:15px; background:#fafafa; border-radius:12px; font-style:italic; font-size:13px; line-height:1.5; color:#666;">
-                " <span id="resStrategy">Strategy will appear here...</span> "
-            </div>
-            
-            </div>
+    <div style="margin-top:20px; padding:15px; background:#fafafa; border-radius:12px; font-style:italic; font-size:13px; line-height:1.5; color:#666;">
+        " <span id="resStrategy">Strategy will appear here...</span> "
+    </div>
+</div>
 
         <div class="card timeline-panel">
             <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
@@ -784,18 +783,34 @@
 
     // --- RENDER & UTILS ---
     function renderResult(data) {
-        document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown";
-        document.getElementById('resStrategy').innerText = data.strategy;
-        document.getElementById('resGrind').innerText = data.prep.grind;
-        document.getElementById('resTemp').innerText = data.prep.temp;
-        document.getElementById('resWaterTotal').innerText = data.prep.water_total;
-        document.getElementById('resTotalTime').innerText = data.prep.time_total;
+    // 建立一個安全填寫的小工具 helper
+    const safeSetText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text; // 只有當元素存在時才寫入，避免報錯
+    };
 
-        const tags = document.getElementById('resTags');
+    // 使用安全填寫
+    safeSetText('resOrigin', data.bean.origin || "Unknown");
+    safeSetText('resStrategy', data.strategy);
+    safeSetText('resGrind', data.prep.grind);
+    safeSetText('resTemp', data.prep.temp);
+    safeSetText('resWaterTotal', data.prep.water_total);
+    safeSetText('resTotalTime', data.prep.time_total);
+    
+    // 處理 Tags
+    const tags = document.getElementById('resTags');
+    if (tags) {
         tags.innerHTML = '';
-        if (data.bean.tags) data.bean.tags.forEach(t => tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`);
+        if (data.bean.tags) {
+            data.bean.tags.forEach(t => {
+                tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
+            });
+        }
+    }
 
-        const tl = document.getElementById('resTimeline');
+    // 處理 Timeline
+    const tl = document.getElementById('resTimeline');
+    if (tl) {
         tl.innerHTML = '';
         if (data.steps) {
             data.steps.forEach(s => {
@@ -803,6 +818,7 @@
             });
         }
     }
+}
 
     // --- HELPER FUNCTIONS ---
     function getAnonId() { return localStorage.getItem('bulu_anon_id') || 'u_' + Math.random().toString(36).substr(2, 9); }
