@@ -306,6 +306,21 @@
             }
             .btn-fab { width: 100%; justify-content: center; }
         }
+                /* --- 在 style 標籤內加入這個 class --- */
+            .chat-panel {
+                 grid-column: 1 / -1; /* 讓它橫跨兩欄，置於底部 */
+                 display: flex;
+                 flex-direction: column;
+                 gap: 15px;
+            }
+
+                 /* 為了讓聊天視窗更好看，可以稍微調整高度 */
+            #chatWindow {
+                 max-height: 300px; /* 增加一點高度 */
+                 background: #FAFAFC; /* 给聊天背景一點顏色區分 */
+                 padding: 15px;
+                 border-radius: 12px;
+        }
     </style>
 </head>
 <body>
@@ -433,61 +448,63 @@
             </div>
         </div>
 
-        <div id="viewResult" class="hidden">
-            <div class="result-dashboard">
-                <div class="card origin-card">
-                    <div>
-                        <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
-                        <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
-                        <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
-                    </div>
-                    <div style="text-align:right;">
-                        <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
-                    </div>
-                </div>
+<div id="viewResult" class="hidden">
+    <div class="result-dashboard">
+        
+        <div class="card origin-card">
+            </div>
 
-                <div class="card stats-panel">
-                    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
-                    
-                    <div class="stat-row">
-                        <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
-                        <span id="resGrind" class="stat-val">--</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
-                        <span id="resTemp" class="stat-val">--</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
-                        <span id="resWaterTotal" class="stat-val">--</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
-                        <span id="resTotalTime" class="stat-val">--</span>
-                    </div>
+        <div class="card stats-panel">
+            <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
+            
+            <div class="stat-row">
+                <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
+                <span id="resGrind" class="stat-val">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
+                <span id="resTemp" class="stat-val">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
+                <span id="resWaterTotal" class="stat-val">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
+                <span id="resTotalTime" class="stat-val">--</span>
+            </div>
 
-                    <div style="margin-top:20px; padding:15px; background:#fafafa; border-radius:12px; font-style:italic; font-size:13px; line-height:1.5; color:#666;">
-                        " <span id="resStrategy">Strategy will appear here...</span> "
-                    </div>
-                    
-                    <div id="chatWindow"></div>
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <input type="text" id="chatInput" style="flex:1; border:1px solid #ddd; border-radius:20px; padding:8px 15px; outline:none;" placeholder="Ask AI...">
-                        <button onclick="sendChat()" style="background:var(--brand-primary); color:#fff; border:none; border-radius:50%; width:35px; height:35px; cursor:pointer;">↑</button>
-                    </div>
+            <div style="margin-top:20px; padding:15px; background:#fafafa; border-radius:12px; font-style:italic; font-size:13px; line-height:1.5; color:#666;">
+                " <span id="resStrategy">Strategy will appear here...</span> "
+            </div>
+            
+            </div>
 
-                    <button onclick="location.reload()" class="btn-lang" style="margin-top:20px; text-align:center;">
-                        <span data-i18n="btn_restart">Start Over</span>
-                    </button>
-                </div>
-
-                <div class="card timeline-panel">
-                    <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
-                    <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;">
-                        </div>
-                </div>
+        <div class="card timeline-panel">
+            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
+            <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;">
             </div>
         </div>
+
+        <div class="card chat-panel">
+            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin:0; color:var(--brand-primary);">AI Barista Chat</h3>
+            
+            <div id="chatWindow"></div>
+            
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <input type="text" id="chatInput" style="flex:1; border:1px solid #ddd; border-radius:20px; padding:12px 20px; outline:none;" placeholder="Ask AI about this brew...">
+                <button onclick="sendChat()" style="background:var(--brand-primary); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="arrow-up" size="20"></i>
+                </button>
+            </div>
+
+            <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
+                <span data-i18n="btn_restart">Start Over</span>
+            </button>
+        </div>
+
+    </div>
+</div>
 
     </main>
 
