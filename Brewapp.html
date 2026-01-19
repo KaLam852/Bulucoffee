@@ -451,8 +451,17 @@
 <div id="viewResult" class="hidden">
     <div class="result-dashboard">
         
-        <div class="card origin-card">
-            </div>
+    <div class="card origin-card">
+        <div>
+        <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
+        <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
+        <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+        </div>
+    
+        <div style="text-align:right;">
+        <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
+        </div>
+    </div>
 
         <div class="card stats-panel">
     <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Parameters</div>
@@ -713,7 +722,7 @@
             Strictly follow this JSON structure. Do not use Markdown inside the JSON values.
             {
                 "bean": { "origin": "Detected Origin", "roast_date": "YYYY-MM-DD", "days_old": "Num", "tags": ["Flavor1","Flavor2","Acid/Body"] },
-                "strategy": "Pro Analysis (80-100 words): Explain the bean density and strategy. (MUST BE IN ${langInstruction})",
+                "strategy": "Pro Analysis (80-100 words): Explain the Dripper ${selectedGear}, bean density and strategy. (MUST BE IN ${langInstruction})",
                 "prep": { 
                     "grind": "CALCULATED SETTING for ${grinder}. Format: '[Model]: [Value] [Unit]' (e.g. 'Ode: 5.2' or 'C40: 26 Clicks'). DO NOT USE 'Ode: 5.2' or 'C40: 26 Clicks' unless it matches the grinder.", 
                     "temp": "XX°C", 
@@ -726,7 +735,7 @@
                         "action": "Step Name (Translate to ${langInstruction})", 
                         "weight": "Target Cumulative Weight (g)", 
                         "detail": "VERY DETAILED ACTION in ${langInstruction}: Must specify Pouring, Flow Rate, Agitation, Pour Height, and Motion.", 
-                        "tip": "PROFESSIONAL INSIGHT in ${langInstruction}: Explain the chemistry and physics." 
+                        "tip": "PROFESSIONAL INSIGHT in ${langInstruction}: Explain the Dripper ${selectedGear} or chemistry or physics." 
                     }
                 ]
             }`;
