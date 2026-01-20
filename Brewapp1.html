@@ -535,7 +535,8 @@
 
 <script>
     // --- 1. CONFIGURATION ---
-    const API_KEY = "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"; 
+    const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
+    let currentRecipeContext = null; // 用來暫存食譜給 Chat 用
     
     // Supabase Config
     const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
@@ -658,90 +659,25 @@
 
     // --- AI ANALYSIS ---
     // !!! FIXED: Added the missing { below !!!
+    // --- AI ANALYSIS (已改為呼叫 Supabase Edge Function) ---
     async function startAnalysis() { 
        
-       // 1. Basic Checks
+       // 1. 基本檢查
         if (!imageBase64) { alert("Please upload an image first."); return; }
 
-        // 2. Define Vars
+        // 2. 準備參數
         const dose = config.dose;
+        const gear = selectedGear; 
         const grinder = config.grinder; 
         const paper = config.paper;      
-        const targetWater = Math.round(dose * 15);
-        const today = new Date().toISOString().split('T')[0];
-
-        // 3. UI Toggle
+        
+        // 3. 切換 UI
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
         updateNav(3);
     
-        // 1. 定義語言指令 (加強語氣)
-        const langInstruction = currentLang === 'zh' ? 'Traditional Chinese (繁體中文)' : 'English';
-
-        // 2. 修改 Prompt
-        const prompt = `
-            Role: World Barista Champion.
-            Task: Create an EXTREMELY DETAILED, high-precision brewing recipe.
-            
-            【INPUTS】
-            Dose:${dose}g, Water:${targetWater}g, Gear:${selectedGear}, Grinder:${grinder}, Paper:${paper}, Date:${today}.
-            Image: Extract origin/roast/process/date.  
-            
-            【LOGIC KERNEL & PHYSICS】
-            1. **OUTPUT LANGUAGE: ${langInstruction}** (CRITICAL REQUIREMENT).
-               - If Chinese: All values in "strategy", "detail", "tip", and "action" MUST be in Traditional Chinese.
-               - Do NOT translate JSON keys (keep "prep", "steps", "time" in English).
-            2. **Density Logic**:
-               - High Density (Light roast/Eth): High Temp (93-96°C), High Agitation (Spiral pour), High flow rate.
-               - Low Density (Dark roast/Indo): Low Temp (88-90°C), Low Agitation (Center pour), Gentle flow.
-            3. **Freshness Logic**:
-               - <10 days: Big Bloom (3x dose), High turbulence to degas.
-               - >60 days: Lower temp, gentle pour to avoid bitterness.
-            4. **Gear Specifics**:
-               - Flat Bottom (Kalita/Orea): Focus on raising bed level.
-               - Cone (V60): Focus on center vs edge pouring to control bypass.
-               
-               - Chemex Special: Use Pulse Pouring (not continuous) to maintain thermal mass and prevent stalling.
-               
-             5. **GRINDER SETTING (FILTER ONLY)**:
-               Ignore Espresso settings. Use these FILTER ranges for "${grinder}":
-               - **Niche Zero**: 35-50 (Dot). Target 45 for standard V60.
-               - **Comandante C40**: 22-28 Clicks.
-               - **1Zpresso K-Ultra**: 7.0-8.5.
-               - **Fellow Ode**: 4.0-6.0.
-               - **EK43**: 9.0-11.5.
-               - **Fuji**: 3-4.
-               - **Generic**: Medium-Coarse.
-               -**⚠️ CHEMEX OVERRIDE RULE (CRITICAL)**:
-               IF Dripper is "Chemex" OR "Chemex Bonded Paper":
-               **YOU MUST GRIND COARSER** (Chemex paper is 30% thicker)
-               *Logic*: Natural Process or Dark Roast? -> Go Coarser (+10%). Washed/Light? -> Go Finer.
-              
-
-            【OUTPUT JSON REQUIREMENTS】
-            Strictly follow this JSON structure. Do not use Markdown inside the JSON values.
-            {
-                "bean": { "origin": "Detected Origin", "roast_date": "YYYY-MM-DD", "days_old": "Num", "tags": ["Flavor1","Flavor2","Acid/Body"] },
-                "strategy": "Pro Analysis (80-100 words): Explain the Dripper ${selectedGear}, bean density and strategy. (MUST BE IN ${langInstruction})",
-                "prep": { 
-                    "grind": "CALCULATED SETTING for ${grinder}. Format: '[Model]: [Value] [Unit]' (e.g. 'Ode: 5.2' or 'C40: 26 Clicks'). DO NOT USE 'Ode: 5.2' or 'C40: 26 Clicks' unless it matches the grinder.", 
-                    "temp": "XX°C", 
-                    "water_total": "${targetWater}g", 
-                    "time_total": "Target mm:ss" 
-                },
-                "steps": [
-                    { 
-                        "time": "0:00", 
-                        "action": "Step Name (Translate to ${langInstruction})", 
-                        "weight": "Target Cumulative Weight (g)", 
-                        "detail": "VERY DETAILED ACTION in ${langInstruction}: Must specify Pouring, Flow Rate, Agitation, Pour Height, and Motion.", 
-                        "tip": "PROFESSIONAL INSIGHT in ${langInstruction}: Explain the Dripper ${selectedGear} or chemistry or physics." 
-                    }
-                ]
-            }`;
-
         try {
-            // Supabase Upload
+            // 上傳圖片 (保留原本邏輯)
             let hostedImageUrl = imageBase64;
             if(_supabase) {
                 try {
@@ -749,30 +685,27 @@
                 } catch(err) { console.log("Upload skip"); }
             }
 
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            // 【呼叫後端 /brew】
+            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/brew`, {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://bulucoffee.com"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "model": "openai/gpt-4o",
-                    "temperature": 0.4,
-                    "messages": [
-                        { "role": "user", "content": [
-                            { "type": "text", "text": prompt },
-                            { "type": "image_url", "image_url": { "url": hostedImageUrl } }
-                        ]}
-                    ]
+                    "image": hostedImageUrl,
+                    "dose": dose,
+                    "gear": gear,
+                    "grinder": grinder,
+                    "paper": paper,
+                    "lang": currentLang
                 })
             });
 
-            if (!res.ok) throw new Error("API Error");
-            const data = await res.json();
-            let raw = data.choices[0].message.content.replace(/```json|```/g, "").trim();
-            const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
-            const result = JSON.parse(raw.substring(start, end + 1));
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || "Edge Function Error");
+            }
+            
+            const result = await res.json();
+            currentRecipeContext = result; // 存給聊天用
             
             renderResult(result);
             initChat(result);
@@ -854,22 +787,49 @@
     }
     
     // !!! ADDED: Basic Chat function to prevent errors when clicking send !!!
-    function sendChat() {
+    // --- CHAT FUNCTION (已改為呼叫 Supabase Edge Function) ---
+    async function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value;
         if(!text) return;
         
-        // UI Update
+        // 顯示你的訊息
         const win = document.getElementById('chatWindow');
         win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
         input.value = "";
         win.scrollTop = win.scrollHeight;
         
-        // Placeholder AI Response (Since backend chat logic wasn't fully provided)
-        setTimeout(() => {
-             win.innerHTML += `<div class="chat-msg msg-ai">That's a great question! However, the chat AI connection is currently in demo mode. Try adjusting the grind size slightly coarser if it tastes bitter.</div>`;
-             win.scrollTop = win.scrollHeight;
-        }, 800);
+        // 顯示思考中
+        const loadingId = 'loading-' + Date.now();
+        win.innerHTML += `<div id="${loadingId}" class="chat-msg msg-ai">Thinking...</div>`;
+        win.scrollTop = win.scrollHeight;
+        
+        try {
+            // 【呼叫後端 /chat】
+            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "message": text,
+                    "context": currentRecipeContext,
+                    "lang": currentLang
+                })
+            });
+
+            const data = await res.json();
+            
+            // 顯示結果
+            const loadingMsg = document.getElementById(loadingId);
+            if(loadingMsg) loadingMsg.remove();
+            
+            win.innerHTML += `<div class="chat-msg msg-ai">${data.reply}</div>`;
+            win.scrollTop = win.scrollHeight;
+
+        } catch (e) {
+            console.error(e);
+            const loadingMsg = document.getElementById(loadingId);
+            if(loadingMsg) loadingMsg.innerText = "Error connecting to AI.";
+        }
     }
 </script>
 
