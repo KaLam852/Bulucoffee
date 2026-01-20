@@ -661,49 +661,69 @@
     // !!! FIXED: Added the missing { below !!!
     // --- AI ANALYSIS (已改為呼叫 Supabase Edge Function) ---
     // --- CHAT FUNCTION (修正版：已補上 Authorization) ---
-    async function sendChat() {
-        const input = document.getElementById('chatInput');
-        const text = input.value;
-        if(!text) return;
+// --- AI ANALYSIS (完整修復版) ---
+    async function startAnalysis() { 
+        // 1. 基本檢查
+        if (!imageBase64) { alert("Please upload an image first."); return; }
+
+        // 2. 準備參數
+        const dose = config.dose;
+        const gear = selectedGear; 
+        const grinder = config.grinder; 
+        const paper = config.paper;      
         
-        const win = document.getElementById('chatWindow');
-        win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
-        input.value = "";
-        win.scrollTop = win.scrollHeight;
-        
-        const loadingId = 'loading-' + Date.now();
-        win.innerHTML += `<div id="${loadingId}" class="chat-msg msg-ai">Thinking...</div>`;
-        win.scrollTop = win.scrollHeight;
-        
+        // 3. 切換 UI
+        document.getElementById('viewUpload').classList.add('hidden');
+        document.getElementById('viewLoading').classList.remove('hidden');
+        updateNav(3);
+    
         try {
+            // 上傳圖片
+            let hostedImageUrl = imageBase64;
+            if(_supabase) {
+                try {
+                    hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels') || imageBase64;
+                } catch(err) { console.log("Upload skip"); }
+            }
+
             // 【呼叫 Supabase 後端】
-            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat`, {
+            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/brew`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _supabaseKey // 關鍵修改：補上這行通行證
+                    "Authorization": "Bearer " + _supabaseKey // 這裡已包含修正的通行證
                 },
                 body: JSON.stringify({
-                    "message": text,
-                    "context": currentRecipeContext,
+                    "image": hostedImageUrl,
+                    "dose": dose,
+                    "gear": gear,
+                    "grinder": grinder,
+                    "paper": paper,
                     "lang": currentLang
                 })
             });
 
-            if (!res.ok) throw new Error("Chat API Error");
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || "Edge Function Error");
+            }
+            
+            const result = await res.json();
+            currentRecipeContext = result;
+            
+            renderResult(result);
+            initChat(result);
+            if(_supabase) saveToSupabase(result);
 
-            const data = await res.json();
-            
-            const loadingMsg = document.getElementById(loadingId);
-            if(loadingMsg) loadingMsg.remove();
-            
-            win.innerHTML += `<div class="chat-msg msg-ai">${data.reply}</div>`;
-            win.scrollTop = win.scrollHeight;
+            document.getElementById('viewLoading').classList.add('hidden');
+            document.getElementById('viewResult').classList.remove('hidden');
+            document.getElementById('btnAnalyze').classList.add('hidden');
 
         } catch (e) {
             console.error(e);
-            const loadingMsg = document.getElementById(loadingId);
-            if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
+            alert("AI Error: " + e.message);
+            document.getElementById('viewLoading').classList.add('hidden');
+            document.getElementById('viewUpload').classList.remove('hidden');
         }
     }
 
