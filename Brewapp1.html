@@ -411,7 +411,7 @@
                     <option value="Fuji">Fuji Royal / Feima</option>
                     <option value="Generic">Other / Generic</option>
                     </select>
-                    <select id="inputPaper" class="custom-select">
+               
                 </div>
             </div>
             <div style="height: 100px;"></div> 
@@ -543,7 +543,7 @@
     const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM';
     
     let _supabase = null;
-    let config = { dose: 20, gear: '', grinder: '', paper: '' };
+    let config = { dose: 20, gear: '', grinder: '' };
     let selectedGear = null;
     let imageBase64 = null;
     let chatHistory = [];
@@ -551,8 +551,8 @@
 
     // --- TRANSLATIONS ---
     const translations = {
-        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder & Paper", sel_grinder: "Select Grinder", sel_paper: "Select Filter Paper", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Photo", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", loading: "AI ANALYZING...", chat_placeholder: "Ask AI...", lbl_grind: "GRIND SIZE", lbl_temp: "TEMPERATURE", lbl_water: "TOTAL WATER", lbl_time: "EST. TIME", alert_incomplete: "Please select Dripper, Grinder, and Paper first!" },
-        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機與濾紙", sel_grinder: "選擇磨豆機型號", sel_paper: "選擇濾紙類型", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 分析烘焙度...", tap_upload: "點擊上傳照片", btn_brew: "生成沖煮方案", steps_title: "沖煮步驟", btn_restart: "重新開始", loading: "AI 正在分析...", chat_placeholder: "問問 AI...", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "總注水量", lbl_time: "預估時間", alert_incomplete: "請先選擇濾杯、磨豆機與濾紙！" }
+        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Photo", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", loading: "AI ANALYZING...", chat_placeholder: "Ask AI...", lbl_grind: "GRIND SIZE", lbl_temp: "TEMPERATURE", lbl_water: "TOTAL WATER", lbl_time: "EST. TIME", alert_incomplete: "Please select Dripper and Grinder first!" },
+        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 分析烘焙度...", tap_upload: "點擊上傳照片", btn_brew: "生成沖煮方案", steps_title: "沖煮步驟", btn_restart: "重新開始", loading: "AI 正在分析...", chat_placeholder: "問問 AI...", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "總注水量", lbl_time: "預估時間", alert_incomplete: "請先選擇濾杯與磨豆機！" }
     };
 
     // --- INIT ---
@@ -564,7 +564,6 @@
             
             // 綁定事件
             document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
-            document.getElementById('inputPaper').addEventListener('change', (e) => { config.paper = e.target.value; checkConfig(); });
             
             // 移除 HTML 預設的 disabled
             document.getElementById('btnNext').disabled = false;
@@ -604,13 +603,13 @@
     }
 
     function checkConfig() {
-        const isValid = config.gear && config.grinder && config.paper;
+        const isValid = config.gear && config.grinder;
         const btn = document.getElementById('btnNext');
         btn.style.opacity = isValid ? '1' : '0.5';
     }
 
     function goToUpload() {
-        if (!config.gear || !config.grinder || !config.paper) {
+        if (!config.gear || !config.grinder) {
             alert(translations[currentLang].alert_incomplete);
             return;
         }
@@ -669,8 +668,7 @@
         // 2. 準備參數
         const dose = config.dose;
         const gear = selectedGear; 
-        const grinder = config.grinder; 
-        const paper = config.paper;      
+        const grinder = config.grinder;     
         
         // 3. 切換 UI
         document.getElementById('viewUpload').classList.add('hidden');
@@ -698,7 +696,6 @@
                     "dose": dose,
                     "gear": gear,
                     "grinder": grinder,
-                    "paper": paper,
                     "lang": currentLang
                 })
             });
