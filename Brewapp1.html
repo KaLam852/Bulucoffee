@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
@@ -739,6 +739,9 @@
             // Auth Listener
             setupAuthListener();
 
+            // Check Payment Return Status (New)
+            checkPaymentReturn();
+
             if (typeof lucide !== 'undefined') lucide.createIcons();
             updateUIText();
             
@@ -884,9 +887,10 @@
             if(userUI) userUI.style.display = 'none';
         }
     }
-const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
+
+    const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
     
-   async function handleSignUp() {
+    async function handleSignUp() {
         const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
         const password = document.getElementById('modal-password').value;
@@ -987,6 +991,19 @@ const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
     async function handleLogout() {
         await _supabase.auth.signOut();
         window.location.reload(); 
+    }
+
+    // --- PAYMENT RETURN CHECK ---
+    function checkPaymentReturn() {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('payment');
+
+        if (status === 'success') {
+            alert("付款成功！歡迎加入 BrewLab Pro。帳號已啟用。");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (status === 'cancel') {
+            alert("付款已取消，帳號未啟用。");
+        }
     }
 
     // --- UI Logic ---
