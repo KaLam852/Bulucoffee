@@ -41,7 +41,7 @@
             align-items: center;
         }
 
-        /* --- Auth Button Wrapper (New) --- */
+        /* --- Auth Button Wrapper --- */
         .auth-wrapper {
             position: absolute; 
             top: 30px; 
@@ -76,6 +76,24 @@
             border-radius: 20px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #eee;
+        }
+
+        /* --- Auth Toggle Link --- */
+        .auth-toggle-text {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 15px;
+            color: #666;
+        }
+        .auth-toggle-link {
+            color: var(--brand-primary);
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 5px;
+        }
+        .auth-toggle-link:hover {
+            color: var(--brand-accent);
         }
 
         /* --- Layout --- */
@@ -401,7 +419,6 @@
                 top: 18px; 
                 right: 15px;
                 width: auto;
-                /* On mobile we move it slightly to fit with sidebar */
             }
             
             #btn-open-login {
@@ -414,14 +431,15 @@
 <body>
 
     <div class="auth-wrapper">
-        <button id="btn-open-login" onclick="openAuthModal()">
+        <button id="btn-open-login" onclick="openAuthModal()" data-i18n="btn_login">
             Login
         </button>
 
         <div id="user-ui">
             <span id="user-email" style="font-size: 12px; font-weight: bold; color: #333;"></span>
             <button onclick="handleLogout()" 
-                    style="font-size: 10px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    style="font-size: 10px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                    data-i18n="btn_logout">
                 Logout
             </button>
         </div>
@@ -431,8 +449,8 @@
         <div class="modal-box">
             <button onclick="closeAuthModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
             
-            <h2 style="margin-top: 0; color: var(--brand-primary); text-align: center;">Welcome Back</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 20px;">Sign in to save your brews.</p>
+            <h2 id="auth-title" style="margin-top: 0; color: var(--brand-primary); text-align: center;">Welcome Back</h2>
+            <p id="auth-desc" style="text-align: center; color: #666; font-size: 14px; margin-bottom: 20px;">Sign in to save your brews.</p>
 
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <input type="email" id="modal-email" placeholder="Email Address" 
@@ -441,17 +459,15 @@
                 <input type="password" id="modal-password" placeholder="Password" 
                        style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
                 
-                <button onclick="handleSignIn()" 
-                        style="padding: 12px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                <button id="btn-auth-action" onclick="handleAuthAction()" 
+                        style="padding: 12px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px;">
                     Log In
                 </button>
                 
-                <div style="text-align: center; color: #999; font-size: 12px;">or</div>
-                
-                <button onclick="handleSignUp()" 
-                        style="padding: 12px; background: transparent; color: #5468AA; border: 1px solid #5468AA; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Create New Account
-                </button>
+                <div class="auth-toggle-text">
+                    <span id="auth-toggle-msg">New here?</span>
+                    <span class="auth-toggle-link" onclick="toggleAuthMode()" id="auth-toggle-btn">Create an account</span>
+                </div>
             </div>
         </div>
     </div>
@@ -676,11 +692,40 @@
     let chatHistory = [];
     let currentLang = 'en'; 
     let currentUser = null;
+    let isLoginMode = true; // Toggle for Auth Modal
 
-    // --- TRANSLATIONS ---
+    // --- TRANSLATIONS (Expanded for Auth) ---
     const translations = {
-        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload coffee bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", loading: "AI ANALYZING...", chat_placeholder: "Ask AI...", lbl_grind: "GRIND SIZE", lbl_temp: "TEMPERATURE", lbl_water: "TOTAL WATER", lbl_time: "EST. TIME", alert_incomplete: "Please select Dripper and Grinder first!" },
-        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 分析烘焙度...", tap_upload: "點擊上傳咖啡包裝", btn_brew: "生成沖煮方案", steps_title: "沖煮步驟", btn_restart: "重新開始", loading: "AI 正在分析...", chat_placeholder: "問問 AI...", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "總注水量", lbl_time: "預估時間", alert_incomplete: "請先選擇濾杯與磨豆機！" }
+        en: { 
+            sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder", btn_next: "Next Step", btn_back: "Go Back", 
+            scan_desc: "AI analyzes roast level...", tap_upload: "Upload coffee bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", 
+            loading: "AI ANALYZING...", chat_placeholder: "Ask AI...", lbl_grind: "GRIND SIZE", lbl_temp: "TEMPERATURE", lbl_water: "TOTAL WATER", lbl_time: "EST. TIME", 
+            alert_incomplete: "Please select Dripper and Grinder first!",
+            btn_login: "Login", btn_logout: "Logout",
+            // Auth Modal English
+            auth_welcome: "Welcome Back", auth_signin_desc: "Sign in to save your brews.", auth_join: "Join BrewLab", auth_signup_desc: "Create an account to start tracking.",
+            btn_login_action: "Log In", btn_signup_action: "Sign Up",
+            msg_new: "New here?", msg_already: "Already have an account?",
+            link_create: "Create an account", link_login: "Log In",
+            ph_email: "Email Address", ph_pass: "Password",
+            alert_fill_data: "Please enter both Email and Password above.", alert_pass_len: "Password must be at least 6 characters.",
+            alert_reg_success: "Success! Check your email to confirm account."
+        },
+        zh: { 
+            sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", 
+            scan_desc: "AI 分析烘焙度...", tap_upload: "點擊上傳咖啡包裝", btn_brew: "生成沖煮方案", steps_title: "沖煮步驟", btn_restart: "重新開始", 
+            loading: "AI 正在分析...", chat_placeholder: "問問 AI...", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "總注水量", lbl_time: "預估時間", 
+            alert_incomplete: "請先選擇濾杯與磨豆機！",
+            btn_login: "登入", btn_logout: "登出",
+            // Auth Modal Chinese
+            auth_welcome: "歡迎回來", auth_signin_desc: "登入以儲存您的沖煮記錄。", auth_join: "加入 BrewLab", auth_signup_desc: "註冊帳號開始記錄您的咖啡之旅。",
+            btn_login_action: "登入", btn_signup_action: "註冊",
+            msg_new: "還沒有帳號？", msg_already: "已經有帳號了？",
+            link_create: "註冊新帳號", link_login: "登入",
+            ph_email: "電子信箱", ph_pass: "密碼",
+            alert_fill_data: "請先在上方輸入 Email 和密碼。", alert_pass_len: "密碼長度至少需要 6 個字元。",
+            alert_reg_success: "註冊成功！請檢查您的信箱以啟用帳號。"
+        }
     };
 
     // --- INIT ---
@@ -742,30 +787,76 @@
         }
     }
 
-    // --- GLOBAL FUNCTIONS ---
-function openAuthModal() {
-    const modal = document.getElementById('auth-modal');
-    // 1. 先移除 'hidden' class，這樣 display: none 才會消失
-    modal.classList.remove('hidden');
-    
-    // 2. 使用小延遲來確保瀏覽器偵測到 display 變化，從而觸發 opacity 動畫
-    setTimeout(() => {
-        modal.classList.add('active');
-    }, 10);
-}
+    // --- AUTH UI LOGIC (Enhanced) ---
 
-function closeAuthModal() {
-    const modal = document.getElementById('auth-modal');
-    // 1. 先移除 active，觸發淡出動畫
-    modal.classList.remove('active');
-    
-    // 2. 等待 300ms (CSS transition 時間) 動畫結束後，再加回 hidden
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        updateAuthModalUI();
+    }
 
-    // Auth Logic
+    function updateAuthModalUI() {
+        const t = translations[currentLang];
+        const title = document.getElementById('auth-title');
+        const desc = document.getElementById('auth-desc');
+        const btn = document.getElementById('btn-auth-action');
+        const msg = document.getElementById('auth-toggle-msg');
+        const toggleBtn = document.getElementById('auth-toggle-btn');
+        const inputEmail = document.getElementById('modal-email');
+        const inputPass = document.getElementById('modal-password');
+
+        // Update placeholders
+        inputEmail.placeholder = t.ph_email;
+        inputPass.placeholder = t.ph_pass;
+
+        if (isLoginMode) {
+            // Login Mode
+            title.innerText = t.auth_welcome;
+            desc.innerText = t.auth_signin_desc;
+            btn.innerText = t.btn_login_action;
+            msg.innerText = t.msg_new;
+            toggleBtn.innerText = t.link_create;
+        } else {
+            // Signup Mode
+            title.innerText = t.auth_join;
+            desc.innerText = t.auth_signup_desc;
+            btn.innerText = t.btn_signup_action;
+            msg.innerText = t.msg_already;
+            toggleBtn.innerText = t.link_login;
+        }
+    }
+
+    function handleAuthAction() {
+        if (isLoginMode) {
+            handleSignIn();
+        } else {
+            handleSignUp();
+        }
+    }
+
+    function openAuthModal() {
+        isLoginMode = true; // Reset to login
+        updateAuthModalUI(); // Apply translations
+        
+        // Reset Inputs
+        document.getElementById('modal-email').value = '';
+        document.getElementById('modal-password').value = '';
+
+        const modal = document.getElementById('auth-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
+
+    function closeAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    // --- SUPABASE AUTH ACTIONS ---
     function setupAuthListener() {
         if (!_supabase) return;
         _supabase.auth.getSession().then(({ data: { session } }) => {
@@ -795,14 +886,15 @@ function closeAuthModal() {
     }
 
     async function handleSignUp() {
+        const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
         const password = document.getElementById('modal-password').value;
 
-        if (!email || !password) return alert("Please enter both email and password!");
-        if (password.length < 6) return alert("Password must be at least 6 characters.");
+        if (!email || !password) return alert(t.alert_fill_data);
+        if (password.length < 6) return alert(t.alert_pass_len);
 
-        const btn = event.target; 
-        const oldText = btn.innerText; btn.innerText = "Processing..."; btn.disabled = true;
+        const btn = document.getElementById('btn-auth-action');
+        const oldText = btn.innerText; btn.innerText = "..."; btn.disabled = true;
 
         const { data, error } = await _supabase.auth.signUp({
             email: email,
@@ -814,19 +906,22 @@ function closeAuthModal() {
         if (error) {
             alert("Error: " + error.message);
         } else {
-            alert("Success! Check your email to confirm account.");
+            alert(t.alert_reg_success);
+            // Switch to login mode automatically or close? 
+            // Usually stay open and tell them to check email, but let's close for simplicity
             closeAuthModal();
         }
     }
 
     async function handleSignIn() {
+        const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
         const password = document.getElementById('modal-password').value;
 
-        if (!email || !password) return alert("Please enter email and password!");
+        if (!email || !password) return alert(t.alert_fill_data);
 
-        const btn = event.target; 
-        const oldText = btn.innerText; btn.innerText = "Logging in..."; btn.disabled = true;
+        const btn = document.getElementById('btn-auth-action');
+        const oldText = btn.innerText; btn.innerText = "..."; btn.disabled = true;
 
         const { data, error } = await _supabase.auth.signInWithPassword({
             email: email,
@@ -853,6 +948,8 @@ function closeAuthModal() {
         document.getElementById('btnLangDesktop').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
         if(document.getElementById('btnLangMobile')) document.getElementById('btnLangMobile').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
         updateUIText();
+        // Also update auth modal text if it happens to be open
+        updateAuthModalUI(); 
     }
 
     function updateUIText() {
