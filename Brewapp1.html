@@ -377,18 +377,82 @@
             padding-top: 60px; /* 增加頂部空間給登入框 */
         }
     }
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+        backdrop-filter: blur(4px);      /* 背景模糊特效 */
+        z-index: 9999;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 0; visibility: hidden; transition: 0.3s;
+    }
+    
+    .modal-overlay.active {
+        opacity: 1; visibility: visible;
+    }
+
+    .modal-box {
+        background: #fff;
+        width: 90%; max-width: 360px;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        position: relative;
+        transform: translateY(20px); transition: 0.3s;
+    }
+
+    .modal-overlay.active .modal-box {
+        transform: translateY(0);
+    }
     </style>
 </head>
 <body>
-    <div id="auth-container" style="position: absolute; top: 15px; right: 20px; z-index: 1000; font-family: sans-serif;">
+    <div id="auth-container" style="position: absolute; top: 20px; right: 20px; z-index: 1000; font-family: sans-serif;">
         
-        <div id="login-ui" style="display: flex; gap: 5px;">
-            <input type="email" id="email-input" placeholder="Email" 
-                   style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 140px;">
-            <button onclick="handleLogin()" 
-                    style="padding: 6px 12px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                Login
+        <button id="btn-open-login" onclick="openAuthModal()" 
+                style="padding: 8px 16px; background: #333; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            Login / Sign up
+        </button>
+
+        <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <span id="user-email" style="font-size: 13px; font-weight: bold; color: #333;"></span>
+            <button onclick="handleLogout()" 
+                    style="font-size: 12px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Logout
             </button>
+        </div>
+
+    </div>
+
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <button onclick="closeAuthModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+            
+            <h2 style="margin-top: 0; color: var(--brand-primary); text-align: center;">Welcome Back</h2>
+            <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 20px;">Sign in to save your brews.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="email" id="modal-email" placeholder="Email Address" 
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                
+                <input type="password" id="modal-password" placeholder="Password" 
+                       style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                
+                <button onclick="handleSignIn()" 
+                        style="padding: 12px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Log In
+                </button>
+                
+                <div style="text-align: center; color: #999; font-size: 12px;">or</div>
+                
+                <button onclick="handleSignUp()" 
+                        style="padding: 12px; background: transparent; color: #5468AA; border: 1px solid #5468AA; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Create New Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
         </div>
 
         <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -930,65 +994,89 @@
 
     // --- AUTH FUNCTIONS (已修正 ID 對應) ---
 
-    // 1. 監聽登入狀態
-    function setupAuthListener() {
-        if (!_supabase) return;
-        
-        _supabase.auth.getSession().then(({ data: { session } }) => {
-            updateAuthUI(session);
-        });
-
-        _supabase.auth.onAuthStateChange((_event, session) => {
-            updateAuthUI(session);
-        });
+    // function openAuthModal() {
+        document.getElementById('auth-modal').classList.add('active');
     }
 
-    // 2. 更新 UI 顯示 (✅ 修正：ID 改回對應 HTML)
+    function closeAuthModal() {
+        document.getElementById('auth-modal').classList.remove('active');
+    }
+
+    // 2. 更新 UI 顯示 (控制右上角按鈕)
     function updateAuthUI(session) {
-        // HTML ID: login-ui, user-ui, user-email
-        const loginBox = document.getElementById('login-ui'); 
-        const userBox = document.getElementById('user-ui');
-        const displayEmail = document.getElementById('user-email');
+        const btnLogin = document.getElementById('btn-open-login');
+        const userUI = document.getElementById('user-ui');
+        const userEmail = document.getElementById('user-email');
 
         if (session) {
             currentUser = session.user;
-            loginBox.style.display = 'none';
-            userBox.style.display = 'flex';
-            displayEmail.innerText = session.user.email;
-            console.log("Logged in as:", currentUser.id);
+            // 登入後：隱藏登入鈕，顯示 Email
+            if(btnLogin) btnLogin.style.display = 'none';
+            if(userUI) userUI.style.display = 'flex';
+            if(userEmail) userEmail.innerText = session.user.email;
+            
+            closeAuthModal(); // 確保 Modal 關閉
         } else {
             currentUser = null;
-            loginBox.style.display = 'flex'; // 修正：原本是 flex
-            userBox.style.display = 'none';
+            // 未登入：顯示登入鈕，隱藏 Email
+            if(btnLogin) btnLogin.style.display = 'block';
+            if(userUI) userUI.style.display = 'none';
         }
     }
 
-    // 3. 處理登入 (Magic Link)
-    async function handleLogin() {
-        // HTML ID: email-input
-        const email = document.getElementById('email-input').value; 
-        if (!email) return alert("Please enter email!");
-        
-        const btn = document.querySelector('#login-ui button');
-        const originalText = btn.innerText;
-        btn.innerText = "Sending...";
-        btn.disabled = true;
+    // 3. 註冊 (Sign Up)
+    async function handleSignUp() {
+        // 注意 ID 變成了 modal-email
+        const email = document.getElementById('modal-email').value;
+        const password = document.getElementById('modal-password').value;
 
-        const { error } = await _supabase.auth.signInWithOtp({
+        if (!email || !password) return alert("Please enter both email and password!");
+        if (password.length < 6) return alert("Password must be at least 6 characters.");
+
+        const btn = event.target; 
+        const oldText = btn.innerText; btn.innerText = "Processing..."; btn.disabled = true;
+
+        const { data, error } = await _supabase.auth.signUp({
             email: email,
-            options: { emailRedirectTo: window.location.href }
+            password: password,
         });
 
+        btn.innerText = oldText; btn.disabled = false;
+
         if (error) {
-            alert("Login Error: " + error.message);
+            alert("Error: " + error.message);
         } else {
-            alert("Magic Link sent! Check your inbox.");
+            alert("Success! Check your email to confirm account.");
+            closeAuthModal();
         }
-        btn.innerText = originalText;
-        btn.disabled = false;
     }
 
-    // 4. 處理登出
+    // 4. 登入 (Login)
+    async function handleSignIn() {
+        const email = document.getElementById('modal-email').value;
+        const password = document.getElementById('modal-password').value;
+
+        if (!email || !password) return alert("Please enter email and password!");
+
+        const btn = event.target; 
+        const oldText = btn.innerText; btn.innerText = "Logging in..."; btn.disabled = true;
+
+        const { data, error } = await _supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+        
+        btn.innerText = oldText; btn.disabled = false;
+
+        if (error) {
+            alert("Login Failed: " + error.message);
+        } else {
+            // 成功後 onAuthStateChange 會自動更新 UI
+            closeAuthModal();
+        }
+    }
+
+    // 5. 登出
     async function handleLogout() {
         await _supabase.auth.signOut();
         window.location.reload(); 
