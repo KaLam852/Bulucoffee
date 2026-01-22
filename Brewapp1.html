@@ -6,10 +6,12 @@
     <title>BrewLab.</title>
     <link rel="icon" type="image/png" href="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Bulu-modified.png">
     <link rel="apple-touch-icon" href="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">  
     
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             /* --- Bulu Coffee Branding --- */
@@ -322,12 +324,30 @@
                  background: #FAFAFC; /* 给聊天背景一點顏色區分 */
                  padding: 15px;
                  border-radius: 12px;
+                 overflow-y: auto;
         }
     </style>
 </head>
 <body>
+<div id="auth-container" style="position: absolute; top: 20px; right: 20px; z-index: 1000; font-family: sans-serif;">
+    
+    <div id="login-ui">
+        <input type="email" id="email-input" placeholder="Enter email to login" 
+               style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <button onclick="handleLogin()" 
+                style="padding: 8px 12px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Login
+        </button>
+    </div>
 
-<div id="app-container">
+    <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 8px 15px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+        <span id="user-email" style="font-weight: bold; color: #333;"></span>
+        <button onclick="handleLogout()" 
+                style="font-size: 12px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Logout
+        </button>
+    </div>
+
     
     <aside class="sidebar">
         <div class="brand-area">
@@ -548,6 +568,7 @@
     let imageBase64 = null;
     let chatHistory = [];
     let currentLang = 'en'; 
+    let currentUser = null;
 
     // --- TRANSLATIONS ---
     const translations = {
@@ -559,8 +580,12 @@
     document.addEventListener("DOMContentLoaded", () => {
         try {
             if (typeof supabase !== 'undefined') _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
+       
+            // 【新增】啟動會員狀態監聽
+            setupAuthListener();
+
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            updateUIText();
+            // ... (原本的 updateUIText 等程式碼保持不變) ...
             
             // 綁定事件
             document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
@@ -697,6 +722,7 @@
                     "gear": gear,
                     "grinder": grinder,
                     "lang": currentLang
+                    "userId": getCurrentUserId()
                 })
             });
 
@@ -710,7 +736,26 @@
             
             renderResult(result);
             initChat(result);
-            if(_supabase) saveToSupabase(result);
+            async function saveToSupabase(result) {
+        if(!_supabase) return;
+        
+        const userId = getCurrentUserId(); // 使用新的 ID 邏輯
+        const isMember = currentUser ? true : false; // 標記是否為會員
+
+        try {
+            await _supabase.from('coffee_brewing_logs').insert([{ 
+                user_id: userId, 
+                // is_member: isMember, // (選用) 如果你的資料庫有開這個欄位再打開註解
+                bean_origin: result.bean.origin, 
+                ai_strategy: result.strategy, 
+                dose_grams: config.dose, 
+                full_chat_history: result 
+            }]);
+            console.log("Saved log for user:", userId);
+        } catch(e) { 
+            console.error("Supabase Save Error", e); 
+        }
+    };
 
             document.getElementById('viewLoading').classList.add('hidden');
             document.getElementById('viewResult').classList.remove('hidden');
@@ -764,16 +809,32 @@
 }
 
     // --- HELPER FUNCTIONS ---
-    function getAnonId() { return localStorage.getItem('bulu_anon_id') || 'u_' + Math.random().toString(36).substr(2, 9); }
     
+    // 【修正】統一取得 ID (會員優先，沒有才用匿名)
+    function getCurrentUserId() {
+        if (currentUser && currentUser.id) {
+            return currentUser.id; // 回傳 Supabase 真實會員 UUID
+        }
+        // 如果沒登入，就用舊的匿名邏輯
+        let anonId = localStorage.getItem('bulu_anon_id');
+        if (!anonId) {
+            anonId = 'u_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('bulu_anon_id', anonId);
+        }
+        return anonId;
+    }
+
+    // 順便修正上傳圖片的檔名邏輯，讓圖片擁有者也是正確的 ID
     async function uploadImgToSupabase(base64, folder) {
         const res = await fetch(base64);
         const blob = await res.blob();
-        const fileName = `${folder}/${getAnonId()}_${Date.now()}.jpg`;
+        // 這裡改用 getCurrentUserId()
+        const fileName = `${folder}/${getCurrentUserId()}_${Date.now()}.jpg`;
         await _supabase.storage.from('coffee-images').upload(fileName, blob);
         const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
         return data.publicUrl;
     }
+    
 
     async function saveToSupabase(result) {
         if(!_supabase) return;
@@ -835,6 +896,72 @@
             if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
     }
+    // --- 【新增】AUTH FUNCTIONS ---
+
+    // 1. 監聽登入狀態 (核心)
+    function setupAuthListener() {
+        if (!_supabase) return;
+        
+        // 檢查當前 Session
+        _supabase.auth.getSession().then(({ data: { session } }) => {
+            updateAuthUI(session);
+        });
+
+        // 監聽狀態改變 (登入/登出/重新整理)
+        _supabase.auth.onAuthStateChange((_event, session) => {
+            updateAuthUI(session);
+        });
+    }
+
+    // 2. 更新 UI 顯示
+    function updateAuthUI(session) {
+        const loginBox = document.getElementById('login-box');
+        const userBox = document.getElementById('user-box');
+        const displayEmail = document.getElementById('displayEmail');
+
+        if (session) {
+            currentUser = session.user; // 存入變數
+            loginBox.style.display = 'none';
+            userBox.style.display = 'flex';
+            displayEmail.innerText = session.user.email;
+            console.log("Logged in as:", currentUser.id);
+        } else {
+            currentUser = null;
+            loginBox.style.display = 'flex';
+            userBox.style.display = 'none';
+        }
+    }
+
+    // 3. 處理登入 (Magic Link)
+    async function handleLogin() {
+        const email = document.getElementById('inputEmail').value;
+        if (!email) return alert("Please enter email!");
+        
+        const btn = document.querySelector('#login-box button');
+        const originalText = btn.innerText;
+        btn.innerText = "Sending...";
+        btn.disabled = true;
+
+        const { error } = await _supabase.auth.signInWithOtp({
+            email: email,
+            options: { emailRedirectTo: window.location.href }
+        });
+
+        if (error) {
+            alert("Login Error: " + error.message);
+        } else {
+            alert("Magic Link sent! Check your inbox.");
+        }
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+
+    // 4. 處理登出
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.reload(); // 重新整理頁面確保清除乾淨
+    }
+
 </script>
 
 </body>
