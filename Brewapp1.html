@@ -44,11 +44,14 @@
 
         /* --- Layout --- */
         #app-container {
-            display: flex;
-            width: 100%; height: 100%;
-            max-width: 1400px;
-            background: var(--bg-color);
-        }
+           display: flex;
+           width: 100%;
+           height: 100vh;
+           max-width: 1400px;
+           margin: 0 auto; /* 加入這行 */
+           background: var(--bg-color);
+           box-shadow: 0 0 50px rgba(0,0,0,0.05); /* 可選：加入陰影 */
+}
 
         /* --- Sidebar --- */
         .sidebar {
@@ -275,14 +278,28 @@
 
         /* --- RWD: Mobile Adaption --- */
         @media (max-width: 768px) {
-            #app-container { flex-direction: column; }
+            #app-container { 
+             flex-direction: column;
+             height: 100vh;
+             overflow: hidden;
+             }
+
             .sidebar {
-                width: 100%; height: auto; padding: 15px 20px;
-                flex-direction: row; justify-content: space-between; align-items: center;
-                border-bottom: 1px solid #eee; border-right: none;
+                width: 100%;
+                height: auto;
+                min-height: 60px; /* 加入最小高度 */
+                padding: 12px 20px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #eee;
+                border-right: none;
+                flex-shrink: 0; /* 防止被壓縮 */
+                
             }
-            .brand-area { margin: 0; display: flex; align-items: center; }
-            .brand-title { display: inline-block; font-size: 24px; margin: 0; } 
+            .brand-area { margin: 0; display: flex; align-items: center; gap: 10px;}
+            .brand-area img { height: 40px !important; /* 縮小手機版 logo */}
+            .brand-title { display: inline-block; font-size: 18px; margin: 0; white-space: nowrap;} 
             .brand-title br { display: none; }
             .brand-logo { display: none; }
             
@@ -290,12 +307,12 @@
             .btn-mobile-lang {
                 display: block; 
                 background: #fff; border: 1px solid #ddd; color: var(--text-main);
-                padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;
+                padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer;
             }
 
             .step-nav, .sidebar-footer { display: none; }
             
-            .main-stage { padding: 20px; padding-bottom: 100px; }
+            .main-stage { padding: 20px; padding-bottom: 100px; overflow-y: auto; overflow-x: hidden;}
             .dose-dial { width: 160px; height: 160px; margin-bottom: 20px; }
             .dose-val { font-size: 50px; }
             
@@ -332,9 +349,11 @@
         
         /* 1. 調整登入框位置與大小 */
         #auth-container {
-            top: 10px !important;
-            right: 10px !important;
-            width: auto;
+             top: 70px !important; /* 避開 sidebar */
+             right: 15px !important;
+             left: auto !important;
+             width: auto;
+             max-width: calc(100% - 30px);
         }
         
         /* 2. 讓輸入框變小，不要擋住 Logo */
