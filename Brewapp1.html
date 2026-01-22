@@ -743,14 +743,27 @@
     }
 
     // --- GLOBAL FUNCTIONS ---
+function openAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    // 1. 先移除 'hidden' class，這樣 display: none 才會消失
+    modal.classList.remove('hidden');
+    
+    // 2. 使用小延遲來確保瀏覽器偵測到 display 變化，從而觸發 opacity 動畫
+    setTimeout(() => {
+        modal.classList.add('active');
+    }, 10);
+}
 
-    function openAuthModal() {
-        document.getElementById('auth-modal').classList.add('active');
-    }
-
-    function closeAuthModal() {
-        document.getElementById('auth-modal').classList.remove('active');
-    }
+function closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    // 1. 先移除 active，觸發淡出動畫
+    modal.classList.remove('active');
+    
+    // 2. 等待 300ms (CSS transition 時間) 動畫結束後，再加回 hidden
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
 
     // Auth Logic
     function setupAuthListener() {
