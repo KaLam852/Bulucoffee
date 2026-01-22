@@ -886,7 +886,7 @@
     }
 const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
     
-    async function handleSignUp() {
+   async function handleSignUp() {
         const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
         const password = document.getElementById('modal-password').value;
@@ -907,18 +907,18 @@ const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
         });
 
         if (error) {
-            alert("Error: " + error.message);
+            alert("註冊錯誤: " + error.message);
             btn.innerText = oldText; 
             btn.disabled = false;
             return;
         }
 
-        // 2. 帳號建立成功，開始準備付款
-        btn.innerText = "Redirecting to Stripe...";
+        // 2. 帳號建立成功，嘗試跳轉付款
+        btn.innerText = "Redirecting to Payment...";
         
         try {
-            // 呼叫 Edge Function (假設你的 Function 叫 'checkout')
-            // 注意：你需要確保 SUPABASE_PROJECT_URL 是正確的
+            console.log("正在呼叫 Edge Function..."); // Debug 用
+
             const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/checkout`, {
                 method: 'POST',
                 headers: {
@@ -927,10 +927,16 @@ const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
                 },
                 body: JSON.stringify({
                     email: email,
-                    userId: data.user.id, // 剛註冊的 User ID
+                    userId: data.user.id,
                     priceId: STRIPE_PRICE_ID
                 })
             });
+
+            // 檢查回應是否正常
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || "付款服務回應錯誤");
+            }
 
             const result = await response.json();
 
@@ -942,33 +948,20 @@ const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
             }
 
         } catch (payError) {
-            console.error(payError);
-            alert("帳號已建立，但付款跳轉失敗。請稍後再登入嘗試。");
-            // 雖然跳轉失敗，但帳號已存在，讓介面回到登入狀態
-            closeAuthModal();
+            console.error("付款失敗詳細錯誤:", payError);
+            
+            // --- 關鍵修正：付款失敗即「回滾」---
+            // 雖然帳號已建立，但我們強制登出，並告訴用戶註冊未完成
+            await _supabase.auth.signOut(); 
+            
+            alert("註冊失敗：無法連接付款系統，帳號未啟用。請稍後再試。");
+            
+            // 恢復按鈕狀態
+            btn.innerText = oldText; 
+            btn.disabled = false;
+            // 保持註冊視窗開啟，讓他們可以重試
         }
     }
-
-    // --- 檢查是否剛付款回來 ---
-    function checkPaymentReturn() {
-        const params = new URLSearchParams(window.location.search);
-        const status = params.get('payment');
-
-        if (status === 'success') {
-            alert("付款成功！歡迎加入 BrewLab Pro。");
-            // 清除 URL 參數讓網址變乾淨
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (status === 'cancel') {
-            alert("付款已取消。");
-        }
-    }
-
-    // 在 init 裡呼叫這個檢查
-    document.addEventListener("DOMContentLoaded", () => {
-        // ... 原有的 init ...
-        checkPaymentReturn(); // 加入這行
-    });
-
     
     async function handleSignIn() {
         const t = translations[currentLang];
