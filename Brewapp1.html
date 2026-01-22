@@ -721,7 +721,7 @@
                     "dose": dose,
                     "gear": gear,
                     "grinder": grinder,
-                    "lang": currentLang
+                    "lang": currentLang,
                     "userId": getCurrentUserId()
                 })
             });
@@ -836,21 +836,29 @@
     }
     
 
-    async function saveToSupabase(result) {
+async function saveToSupabase(result) {
         if(!_supabase) return;
+        
+        const userId = getCurrentUserId();
+        // const isMember = currentUser ? true : false; 
+
         try {
-            await _supabase.from('coffee_brewing_logs').insert([{ user_id: getAnonId(), bean_origin: result.bean.origin, ai_strategy: result.strategy, dose_grams: config.dose, full_chat_history: result }]);
+            await _supabase.from('coffee_brewing_logs').insert([{ 
+                user_id: userId, 
+                bean_origin: result.bean.origin, 
+                ai_strategy: result.strategy, 
+                dose_grams: config.dose, 
+                full_chat_history: result 
+            }]);
+            console.log("Saved log for user:", userId);
         } catch(e) { console.error("Supabase Save Error", e); }
     }
-
     function initChat(recipe) {
         chatHistory = [{ "role": "system", "content": `Context: ${JSON.stringify(recipe)}. Lang: ${currentLang}` }];
         document.getElementById('chatWindow').innerHTML = `<div class="chat-msg msg-ai">Feel free to ask questions about the brew!</div>`; 
     }
     
-    // !!! ADDED: Basic Chat function to prevent errors when clicking send !!!
-    // --- CHAT FUNCTION (已改為呼叫 Supabase Edge Function) ---
-    // --- CHAT FUNCTION (修正版：已補上 Authorization) ---
+
     async function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value;
@@ -915,7 +923,7 @@
 
     // 2. 更新 UI 顯示
     function updateAuthUI(session) {
-        const loginBox = document.getElementById('login-box');
+        const loginBox = document.getElementById('login-ui');
         const userBox = document.getElementById('user-box');
         const displayEmail = document.getElementById('displayEmail');
 
@@ -934,7 +942,7 @@
 
     // 3. 處理登入 (Magic Link)
     async function handleLogin() {
-        const email = document.getElementById('inputEmail').value;
+        const email = document.getElementById('email-input').value;
         if (!email) return alert("Please enter email!");
         
         const btn = document.querySelector('#login-box button');
