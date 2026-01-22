@@ -446,14 +446,14 @@
     </div>
 
     <!-- Auth Modal: 改為使用 Iframe 嵌入 -->
-<div id="auth-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center backdrop-blur-sm opacity-0 transition-opacity duration-300">
-    <div class="relative w-full max-w-md mx-4" style="height: 500px;"> <!-- 設定固定高度 -->
+<div id="auth-modal" class="fixed inset-0 bg-black/50 hidden z-[9999] flex items-center justify-center backdrop-blur-sm opacity-0 transition-opacity duration-300">
+    <div class="relative w-full max-w-md mx-4" style="height: 500px;">
         <!-- 關閉按鈕 -->
         <button onclick="closeAuthModal()" class="absolute top-2 right-2 z-10 text-gray-500 hover:text-gray-800 bg-white rounded-full p-1 shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         
-        <!-- 嵌入 auth.html -->
+        <!-- Iframe -->
         <iframe id="auth-frame" src="" class="w-full h-full rounded-2xl bg-transparent border-none"></iframe>
     </div>
 </div>
