@@ -426,6 +426,22 @@
                 font-size: 12px;
             }
         }
+        /* ▼▼▼ 把這段貼到 <style> 裡面 ▼▼▼ */
+
+/* 導覽列按鈕的基本設定 */
+.nav-item { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    color: #9ca3af; /* 預設是灰色 */
+    font-size: 0.75rem; 
+    text-decoration: none;
+}
+
+/* 當按鈕被選中時 (Active) 變成橘色 */
+.nav-item.active { 
+    color: #d97706; 
+}
     </style>
 </head>
 <body>
