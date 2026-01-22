@@ -39,6 +39,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding-bottom: 60px; /* 為了底部的 Navbar 留空間 */
         }
 
         /* --- Auth Button Wrapper --- */
@@ -130,11 +131,11 @@
         }
 
         .step-nav { flex: 1; display: flex; flex-direction: column; gap: 20px; }
-        .nav-item {
+        .nav-item-step {
             display: flex; align-items: center; gap: 15px;
             color: var(--text-light); opacity: 0.5; transition: 0.3s;
         }
-        .nav-item.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
+        .nav-item-step.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
         .nav-num { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; }
         .nav-label { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -155,6 +156,7 @@
             padding: 40px;
             overflow-y: auto; overflow-x: hidden;
             display: flex; flex-direction: column;
+            padding-bottom: 120px; /* Space for navbar */
         }
 
         /* --- Radial Section (Dose) --- */
@@ -239,7 +241,8 @@
 
         /* --- Action Bar --- */
         .action-bar {
-            position: fixed; bottom: 30px; right: 40px;
+            position: fixed; bottom: 80px; /* Above navbar */
+            right: 40px;
             display: flex; gap: 15px; align-items: center; z-index: 50;
         }
         .btn-fab {
@@ -366,6 +369,19 @@
             transform: translateY(0);
         }
 
+        /* --- Bottom Navbar Styles --- */
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            color: #9ca3af; 
+            font-size: 0.75rem; 
+            text-decoration: none;
+        }
+        .nav-item.active { 
+            color: #d97706; /* 橘色 */
+        }
+
         /* --- RWD: Mobile Adaption --- */
         @media (max-width: 768px) {
             #app-container { 
@@ -407,11 +423,13 @@
             .result-dashboard { grid-template-columns: 1fr; display: flex; flex-direction: column; }
             
             .action-bar { 
-                width: 100%; bottom: 0; right: 0; padding: 15px; 
-                background: rgba(255,255,255,0.95); 
-                backdrop-filter: blur(5px); justify-content: center; 
-                border-top: 1px solid #eee;
+                width: 100%; bottom: 60px; /* Above nav */ right: 0; padding: 15px; 
+                background: rgba(255,255,255,0.5); 
+                justify-content: center; 
+                border-top: none;
+                pointer-events: none; /* Let clicks pass through if needed */
             }
+            .action-bar button { pointer-events: auto; }
             .btn-fab { width: 100%; justify-content: center; }
 
             /* Mobile Auth Button Adjustments */
@@ -426,22 +444,6 @@
                 font-size: 12px;
             }
         }
-        /* ▼▼▼ 把這段貼到 <style> 裡面 ▼▼▼ */
-
-/* 導覽列按鈕的基本設定 */
-.nav-item { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    color: #9ca3af; /* 預設是灰色 */
-    font-size: 0.75rem; 
-    text-decoration: none;
-}
-
-/* 當按鈕被選中時 (Active) 變成橘色 */
-.nav-item.active { 
-    color: #d97706; 
-}
     </style>
 </head>
 <body>
@@ -453,12 +455,7 @@
 
         <div id="user-ui">
             <span id="user-email" style="font-size: 12px; font-weight: bold; color: #333;"></span>
-            <button onclick="handleLogout()" 
-                    style="font-size: 10px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;"
-                    data-i18n="btn_logout">
-                Logout
-            </button>
-        </div>
+            </div>
     </div>
 
     <div id="auth-modal" class="modal-overlay hidden">
@@ -505,15 +502,15 @@
             </div>
     
             <div class="step-nav">
-                <div class="nav-item active" id="navStep1">
+                <div class="nav-item-step active" id="navStep1">
                     <span class="nav-num">01</span>
                     <span class="nav-label">Config</span>
                 </div>
-                <div class="nav-item" id="navStep2">
+                <div class="nav-item-step" id="navStep2">
                     <span class="nav-num">02</span>
                     <span class="nav-label">Scan</span>
                 </div>
-                <div class="nav-item" id="navStep3">
+                <div class="nav-item-step" id="navStep3">
                     <span class="nav-num">03</span>
                     <span class="nav-label">Brew</span>
                 </div>
@@ -670,15 +667,17 @@
                             <i data-lucide="arrow-up" size="20"></i>
                         </button>
                     </div>
-<button id="btnSave" onclick="saveBrew()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 mx-auto transition-transform hover:scale-105">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-    </svg>
-    <span>儲存到沖煮日記 (Save)</span>
-</button>
-<button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
-    <span data-i18n="btn_restart">Start Over</span>
-</button>
+
+                    <button id="btnSave" onclick="saveBrew()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 mx-auto transition-transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                        </svg>
+                        <span>儲存到沖煮日記 (Save)</span>
+                    </button>
+
+                    <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
+                        <span data-i18n="btn_restart">Start Over</span>
+                    </button>
                 </div>
             
                 </div>
@@ -697,17 +696,35 @@
 
     </div>
 
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around py-3 z-50">
+        <a href="index.html" class="nav-item active">
+            <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+            掃描 (Scan)
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            日記 (Journal)
+        </a>
+        <a href="#" onclick="doLogout()" class="nav-item">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            登出 (Exit)
+        </a>
+    </nav>
+
 <script>
+    // ⚠️ 全域變數：放在最上面，確保所有函式都抓得到
     let currentBrewData = null;
+    
     // --- 1. CONFIGURATION ---
     const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
-    let currentRecipeContext = null; 
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM';
     
-    // Supabase Config
-    const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
-    const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM';
-    
-    let _supabase = null;
+    // 初始化 Supabase
+    let supabase = null;
+    if (typeof window.supabase !== 'undefined') {
+        supabase = window.supabase.createClient(SUPABASE_PROJECT_URL, supabaseKey);
+    }
+
     let config = { dose: 20, gear: '', grinder: '' };
     let selectedGear = null;
     let imageBase64 = null;
@@ -715,6 +732,7 @@
     let currentLang = 'en'; 
     let currentUser = null;
     let isLoginMode = true; // Toggle for Auth Modal
+    let currentRecipeContext = null; 
 
     // --- TRANSLATIONS (Expanded for Auth) ---
     const translations = {
@@ -753,8 +771,6 @@
     // --- INIT ---
     document.addEventListener("DOMContentLoaded", () => {
         try {
-            if (typeof supabase !== 'undefined') _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
-       
             // Load saved config from LocalStorage
             loadState();
 
@@ -883,11 +899,11 @@
 
     // --- SUPABASE AUTH ACTIONS ---
     function setupAuthListener() {
-        if (!_supabase) return;
-        _supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!supabase) return;
+        supabase.auth.getSession().then(({ data: { session } }) => {
             updateAuthUI(session);
         });
-        _supabase.auth.onAuthStateChange((_event, session) => {
+        supabase.auth.onAuthStateChange((_event, session) => {
             updateAuthUI(session);
         });
     }
@@ -927,7 +943,7 @@
         btn.disabled = true;
 
         // 1. 先建立 Supabase 帳號
-        const { data, error } = await _supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password,
         });
@@ -949,7 +965,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + _supabaseKey
+                    'Authorization': 'Bearer ' + supabaseKey
                 },
                 body: JSON.stringify({
                     email: email,
@@ -977,7 +993,7 @@
             console.error(payError);
             
             // 付款失敗，強制登出
-            await _supabase.auth.signOut(); 
+            await supabase.auth.signOut(); 
             
             alert("註冊失敗：無法連接付款系統 (" + payError.message + ")。");
             
@@ -996,7 +1012,7 @@
         const btn = document.getElementById('btn-auth-action');
         const oldText = btn.innerText; btn.innerText = "..."; btn.disabled = true;
 
-        const { data, error } = await _supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
         });
@@ -1010,8 +1026,9 @@
         }
     }
 
-    async function handleLogout() {
-        await _supabase.auth.signOut();
+    // --- 登出功能 (Navbar 使用) ---
+    async function doLogout() {
+        await supabase.auth.signOut();
         window.location.reload(); 
     }
 
@@ -1034,7 +1051,6 @@
         document.getElementById('btnLangDesktop').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
         if(document.getElementById('btnLangMobile')) document.getElementById('btnLangMobile').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
         updateUIText();
-        // Also update auth modal text if it happens to be open
         updateAuthModalUI(); 
     }
 
@@ -1094,7 +1110,7 @@
     }
 
     function updateNav(step) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item-step').forEach(el => el.classList.remove('active'));
         document.getElementById('navStep' + step).classList.add('active');
     }
 
@@ -1141,17 +1157,17 @@
         const res = await fetch(base64);
         const blob = await res.blob();
         const fileName = `${folder}/${getCurrentUserId()}_${Date.now()}.jpg`;
-        await _supabase.storage.from('coffee-images').upload(fileName, blob);
-        const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
+        await supabase.storage.from('coffee-images').upload(fileName, blob);
+        const { data } = supabase.storage.from('coffee-images').getPublicUrl(fileName);
         return data.publicUrl;
     }
 
     async function saveToSupabase(result) {
-        if(!_supabase) return;
+        if(!supabase) return;
         
         const userId = getCurrentUserId();
         try {
-            await _supabase.from('coffee_brewing_logs').insert([{ 
+            await supabase.from('coffee_brewing_logs').insert([{ 
                 user_id: userId, 
                 bean_origin: result.bean.origin, 
                 ai_strategy: result.strategy, 
@@ -1167,7 +1183,7 @@
 
         const dose = config.dose;
         const gear = selectedGear; 
-        const grinder = config.grinder;      
+        const grinder = config.grinder;       
         
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
@@ -1175,7 +1191,7 @@
     
         try {
             let hostedImageUrl = imageBase64;
-            if(_supabase) {
+            if(supabase) {
                 try {
                     hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels') || imageBase64;
                 } catch(err) { console.log("Upload skip"); }
@@ -1185,7 +1201,7 @@
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _supabaseKey 
+                    "Authorization": "Bearer " + supabaseKey 
                 },
                 body: JSON.stringify({
                     "image": hostedImageUrl,
@@ -1204,11 +1220,12 @@
             
             const result = await res.json();
             currentRecipeContext = result;
+            currentBrewData = result; // ⚠️ 關鍵修正：將 AI 結果存入全域變數，供儲存按鈕使用
             
             renderResult(result);
             initChat(result);
             
-            if(_supabase) await saveToSupabase(result);
+            if(supabase) await saveToSupabase(result);
 
             document.getElementById('viewLoading').classList.add('hidden');
             document.getElementById('viewResult').classList.remove('hidden');
@@ -1229,7 +1246,9 @@
         };
 
         safeSetText('resOrigin', data.bean.origin || "Unknown");
-        safeSetText('resStrategy', data.strategy);
+        // safeSetText('resStrategy', data.strategy); // 使用 HTML 結構更靈活
+        document.getElementById('resStrategy').innerText = data.strategy;
+        
         safeSetText('resGrind', data.prep.grind);
         safeSetText('resTemp', data.prep.temp);
         safeSetText('resWaterTotal', data.prep.water_total);
@@ -1262,9 +1281,7 @@
     }
     
     function formatMessage(text) {
-        // Convert **bold** to <b>bold</b>
         let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        // Convert newlines to <br>
         formatted = formatted.replace(/\n/g, '<br>');
         return formatted;
     }
@@ -1288,7 +1305,7 @@
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _supabaseKey 
+                    "Authorization": "Bearer " + supabaseKey 
                 },
                 body: JSON.stringify({
                     "message": text,
@@ -1304,7 +1321,6 @@
             const loadingMsg = document.getElementById(loadingId);
             if(loadingMsg) loadingMsg.remove();
             
-            // Apply formatting here
             win.innerHTML += `<div class="chat-msg msg-ai">${formatMessage(data.reply)}</div>`;
             win.scrollTop = win.scrollHeight;
 
@@ -1314,71 +1330,76 @@
             if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
     }
-   async function saveBrew() {
-    const btn = document.getElementById('btnSave');
-    const originalText = btn.innerHTML;
 
-    // 1. 檢查登入
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        alert("請先登入 (Please Login first)");
-        return;
-    }
+    // --- SAVE BREW FUNCTION (Fixes Applied) ---
+    async function saveBrew() {
+        const btn = document.getElementById('btnSave');
+        const originalText = btn.innerHTML;
 
-    btn.textContent = "權限確認中...";
-    btn.disabled = true;
-
-    try {
-        // ▼▼▼ 2. 查票 (檢查 profiles 表格) ▼▼▼
-        const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('subscription_status')
-            .eq('id', user.id)
-            .single();
-        
-        // 如果找不到資料，或者狀態不是 active
-        if (!profile || profile.subscription_status !== 'active') {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            
-            if(confirm("🔒 升級 Pro 解鎖無限儲存！\nUpgrade to Pro to save your brews?")) {
-                // 這裡觸發你的付款流程
-                // 例如: location.href = '/checkout-page'; 
-                alert("即將跳轉至付款頁面...");
-            }
-            return; // ⛔️ 擋住，不讓存
+        // 1. 檢查登入
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            alert("請先登入 (Please Login first)");
+            return;
         }
 
-        // ▼▼▼ 3. 通過驗證，執行儲存 (Pro Only) ▼▼▼
-        
-        // 抓資料 (使用我們討論過的暫存變數 currentBrewData)
-        const beanName = currentBrewData ? currentBrewData.bean.name : "未命名";
-        const roastLevel = currentBrewData ? currentBrewData.bean.roast : "Unknown";
-        const origin = currentBrewData ? currentBrewData.bean.origin : "";
-        const recipe = document.getElementById('markdownContent').innerText;
+        btn.textContent = "權限確認中...";
+        btn.disabled = true;
 
-        const { error: saveError } = await supabase
-            .from('brews')
-            .insert({
-                user_id: user.id,
-                bean_name: beanName,
-                roast_level: roastLevel,
-                notes: origin,
-                recipe: recipe
-            });
+        try {
+            // 2. 查票 (檢查 profiles 表格)
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('subscription_status')
+                .eq('id', user.id)
+                .single();
+            
+            // 如果找不到資料，或者狀態不是 active
+            if (!profile || profile.subscription_status !== 'active') {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if(confirm("🔒 升級 Pro 解鎖無限儲存！\nUpgrade to Pro to save your brews?")) {
+                    alert("即將跳轉至付款頁面...");
+                    // 這裡可以呼叫 handleSignUp() 裡面的 checkout 邏輯，但為了簡單先這樣提示
+                }
+                return; // ⛔️ 擋住，不讓存
+            }
 
-        if (saveError) throw saveError;
+            // 3. 通過驗證，執行儲存 (Pro Only)
+            
+            // 抓資料
+            const beanName = currentBrewData ? currentBrewData.bean.name : "未命名";
+            const roastLevel = currentBrewData ? currentBrewData.bean.roast : "Unknown";
+            const origin = currentBrewData ? currentBrewData.bean.origin : "";
+            
+            // 抓取策略文字
+            const strategyText = document.getElementById('resStrategy').innerText;
+            const timelineText = document.getElementById('resTimeline').innerText;
+            const fullRecipe = `Strategy:\n${strategyText}\n\nSteps:\n${timelineText}`;
 
-        btn.innerHTML = "✅ 已儲存";
-        btn.className = "w-full bg-gray-500 text-white font-bold py-3 px-6 rounded-lg mb-4 flex justify-center gap-2 cursor-not-allowed";
+            const { error: saveError } = await supabase
+                .from('brews')
+                .insert({
+                    user_id: user.id,
+                    bean_name: beanName,
+                    roast_level: roastLevel,
+                    notes: origin,
+                    recipe: fullRecipe
+                });
 
-    } catch (err) {
-        console.error(err);
-        alert("Error: " + err.message);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+            if (saveError) throw saveError;
+
+            btn.innerHTML = "✅ 已儲存";
+            btn.className = "mt-4 bg-gray-500 text-white font-bold py-2 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 mx-auto cursor-not-allowed";
+
+        } catch (err) {
+            console.error(err);
+            alert("Error: " + err.message);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
-}
 </script>
 
 </body>
