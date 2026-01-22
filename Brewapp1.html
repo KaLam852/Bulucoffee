@@ -48,10 +48,10 @@
            width: 100%;
            height: 100vh;
            max-width: 1400px;
-           margin: 0 auto; /* 加入這行 */
+           margin: 0 auto; 
            background: var(--bg-color);
-           box-shadow: 0 0 50px rgba(0,0,0,0.05); /* 可選：加入陰影 */
-}
+           box-shadow: 0 0 50px rgba(0,0,0,0.05); 
+        }
 
         /* --- Sidebar --- */
         .sidebar {
@@ -252,57 +252,92 @@
         .step-tip { margin-top: 5px; font-size: 12px; background: #FFF8F0; padding: 5px 10px; border-radius: 8px; color: #E67E22; display: inline-block;}
 
         /* --- Chat/Rating --- */
-        #chatWindow { max-height: 200px; overflow-y: auto; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+        .chat-panel {
+            grid-column: 1 / -1; 
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #chatWindow { 
+            max-height: 300px; 
+            background: #FAFAFC; 
+            padding: 15px;
+            border-radius: 12px;
+            overflow-y: auto;
+        }
+
         .chat-msg { margin-bottom: 10px; font-size: 14px; padding: 10px 15px; border-radius: 12px; max-width: 90%; }
         .msg-ai { background: #f0f2f9; color: var(--text-main); margin-right: auto; }
         .msg-user { background: var(--brand-primary); color: #fff; margin-left: auto; text-align: right; }
-        .rating-container { display: flex; gap: 5px; margin-top: 10px; cursor: pointer; }
-        .star-icon { color: #ddd; font-size: 20px; transition: 0.2s; }
-        .star-icon.filled { color: var(--brand-accent); }
-        .feedback-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .feedback-chip { background: #fff; border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; font-size: 12px; cursor: pointer; }
-        .feedback-chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
-
+        
         /* --- Loading & Utils --- */
         .loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95); z-index: 200;
+            background: rgba(255,255,255,0.95); z-index: 2000; /* 改高一點確保在所有畫面之上 */
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .hidden { display: none !important; }
 
-        /* Animation Keyframes defined in CSS now */
+        /* Animation */
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
         .spin { animation: spin 2s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); 
+            backdrop-filter: blur(4px);      
+            z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1; visibility: visible;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 90%; max-width: 360px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+            transform: translateY(20px); transition: 0.3s;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
         /* --- RWD: Mobile Adaption --- */
         @media (max-width: 768px) {
             #app-container { 
-             flex-direction: column;
-             height: 100vh;
-             overflow: hidden;
-             }
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
 
             .sidebar {
                 width: 100%;
                 height: auto;
-                min-height: 60px; /* 加入最小高度 */
+                min-height: 60px; 
                 padding: 12px 20px;
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
                 border-bottom: 1px solid #eee;
                 border-right: none;
-                flex-shrink: 0; /* 防止被壓縮 */
-                
+                flex-shrink: 0; 
+                padding-top: 20px; /* 給頂部一點空間 */
             }
-            .brand-area { margin: 0; display: flex; align-items: center; gap: 10px;flex: 1; }
+            .brand-area { margin: 0; display: flex; align-items: center; gap: 10px; flex: 1; }
             .brand-title { display: inline-block; font-size: 18px; margin: 0; white-space: nowrap;} 
             .brand-title br { display: none; }
             .brand-logo { display: none; }
             
-            /* Show Language Toggle on Mobile Header */
             .btn-mobile-lang {
                 display: block; 
                 background: #fff; border: 1px solid #ddd; color: var(--text-main);
@@ -326,88 +361,25 @@
                 border-top: 1px solid #eee;
             }
             .btn-fab { width: 100%; justify-content: center; }
-        }
-                /* --- 在 style 標籤內加入這個 class --- */
-            .chat-panel {
-                 grid-column: 1 / -1; /* 讓它橫跨兩欄，置於底部 */
-                 display: flex;
-                 flex-direction: column;
-                 gap: 15px;
+
+            /* Mobile Auth Button Fixes */
+            #auth-container {
+                 top: 15px !important; 
+                 right: 15px !important;
+                 left: auto !important;
+                 width: auto;
             }
-
-                 /* 為了讓聊天視窗更好看，可以稍微調整高度 */
-            #chatWindow {
-                 max-height: 300px; /* 增加一點高度 */
-                 background: #FAFAFC; /* 给聊天背景一點顏色區分 */
-                 padding: 15px;
-                 border-radius: 12px;
-                 overflow-y: auto;
+            
+            #btn-open-login {
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+            }
         }
-        
-    /* --- Mobile Fixes (手機版救星) --- */
-    @media (max-width: 768px) {
-        
-        /* 1. 調整登入框位置與大小 */
-        #auth-container {
-             top: 12px !important; /* 避開 sidebar */
-             right: 12px !important;
-             left: auto !important;
-             width: auto;
-             max-width: calc(100% - 30px);
-        }
-        
-        /* 2. 讓輸入框變小，不要擋住 Logo */
-        #email-input {
-            width: 100px !important; /* 縮小寬度 */
-            padding: 4px !important;
-        }
-        
-        #login-ui button {
-            padding: 4px 8px !important;
-        }
-
-        /* 3. 防止畫面左右晃動 (20g 被切掉的問題) */
-        body, html {
-            overflow-x: hidden;
-            width: 100%;
-        }
-        
-        /* 4. 確保主畫面不會被登入框蓋住 */
-        .sidebar {
-            padding-top: 60px; /* 增加頂部空間給登入框 */
-        }
-    }
-    .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
-        backdrop-filter: blur(4px);      /* 背景模糊特效 */
-        z-index: 9999;
-        display: flex; justify-content: center; align-items: center;
-        opacity: 0; visibility: hidden; transition: 0.3s;
-    }
-    
-    .modal-overlay.active {
-        opacity: 1; visibility: visible;
-    }
-
-    .modal-box {
-        background: #fff;
-        width: 90%; max-width: 360px;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        position: relative;
-        transform: translateY(20px); transition: 0.3s;
-    }
-
-    .modal-overlay.active .modal-box {
-        transform: translateY(0);
-    }
     </style>
 </head>
 <body>
+
     <div id="auth-container" style="position: absolute; top: 20px; right: 20px; z-index: 1000; font-family: sans-serif;">
-        
         <button id="btn-open-login" onclick="openAuthModal()" 
                 style="padding: 8px 16px; background: #333; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             Login / Sign up
@@ -420,7 +392,6 @@
                 Logout
             </button>
         </div>
-
     </div>
 
     <div id="auth-modal" class="modal-overlay hidden">
@@ -452,18 +423,13 @@
         </div>
     </div>
 
-    <div id="app-container">
+    <div id="viewLoading" class="loading-screen hidden">
+        <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
+            <i data-lucide="loader-2" size="30" class="spin"></i>
         </div>
+        <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);" id="loadingText" data-i18n="loading">AI PROCESSING</div>
+    </div>
 
-        <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <span id="user-email" style="font-size: 13px; font-weight: bold; color: #333;"></span>
-            <button onclick="handleLogout()" 
-                    style="font-size: 12px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Logout
-            </button>
-        </div>
-
-    </div> 
     <div id="app-container">
         
         <aside class="sidebar">
@@ -471,7 +437,6 @@
                 <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu Coffee" style="height: 80px; vertical-align: middle;">
                 <h1 class="brand-title">BrewLab.</h1>
                 <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
-    
             </div>
     
             <div class="step-nav">
@@ -659,15 +624,9 @@
                  <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
             </button>
         </div>
-    
-        <div id="viewLoading" class="loading-screen hidden">
-            <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
-                <i data-lucide="loader-2" size="30" class="spin"></i>
-            </div>
-            <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);" id="loadingText" data-i18n="loading">AI PROCESSING</div>
-        </div>
 
     </div>
+
 <script>
     // --- 1. CONFIGURATION ---
     const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
@@ -706,13 +665,107 @@
             document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
             
             // 移除 HTML 預設的 disabled
-            document.getElementById('btnNext').disabled = false;
+            const btnNext = document.getElementById('btnNext');
+            if(btnNext) btnNext.disabled = false;
+
         } catch (e) {
             console.error("Init Error:", e);
         }
     });
 
-    // --- UI LOGIC ---
+    // --- GLOBAL FUNCTIONS ---
+
+    function openAuthModal() {
+        document.getElementById('auth-modal').classList.add('active');
+    }
+
+    function closeAuthModal() {
+        document.getElementById('auth-modal').classList.remove('active');
+    }
+
+    // Auth Logic
+    function setupAuthListener() {
+        if (!_supabase) return;
+        _supabase.auth.getSession().then(({ data: { session } }) => {
+            updateAuthUI(session);
+        });
+        _supabase.auth.onAuthStateChange((_event, session) => {
+            updateAuthUI(session);
+        });
+    }
+
+    function updateAuthUI(session) {
+        const btnLogin = document.getElementById('btn-open-login');
+        const userUI = document.getElementById('user-ui');
+        const userEmail = document.getElementById('user-email');
+
+        if (session) {
+            currentUser = session.user;
+            if(btnLogin) btnLogin.style.display = 'none';
+            if(userUI) userUI.style.display = 'flex';
+            if(userEmail) userEmail.innerText = session.user.email;
+            closeAuthModal(); 
+        } else {
+            currentUser = null;
+            if(btnLogin) btnLogin.style.display = 'block';
+            if(userUI) userUI.style.display = 'none';
+        }
+    }
+
+    async function handleSignUp() {
+        const email = document.getElementById('modal-email').value;
+        const password = document.getElementById('modal-password').value;
+
+        if (!email || !password) return alert("Please enter both email and password!");
+        if (password.length < 6) return alert("Password must be at least 6 characters.");
+
+        const btn = event.target; 
+        const oldText = btn.innerText; btn.innerText = "Processing..."; btn.disabled = true;
+
+        const { data, error } = await _supabase.auth.signUp({
+            email: email,
+            password: password,
+        });
+
+        btn.innerText = oldText; btn.disabled = false;
+
+        if (error) {
+            alert("Error: " + error.message);
+        } else {
+            alert("Success! Check your email to confirm account.");
+            closeAuthModal();
+        }
+    }
+
+    async function handleSignIn() {
+        const email = document.getElementById('modal-email').value;
+        const password = document.getElementById('modal-password').value;
+
+        if (!email || !password) return alert("Please enter email and password!");
+
+        const btn = event.target; 
+        const oldText = btn.innerText; btn.innerText = "Logging in..."; btn.disabled = true;
+
+        const { data, error } = await _supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+        
+        btn.innerText = oldText; btn.disabled = false;
+
+        if (error) {
+            alert("Login Failed: " + error.message);
+        } else {
+            closeAuthModal();
+        }
+    }
+
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.reload(); 
+    }
+
+    // --- UI Logic ---
     function toggleLanguage() {
         currentLang = currentLang === 'en' ? 'zh' : 'en';
         document.getElementById('btnLangDesktop').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
@@ -745,7 +798,7 @@
     function checkConfig() {
         const isValid = config.gear && config.grinder;
         const btn = document.getElementById('btnNext');
-        btn.style.opacity = isValid ? '1' : '0.5';
+        if(btn) btn.style.opacity = isValid ? '1' : '0.5';
     }
 
     function goToUpload() {
@@ -796,23 +849,55 @@
         reader.readAsDataURL(file);
     }
 
-    // --- AI ANALYSIS ---
+    function getCurrentUserId() {
+        if (currentUser && currentUser.id) {
+            return currentUser.id; 
+        }
+        let anonId = localStorage.getItem('bulu_anon_id');
+        if (!anonId) {
+            anonId = 'u_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('bulu_anon_id', anonId);
+        }
+        return anonId;
+    }
+
+    async function uploadImgToSupabase(base64, folder) {
+        const res = await fetch(base64);
+        const blob = await res.blob();
+        const fileName = `${folder}/${getCurrentUserId()}_${Date.now()}.jpg`;
+        await _supabase.storage.from('coffee-images').upload(fileName, blob);
+        const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
+        return data.publicUrl;
+    }
+
+    async function saveToSupabase(result) {
+        if(!_supabase) return;
+        
+        const userId = getCurrentUserId();
+        try {
+            await _supabase.from('coffee_brewing_logs').insert([{ 
+                user_id: userId, 
+                bean_origin: result.bean.origin, 
+                ai_strategy: result.strategy, 
+                dose_grams: config.dose, 
+                full_chat_history: result 
+            }]);
+            console.log("Saved log for user:", userId);
+        } catch(e) { console.error("Supabase Save Error", e); }
+    }
+
     async function startAnalysis() { 
-        // 1. 基本檢查
         if (!imageBase64) { alert("Please upload an image first."); return; }
 
-        // 2. 準備參數
         const dose = config.dose;
         const gear = selectedGear; 
         const grinder = config.grinder;     
         
-        // 3. 切換 UI
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
         updateNav(3);
     
         try {
-            // 上傳圖片
             let hostedImageUrl = imageBase64;
             if(_supabase) {
                 try {
@@ -820,7 +905,6 @@
                 } catch(err) { console.log("Upload skip"); }
             }
 
-            // 【呼叫 Supabase 後端】
             const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/brew`, {
                 method: "POST",
                 headers: { 
@@ -832,8 +916,8 @@
                     "dose": dose,
                     "gear": gear,
                     "grinder": grinder,
-                    "lang": currentLang, // ✅ 修正：加上了逗號
-                    "userId": getCurrentUserId() // ✅ 修正：確保傳送正確 ID
+                    "lang": currentLang,
+                    "userId": getCurrentUserId() 
                 })
             });
 
@@ -848,7 +932,6 @@
             renderResult(result);
             initChat(result);
             
-            // ✅ 修正：這裡正確呼叫外部定義的 saveToSupabase
             if(_supabase) await saveToSupabase(result);
 
             document.getElementById('viewLoading').classList.add('hidden');
@@ -863,7 +946,6 @@
         }
     }
 
-    // --- RENDER & UTILS ---
     function renderResult(data) {
         const safeSetText = (id, text) => {
             const el = document.getElementById(id);
@@ -896,50 +978,6 @@
                 });
             }
         }
-    }
-
-    // --- HELPER FUNCTIONS ---
-    
-    // 【修正】統一取得 ID (會員優先，沒有才用匿名)
-    function getCurrentUserId() {
-        if (currentUser && currentUser.id) {
-            return currentUser.id; // 回傳 Supabase 真實會員 UUID
-        }
-        // 如果沒登入，就用舊的匿名邏輯
-        let anonId = localStorage.getItem('bulu_anon_id');
-        if (!anonId) {
-            anonId = 'u_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('bulu_anon_id', anonId);
-        }
-        return anonId;
-    }
-
-    async function uploadImgToSupabase(base64, folder) {
-        const res = await fetch(base64);
-        const blob = await res.blob();
-        const fileName = `${folder}/${getCurrentUserId()}_${Date.now()}.jpg`;
-        await _supabase.storage.from('coffee-images').upload(fileName, blob);
-        const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
-        return data.publicUrl;
-    }
-    
-    // ✅ 修正：現在使用正確的 User ID 邏輯
-    async function saveToSupabase(result) {
-        if(!_supabase) return;
-        
-        const userId = getCurrentUserId();
-        // const isMember = currentUser ? true : false; 
-
-        try {
-            await _supabase.from('coffee_brewing_logs').insert([{ 
-                user_id: userId, 
-                bean_origin: result.bean.origin, 
-                ai_strategy: result.strategy, 
-                dose_grams: config.dose, 
-                full_chat_history: result 
-            }]);
-            console.log("Saved log for user:", userId);
-        } catch(e) { console.error("Supabase Save Error", e); }
     }
 
     function initChat(recipe) {
@@ -990,96 +1028,6 @@
             const loadingMsg = document.getElementById(loadingId);
             if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
-    }
-
-    // --- AUTH FUNCTIONS (已修正 ID 對應) ---
-
-    // function openAuthModal() {
-        document.getElementById('auth-modal').classList.add('active');
-    }
-
-    function closeAuthModal() {
-        document.getElementById('auth-modal').classList.remove('active');
-    }
-
-    // 2. 更新 UI 顯示 (控制右上角按鈕)
-    function updateAuthUI(session) {
-        const btnLogin = document.getElementById('btn-open-login');
-        const userUI = document.getElementById('user-ui');
-        const userEmail = document.getElementById('user-email');
-
-        if (session) {
-            currentUser = session.user;
-            // 登入後：隱藏登入鈕，顯示 Email
-            if(btnLogin) btnLogin.style.display = 'none';
-            if(userUI) userUI.style.display = 'flex';
-            if(userEmail) userEmail.innerText = session.user.email;
-            
-            closeAuthModal(); // 確保 Modal 關閉
-        } else {
-            currentUser = null;
-            // 未登入：顯示登入鈕，隱藏 Email
-            if(btnLogin) btnLogin.style.display = 'block';
-            if(userUI) userUI.style.display = 'none';
-        }
-    }
-
-    // 3. 註冊 (Sign Up)
-    async function handleSignUp() {
-        // 注意 ID 變成了 modal-email
-        const email = document.getElementById('modal-email').value;
-        const password = document.getElementById('modal-password').value;
-
-        if (!email || !password) return alert("Please enter both email and password!");
-        if (password.length < 6) return alert("Password must be at least 6 characters.");
-
-        const btn = event.target; 
-        const oldText = btn.innerText; btn.innerText = "Processing..."; btn.disabled = true;
-
-        const { data, error } = await _supabase.auth.signUp({
-            email: email,
-            password: password,
-        });
-
-        btn.innerText = oldText; btn.disabled = false;
-
-        if (error) {
-            alert("Error: " + error.message);
-        } else {
-            alert("Success! Check your email to confirm account.");
-            closeAuthModal();
-        }
-    }
-
-    // 4. 登入 (Login)
-    async function handleSignIn() {
-        const email = document.getElementById('modal-email').value;
-        const password = document.getElementById('modal-password').value;
-
-        if (!email || !password) return alert("Please enter email and password!");
-
-        const btn = event.target; 
-        const oldText = btn.innerText; btn.innerText = "Logging in..."; btn.disabled = true;
-
-        const { data, error } = await _supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
-        
-        btn.innerText = oldText; btn.disabled = false;
-
-        if (error) {
-            alert("Login Failed: " + error.message);
-        } else {
-            // 成功後 onAuthStateChange 會自動更新 UI
-            closeAuthModal();
-        }
-    }
-
-    // 5. 登出
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        window.location.reload(); 
     }
 </script>
 
