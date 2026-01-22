@@ -297,8 +297,7 @@
                 flex-shrink: 0; /* 防止被壓縮 */
                 
             }
-            .brand-area { margin: 0; display: flex; align-items: center; gap: 10px;}
-            .brand-area img { height: 40px !important; /* 縮小手機版 logo */}
+            .brand-area { margin: 0; display: flex; align-items: center; gap: 10px;flex: 1; }
             .brand-title { display: inline-block; font-size: 18px; margin: 0; white-space: nowrap;} 
             .brand-title br { display: none; }
             .brand-logo { display: none; }
@@ -308,6 +307,7 @@
                 display: block; 
                 background: #fff; border: 1px solid #ddd; color: var(--text-main);
                 padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer;
+                margin-left: auto; 
             }
 
             .step-nav, .sidebar-footer { display: none; }
@@ -349,8 +349,8 @@
         
         /* 1. 調整登入框位置與大小 */
         #auth-container {
-             top: 70px !important; /* 避開 sidebar */
-             right: 15px !important;
+             top: 12px !important; /* 避開 sidebar */
+             right: 12px !important;
              left: auto !important;
              width: auto;
              max-width: calc(100% - 30px);
@@ -405,10 +405,10 @@
         <aside class="sidebar">
             <div class="brand-area">
                 <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu Coffee" style="height: 80px; vertical-align: middle;">
-                <h1 class="brand-title">Brew<br>Lab.</h1>
+                <h1 class="brand-title">BrewLab.</h1>
+                <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
+    
             </div>
-            
-            <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
     
             <div class="step-nav">
                 <div class="nav-item active" id="navStep1">
