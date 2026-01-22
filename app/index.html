@@ -654,11 +654,11 @@
                             <i data-lucide="arrow-up" size="20"></i>
                         </button>
                     </div>
-            <button id="btnSave" onclick="saveBrew()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition hover:scale-105 mb-4 flex items-center justify-center gap-2" style="margin-top: 20px;">
+<button id="btnSave" onclick="saveBrew()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 mx-auto transition-transform hover:scale-105">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
     </svg>
-    <span data-i18n="btn_save">儲存到沖煮日記 (Save)</span>
+    <span>儲存到沖煮日記 (Save)</span>
 </button>
 <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
     <span data-i18n="btn_restart">Start Over</span>
@@ -682,6 +682,7 @@
     </div>
 
 <script>
+    let currentBrewData = null;
     // --- 1. CONFIGURATION ---
     const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
     let currentRecipeContext = null; 
