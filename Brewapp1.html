@@ -556,7 +556,7 @@
 <script>
     // --- 1. CONFIGURATION ---
     const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
-    let currentRecipeContext = null; // 用來暫存食譜給 Chat 用
+    let currentRecipeContext = null; 
     
     // Supabase Config
     const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
@@ -581,11 +581,11 @@
         try {
             if (typeof supabase !== 'undefined') _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
        
-            // 【新增】啟動會員狀態監聽
+            // 啟動會員狀態監聽
             setupAuthListener();
 
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            // ... (原本的 updateUIText 等程式碼保持不變) ...
+            updateUIText();
             
             // 綁定事件
             document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
@@ -594,7 +594,6 @@
             document.getElementById('btnNext').disabled = false;
         } catch (e) {
             console.error("Init Error:", e);
-            alert("系統載入錯誤，請檢查 Console");
         }
     });
 
@@ -602,6 +601,7 @@
     function toggleLanguage() {
         currentLang = currentLang === 'en' ? 'zh' : 'en';
         document.getElementById('btnLangDesktop').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
+        if(document.getElementById('btnLangMobile')) document.getElementById('btnLangMobile').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
         updateUIText();
     }
 
@@ -682,10 +682,6 @@
     }
 
     // --- AI ANALYSIS ---
-    // !!! FIXED: Added the missing { below !!!
-    // --- AI ANALYSIS (已改為呼叫 Supabase Edge Function) ---
-    // --- CHAT FUNCTION (修正版：已補上 Authorization) ---
-// --- AI ANALYSIS (完整修復版) ---
     async function startAnalysis() { 
         // 1. 基本檢查
         if (!imageBase64) { alert("Please upload an image first."); return; }
@@ -714,15 +710,15 @@
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _supabaseKey // 這裡已包含修正的通行證
+                    "Authorization": "Bearer " + _supabaseKey 
                 },
                 body: JSON.stringify({
                     "image": hostedImageUrl,
                     "dose": dose,
                     "gear": gear,
                     "grinder": grinder,
-                    "lang": currentLang,
-                    "userId": getCurrentUserId()
+                    "lang": currentLang, // ✅ 修正：加上了逗號
+                    "userId": getCurrentUserId() // ✅ 修正：確保傳送正確 ID
                 })
             });
 
@@ -736,26 +732,9 @@
             
             renderResult(result);
             initChat(result);
-            async function saveToSupabase(result) {
-        if(!_supabase) return;
-        
-        const userId = getCurrentUserId(); // 使用新的 ID 邏輯
-        const isMember = currentUser ? true : false; // 標記是否為會員
-
-        try {
-            await _supabase.from('coffee_brewing_logs').insert([{ 
-                user_id: userId, 
-                // is_member: isMember, // (選用) 如果你的資料庫有開這個欄位再打開註解
-                bean_origin: result.bean.origin, 
-                ai_strategy: result.strategy, 
-                dose_grams: config.dose, 
-                full_chat_history: result 
-            }]);
-            console.log("Saved log for user:", userId);
-        } catch(e) { 
-            console.error("Supabase Save Error", e); 
-        }
-    };
+            
+            // ✅ 修正：這裡正確呼叫外部定義的 saveToSupabase
+            if(_supabase) await saveToSupabase(result);
 
             document.getElementById('viewLoading').classList.add('hidden');
             document.getElementById('viewResult').classList.remove('hidden');
@@ -771,42 +750,38 @@
 
     // --- RENDER & UTILS ---
     function renderResult(data) {
-    // 建立一個安全填寫的小工具 helper
-    const safeSetText = (id, text) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = text; // 只有當元素存在時才寫入，避免報錯
-    };
+        const safeSetText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        };
 
-    // 使用安全填寫
-    safeSetText('resOrigin', data.bean.origin || "Unknown");
-    safeSetText('resStrategy', data.strategy);
-    safeSetText('resGrind', data.prep.grind);
-    safeSetText('resTemp', data.prep.temp);
-    safeSetText('resWaterTotal', data.prep.water_total);
-    safeSetText('resTotalTime', data.prep.time_total);
-    
-    // 處理 Tags
-    const tags = document.getElementById('resTags');
-    if (tags) {
-        tags.innerHTML = '';
-        if (data.bean.tags) {
-            data.bean.tags.forEach(t => {
-                tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
-            });
+        safeSetText('resOrigin', data.bean.origin || "Unknown");
+        safeSetText('resStrategy', data.strategy);
+        safeSetText('resGrind', data.prep.grind);
+        safeSetText('resTemp', data.prep.temp);
+        safeSetText('resWaterTotal', data.prep.water_total);
+        safeSetText('resTotalTime', data.prep.time_total);
+        
+        const tags = document.getElementById('resTags');
+        if (tags) {
+            tags.innerHTML = '';
+            if (data.bean.tags) {
+                data.bean.tags.forEach(t => {
+                    tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
+                });
+            }
+        }
+
+        const tl = document.getElementById('resTimeline');
+        if (tl) {
+            tl.innerHTML = '';
+            if (data.steps) {
+                data.steps.forEach(s => {
+                    tl.innerHTML += `<div class="recipe-step"><span class="step-time">${s.time}</span><div><div class="step-title">${s.action} <span>➔ ${s.weight}</span></div><div class="step-desc">${s.detail}</div><div class="step-tip">💡 ${s.tip}</div></div></div>`;
+                });
+            }
         }
     }
-
-    // 處理 Timeline
-    const tl = document.getElementById('resTimeline');
-    if (tl) {
-        tl.innerHTML = '';
-        if (data.steps) {
-            data.steps.forEach(s => {
-                tl.innerHTML += `<div class="recipe-step"><span class="step-time">${s.time}</span><div><div class="step-title">${s.action} <span>➔ ${s.weight}</span></div><div class="step-desc">${s.detail}</div><div class="step-tip">💡 ${s.tip}</div></div></div>`;
-            });
-        }
-    }
-}
 
     // --- HELPER FUNCTIONS ---
     
@@ -824,19 +799,17 @@
         return anonId;
     }
 
-    // 順便修正上傳圖片的檔名邏輯，讓圖片擁有者也是正確的 ID
     async function uploadImgToSupabase(base64, folder) {
         const res = await fetch(base64);
         const blob = await res.blob();
-        // 這裡改用 getCurrentUserId()
         const fileName = `${folder}/${getCurrentUserId()}_${Date.now()}.jpg`;
         await _supabase.storage.from('coffee-images').upload(fileName, blob);
         const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
         return data.publicUrl;
     }
     
-
-async function saveToSupabase(result) {
+    // ✅ 修正：現在使用正確的 User ID 邏輯
+    async function saveToSupabase(result) {
         if(!_supabase) return;
         
         const userId = getCurrentUserId();
@@ -853,12 +826,12 @@ async function saveToSupabase(result) {
             console.log("Saved log for user:", userId);
         } catch(e) { console.error("Supabase Save Error", e); }
     }
+
     function initChat(recipe) {
         chatHistory = [{ "role": "system", "content": `Context: ${JSON.stringify(recipe)}. Lang: ${currentLang}` }];
         document.getElementById('chatWindow').innerHTML = `<div class="chat-msg msg-ai">Feel free to ask questions about the brew!</div>`; 
     }
     
-
     async function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value;
@@ -874,12 +847,11 @@ async function saveToSupabase(result) {
         win.scrollTop = win.scrollHeight;
         
         try {
-            // 【呼叫 Supabase 後端】
             const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat`, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _supabaseKey // 關鍵修改：補上這行通行證
+                    "Authorization": "Bearer " + _supabaseKey 
                 },
                 body: JSON.stringify({
                     "message": text,
@@ -904,48 +876,49 @@ async function saveToSupabase(result) {
             if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
     }
-    // --- 【新增】AUTH FUNCTIONS ---
 
-    // 1. 監聽登入狀態 (核心)
+    // --- AUTH FUNCTIONS (已修正 ID 對應) ---
+
+    // 1. 監聽登入狀態
     function setupAuthListener() {
         if (!_supabase) return;
         
-        // 檢查當前 Session
         _supabase.auth.getSession().then(({ data: { session } }) => {
             updateAuthUI(session);
         });
 
-        // 監聽狀態改變 (登入/登出/重新整理)
         _supabase.auth.onAuthStateChange((_event, session) => {
             updateAuthUI(session);
         });
     }
 
-    // 2. 更新 UI 顯示
+    // 2. 更新 UI 顯示 (✅ 修正：ID 改回對應 HTML)
     function updateAuthUI(session) {
-        const loginBox = document.getElementById('login-ui');
-        const userBox = document.getElementById('user-box');
-        const displayEmail = document.getElementById('displayEmail');
+        // HTML ID: login-ui, user-ui, user-email
+        const loginBox = document.getElementById('login-ui'); 
+        const userBox = document.getElementById('user-ui');
+        const displayEmail = document.getElementById('user-email');
 
         if (session) {
-            currentUser = session.user; // 存入變數
+            currentUser = session.user;
             loginBox.style.display = 'none';
             userBox.style.display = 'flex';
             displayEmail.innerText = session.user.email;
             console.log("Logged in as:", currentUser.id);
         } else {
             currentUser = null;
-            loginBox.style.display = 'flex';
+            loginBox.style.display = 'flex'; // 修正：原本是 flex
             userBox.style.display = 'none';
         }
     }
 
     // 3. 處理登入 (Magic Link)
     async function handleLogin() {
-        const email = document.getElementById('email-input').value;
+        // HTML ID: email-input
+        const email = document.getElementById('email-input').value; 
         if (!email) return alert("Please enter email!");
         
-        const btn = document.querySelector('#login-box button');
+        const btn = document.querySelector('#login-ui button');
         const originalText = btn.innerText;
         btn.innerText = "Sending...";
         btn.disabled = true;
@@ -967,9 +940,8 @@ async function saveToSupabase(result) {
     // 4. 處理登出
     async function handleLogout() {
         await _supabase.auth.signOut();
-        window.location.reload(); // 重新整理頁面確保清除乾淨
+        window.location.reload(); 
     }
-
 </script>
 
 </body>
