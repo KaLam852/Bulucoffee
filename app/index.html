@@ -654,10 +654,15 @@
                             <i data-lucide="arrow-up" size="20"></i>
                         </button>
                     </div>
-            
-                    <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
-                        <span data-i18n="btn_restart">Start Over</span>
-                    </button>
+            <button id="btnSave" onclick="saveBrew()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition hover:scale-105 mb-4 flex items-center justify-center gap-2" style="margin-top: 20px;">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+    </svg>
+    <span data-i18n="btn_save">儲存到沖煮日記 (Save)</span>
+</button>
+<button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
+    <span data-i18n="btn_restart">Start Over</span>
+</button>
                 </div>
             
                 </div>
@@ -1292,6 +1297,50 @@
             if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
     }
+    async function saveBrew() {
+    const btn = document.getElementById('btnSave');
+    // ... (檢查登入的部分保持不變) ...
+
+    try {
+        // ▼▼▼ 3. 改成從暫存區 (currentBrewData) 抓資料 ▼▼▼
+        
+        // 如果有暫存資料，就用 AI 的；如果沒有，就用預設值
+        const beanName = currentBrewData ? currentBrewData.bean.name : "未命名咖啡豆";
+        const roastLevel = currentBrewData ? currentBrewData.bean.roast : "Unknown";
+        const origin = currentBrewData ? currentBrewData.bean.origin : ""; // 你問的這個！
+        
+        // 抓取原本的 markdown
+        const recipe = document.getElementById('markdownContent').innerText;
+
+        const { error } = await supabase
+            .from('brews')
+            .insert({
+                user_id: user.id,
+                bean_name: beanName,   // 存入 AI 辨識的豆名
+                roast_level: roastLevel, // 存入 AI 辨識的烘焙度
+                notes: origin,         // 把產地存到備註欄 (notes) 或是你有開 origin 欄位也可以
+                recipe: recipe,
+                rating: 0
+            });
+        
+        // ... (後面成功提示保持不變) ...
+
+        if (error) throw error;
+
+        // 5. 成功後的按鈕變化
+        btn.innerHTML = "✅ 已儲存 (Saved!)";
+        btn.className = "w-full bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg mb-4 flex items-center justify-center gap-2 cursor-not-allowed"; 
+        
+        alert("成功！這杯咖啡已存入你的日記。\nSaved to your journal successfully!");
+
+    } catch (err) {
+        console.error('Save Error:', err);
+        alert("儲存失敗 (Save Failed): " + err.message);
+        // 失敗就恢復按鈕，讓它可以再按一次
+        btn.innerHTML = originalText; 
+        btn.disabled = false; 
+    }
+}
 </script>
 
 </body>
