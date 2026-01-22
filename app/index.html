@@ -41,25 +41,25 @@
 
         /* --- Auth Wrapper (Top Right) --- */
         .auth-wrapper {
-            position: absolute; top: 30px; right: 40px; z-index: 1000;
+            position: absolute; top: 30px; right: 40px; z-index: 1000; font-family: sans-serif;
             display: flex; align-items: center; gap: 10px;
         }
 
         #btn-open-login {
-            padding: 8px 24px; background: #333; color: white; border: none;
-            border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 8px 20px; background: #333; color: white; border: none;
+            border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         #btn-open-login:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
 
         #user-ui {
             display: none; align-items: center; gap: 10px;
             background: rgba(255,255,255,0.95); padding: 6px 16px;
-            border-radius: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #eee;
+            border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #eee;
         }
 
         /* --- Main Layout --- */
-        #app-container { display: flex; width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto; background: var(--bg-color); }
+        #app-container { display: flex; width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto; background: var(--bg-color); box-shadow: 0 0 50px rgba(0,0,0,0.05); }
 
         .sidebar {
             width: 280px; padding: 40px 30px; background: #fff;
@@ -182,7 +182,7 @@
                         <span id="doseDisplay" class="dose-val">20</span>
                         <span class="text-gray-400 text-sm">grams</span>
                     </div>
-                    <div class="w-64 mx-auto"><input type="range" id="inputDose" min="10" max="30" value="20" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-400" oninput="updateDose(this.value)"></div>
+                    <div class="w-64 mx-auto"><input type="range" id="inputDose" min="10" max="30" value="20" step="1" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-400" oninput="updateDose(this.value)"></div>
                 </div>
 
                 <div class="mt-12">
@@ -190,8 +190,10 @@
                     <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                         <div class="gear-card" onclick="selectGear(this, 'Hario V60')"><i data-lucide="filter" size="32"></i><span class="mt-2 text-sm font-bold">V60</span></div>
                         <div class="gear-card" onclick="selectGear(this, 'Origami')"><i data-lucide="star" size="32"></i><span class="mt-2 text-sm font-bold">Origami</span></div>
+                        <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')"><i data-lucide="align-center" size="32"></i><span class="mt-2 text-sm font-bold">Kalita Wave</span>
                         <div class="gear-card" onclick="selectGear(this, 'Switch')"><i data-lucide="toggle-right" size="32"></i><span class="mt-2 text-sm font-bold">Switch</span></div>
                         <div class="gear-card" onclick="selectGear(this, 'Chemex')"><i data-lucide="flask-conical" size="32"></i><span class="mt-2 text-sm font-bold">Chemex</span></div>
+                        <div class="gear-card" onclick="selectGear(this, 'Others')"><i data-lucide="more-horizontal" size="32"></i><span class="mt-2 text-sm font-bold">Others</span>
                     </div>
                 </div>
 
@@ -199,10 +201,12 @@
                     <h3 class="font-bold text-xl mb-4 flex items-center gap-2"><i data-lucide="settings-2" class="text-orange-400"></i> <span data-i18n="sec_grinder">Grinder</span></h3>
                     <select id="inputGrinder" class="w-full p-5 rounded-2xl bg-white shadow-sm border-none outline-none text-gray-700 appearance-none cursor-pointer">
                         <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
-                        <option value="C40">Comandante C40</option>
-                        <option value="K-Ultra">1Zpresso K-Ultra</option>
+                        <option value="Comandante C40">Comandante C40</option>
+                        <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
                         <option value="Niche Zero">Niche Zero</option>
-                        <option value="Ode">Fellow Ode</option>
+                        <option value="Fellow Ode">Fellow Ode</option>
+                        <option value="EK43">Mahlkonig EK43</option>
+                        <option value="Fuji">Fuji Royal / Feima</option>
                         <option value="Generic">Other / Generic</option>
                     </select>
                 </div>
@@ -211,15 +215,16 @@
             <div id="viewUpload" class="overlay-view hidden h-full">
                 <div class="flex flex-col md:flex-row gap-10 h-full items-center">
                     <div class="flex-1">
-                        <h2 class="text-5xl font-bold mb-4 text-blue-900">AI Scan.</h2>
-                        <p class="text-gray-500 mb-8" data-i18n="scan_desc">Our AI analyzes roast level and origin to calibrate the perfect recipe.</p>
-                        <button onclick="backToConfig()" class="text-blue-600 font-bold hover:underline">← <span data-i18n="btn_back">Go Back</span></button>
+                          <h2 class="brand-title" style="color:var(--text-main); font-size:42px; margin-bottom:20px;">AI Scan.</h2>
+                        <p style="color:#666; line-height:1.6; margin-bottom:30px;" data-i18n="scan_desc"> Bulu AI analyzes roast level and origin to calibrate the perfect recipe.</p>
+                        <button class="btn-lang" style="width:auto; border:none; padding-left:0;" onclick="backToConfig()">
+                            ← <span data-i18n="btn_back">Go Back</span></button>
                     </div>
                     <div class="flex-1 w-full h-80">
                         <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
                             <img id="imgPreview" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity">
-                            <i data-lucide="scan-line" size="48" class="text-blue-600 mb-4"></i>
-                            <span class="font-bold text-blue-800" data-i18n="tap_upload">Upload Coffee Bag</span>
+                            <i data-lucide="scan-line" size="48" color="#5468AA style="margin-bottom:15px;"></i>
+                            <span style="font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Upload Coffee Bag</span>
                             <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImage(event)">
                         </div>
                     </div>
@@ -229,22 +234,24 @@
             <div id="viewResult" class="hidden">
                 <div class="origin-card mb-6">
                     <div>
-                        <p class="text-[10px] opacity-70 tracking-widest font-bold">OPTIMIZED FOR</p>
-                        <h2 id="resOrigin" class="text-3xl font-bold italic">Analysis Ready</h2>
-                        <div id="resTags" class="flex gap-2 mt-2"></div>
+                          <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
+                    <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
+                    <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+                  
                     </div>
                     <div class="text-3xl font-bold"><span id="resDoseRef">20</span>g</div>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="card">
-                        <h3 class="font-bold text-gray-400 text-xs mb-4 tracking-widest uppercase">Parameters</h3>
+                        <h3 class="font-bold text-gray-400 text-xs mb-4 tracking-widest uppercase data-i18n="lbl_parameters">Parameters</h3>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_grind">GRIND</span><span id="resGrind" class="font-bold text-blue-700">--</span></div>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_temp">TEMP</span><span id="resTemp" class="font-bold text-blue-700">--</span></div>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_water">WATER</span><span id="resWaterTotal" class="font-bold text-blue-700">--</span></div>
+                        <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n=lbl_time">EST. TIME</span><span id="resTotalTime" class="font-bold text-blue-700">--</span></div>
                         
                         <div class="mt-6 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-xl">
-                            <h4 class="text-[10px] font-bold text-orange-400 mb-1">STRATEGY 策略</h4>
+                            <h4 class="text-[10px] font-bold text-orange-400 mb-1 data-i18n="lbl_strategy">STRATEGY</h4>
                             <p id="resStrategy" class="text-xs leading-relaxed text-gray-700 font-medium"></p>
                         </div>
                     </div>
@@ -255,7 +262,7 @@
                 </div>
 
                 <div class="mt-8 flex flex-col items-center gap-4">
-                    <button id="btnSave" onclick="saveBrew()" class="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-3 transform transition hover:scale-105">
+                    <button id="btnSave" onclick="saveBrew()" class="w-full max-w-sm bg-blue-300 hover:bg-blue-400 text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-3 transform transition hover:scale-105">
                         <svg xmlns="http://www.w3.org/2000/svg" style="width:20px; height:20px;" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                         </svg>
@@ -270,7 +277,7 @@
             <button id="btnNext" onclick="goToUpload()" class="bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-blue-800 transition-all transform hover:scale-105">
                 <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
             </button>
-            <button id="btnAnalyze" onclick="startAnalysis()" class="hidden bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-blue-800 transition-all transform hover:scale-105">
+            <button id="btnAnalyze" onclick="startAnalysis()" class="hidden bg-blue-400 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-blue-800 transition-all transform hover:scale-105">
                 <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
             </button>
         </div>
@@ -296,8 +303,8 @@
     let isLoginMode = true;
 
     const translations = {
-        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder Model", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", lbl_grind: "GRIND", lbl_temp: "TEMP", lbl_water: "WATER", btn_login: "Login" },
-        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 正在分析包裝...", tap_upload: "上傳咖啡袋", btn_brew: "生成方案", steps_title: "沖煮步驟", btn_restart: "重新開始", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "注水量", btn_login: "登入" }
+        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder Model", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", lbl_grind: "GRIND", lbl_time: "Est. Time", lbl_temp: "TEMP", lbl_water: "WATER", btn_login: "Login", lbl_strategy:"STRATEGY",lbl_parameter:"Parameters"},
+        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 正在分析包裝...", tap_upload: "上傳咖啡袋", btn_brew: "生成方案", steps_title: "沖煮步驟", btn_restart: "重新開始", lbl_grind: "研磨度",lbl_time: "預計時間", lbl_temp: "水溫", lbl_water: "注水量", btn_login: "登入",lbl_strategy:"策略",lbl_parameter:"參數" }
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -478,8 +485,7 @@
 
         try {
             const { data: profile } = await sb.from('profiles').select('subscription_status').eq('id', user.id).single();
-            // 簡化流程：這裡暫時允許 active 或 free 都能存 (為了測試)，你想改回 active only 就取消註解下面這行
-            // if (!profile || profile.subscription_status !== 'active') { ... }
+            if (!profile || profile.subscription_status !== 'active') { ... }
 
             const { error } = await sb.from('brews').insert({
                 user_id: user.id,
