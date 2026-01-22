@@ -884,7 +884,8 @@
             if(userUI) userUI.style.display = 'none';
         }
     }
-
+const STRIPE_PRICE_ID = "price_1SsN7SLlNkzJbqVvn8VcerXF";
+    
     async function handleSignUp() {
         const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
@@ -894,25 +895,81 @@
         if (password.length < 6) return alert(t.alert_pass_len);
 
         const btn = document.getElementById('btn-auth-action');
-        const oldText = btn.innerText; btn.innerText = "..."; btn.disabled = true;
+        const oldText = btn.innerText; 
+        
+        btn.innerText = "Creating Account..."; 
+        btn.disabled = true;
 
+        // 1. 先建立 Supabase 帳號
         const { data, error } = await _supabase.auth.signUp({
             email: email,
             password: password,
         });
 
-        btn.innerText = oldText; btn.disabled = false;
-
         if (error) {
             alert("Error: " + error.message);
-        } else {
-            alert(t.alert_reg_success);
-            // Switch to login mode automatically or close? 
-            // Usually stay open and tell them to check email, but let's close for simplicity
+            btn.innerText = oldText; 
+            btn.disabled = false;
+            return;
+        }
+
+        // 2. 帳號建立成功，開始準備付款
+        btn.innerText = "Redirecting to Stripe...";
+        
+        try {
+            // 呼叫 Edge Function (假設你的 Function 叫 'checkout')
+            // 注意：你需要確保 SUPABASE_PROJECT_URL 是正確的
+            const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + _supabaseKey
+                },
+                body: JSON.stringify({
+                    email: email,
+                    userId: data.user.id, // 剛註冊的 User ID
+                    priceId: STRIPE_PRICE_ID
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.url) {
+                // 3. 跳轉去 Stripe
+                window.location.href = result.url;
+            } else {
+                throw new Error("無法取得付款連結");
+            }
+
+        } catch (payError) {
+            console.error(payError);
+            alert("帳號已建立，但付款跳轉失敗。請稍後再登入嘗試。");
+            // 雖然跳轉失敗，但帳號已存在，讓介面回到登入狀態
             closeAuthModal();
         }
     }
 
+    // --- 檢查是否剛付款回來 ---
+    function checkPaymentReturn() {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('payment');
+
+        if (status === 'success') {
+            alert("付款成功！歡迎加入 BrewLab Pro。");
+            // 清除 URL 參數讓網址變乾淨
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (status === 'cancel') {
+            alert("付款已取消。");
+        }
+    }
+
+    // 在 init 裡呼叫這個檢查
+    document.addEventListener("DOMContentLoaded", () => {
+        // ... 原有的 init ...
+        checkPaymentReturn(); // 加入這行
+    });
+
+    
     async function handleSignIn() {
         const t = translations[currentLang];
         const email = document.getElementById('modal-email').value;
