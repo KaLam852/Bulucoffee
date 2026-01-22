@@ -380,230 +380,230 @@
     </style>
 </head>
 <body>
-<div id="auth-container" style="position: absolute; top: 20px; right: 20px; z-index: 1000; font-family: sans-serif;">
-    </div> <div id="app-container">
-    <div id="login-ui">
-        <input type="email" id="email-input" placeholder="Enter email to login" 
-               style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-        <button onclick="handleLogin()" 
-                style="padding: 8px 12px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Login
-        </button>
-    </div>
-
-    <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 8px 15px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-        <span id="user-email" style="font-weight: bold; color: #333;"></span>
-        <button onclick="handleLogout()" 
-                style="font-size: 12px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Logout
-        </button>
-    </div>
-</div>
-    
-    <aside class="sidebar">
-        <div class="brand-area">
-            <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu Coffee" style="height: 80px; vertical-align: middle;">
-            <h1 class="brand-title">Brew<br>Lab.</h1>
-        </div>
+    <div id="auth-container" style="position: absolute; top: 15px; right: 20px; z-index: 1000; font-family: sans-serif;">
         
-        <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
-
-        <div class="step-nav">
-            <div class="nav-item active" id="navStep1">
-                <span class="nav-num">01</span>
-                <span class="nav-label">Config</span>
-            </div>
-            <div class="nav-item" id="navStep2">
-                <span class="nav-num">02</span>
-                <span class="nav-label">Scan</span>
-            </div>
-            <div class="nav-item" id="navStep3">
-                <span class="nav-num">03</span>
-                <span class="nav-label">Brew</span>
-            </div>
-        </div>
-
-        <div class="sidebar-footer">
-            <button class="btn-lang" id="btnLangDesktop" onclick="toggleLanguage()">EN / 中</button>
-        </div>
-    </aside>
-
-    <main class="main-stage">
-        
-        <div id="viewConfig">
-            <div class="radial-section">
-                <div class="dose-dial">
-                    <span id="doseDisplay" class="dose-val">20</span>
-                    <span class="dose-unit">grams</span>
-                </div>
-                <div class="range-wrapper">
-                    <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
-                </div>
-            </div>
-
-            <div class="h-scroll-section">
-                <div class="section-header">
-                    <i data-lucide="filter" size="20"></i> <span data-i18n="sec_dripper">Select Dripper</span>
-                </div>
-                <div class="horizontal-list">
-                    <div class="gear-card" onclick="selectGear(this, 'Hario V60')">
-                        <i data-lucide="filter" size="32"></i><span class="gear-name">V60</span>
-                    </div>
-                    <div class="gear-card" onclick="selectGear(this, 'Origami V')">
-                        <i data-lucide="star" size="32"></i><span class="gear-name">Origami</span>
-                    </div>
-                    <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')">
-                        <i data-lucide="align-center" size="32"></i><span class="gear-name">Kalita Wave</span>
-                    </div>
-                    <div class="gear-card" onclick="selectGear(this, 'Hario Switch')">
-                        <i data-lucide="toggle-right" size="32"></i><span class="gear-name">Hario Switch</span>
-                    </div>
-                    <div class="gear-card" onclick="selectGear(this, 'Chemex')">
-                        <i data-lucide="flask-conical" size="32"></i><span class="gear-name">Chemex</span>
-                    </div>
-                    <div class="gear-card" onclick="selectGear(this, 'Others')">
-                        <i data-lucide="more-horizontal" size="32"></i><span class="gear-name">Others</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="h-scroll-section">
-                <div class="section-header">
-                     <i data-lucide="settings-2" size="20"></i> <span data-i18n="sec_grinder">Grinder</span>
-                </div>
-                <div class="controls-grid">
-                    <select id="inputGrinder" class="custom-select">
-                        <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
-                    <option value="Comandante C40">Comandante C40</option>
-                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
-                    <option value="Niche Zero">Niche Zero</option>
-                    <option value="Fellow Ode">Fellow Ode</option>
-                    <option value="EK43">Mahlkonig EK43</option>
-                    <option value="Fuji">Fuji Royal / Feima</option>
-                    <option value="Generic">Other / Generic</option>
-                    </select>
-               
-                </div>
-            </div>
-            <div style="height: 100px;"></div> 
-        </div>
-
-        <div id="viewUpload" class="overlay-view hidden">
-            <div class="upload-split">
-                <div class="upload-left">
-                    <h2 class="brand-title" style="color:var(--text-main); font-size:42px; margin-bottom:20px;">AI Scan.</h2>
-                    <p style="color:#666; line-height:1.6; margin-bottom:30px;" data-i18n="scan_desc">
-                        Our Bulu AI analyzes roast level and origin to calibrate the perfect recipe.
-                    </p>
-                    <button class="btn-lang" style="width:auto; border:none; padding-left:0;" onclick="backToConfig()">
-                        ← <span data-i18n="btn_back">Go Back</span>
-                    </button>
-                    <div id="errorMsg" style="color:red; margin-top:20px; display:none;"></div>
-                </div>
-                
-                <div class="upload-right">
-                    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-                        <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
-                        <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px;"></i>
-                        <span style="font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Upload Coffee Bag</span>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-<div id="viewResult" class="hidden">
-    <div class="result-dashboard">
-        
-    <div class="card origin-card">
-        <div>
-        <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
-        <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
-        <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
-        </div>
-    
-        <div style="text-align:right;">
-        <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
-        </div>
-    </div>
-
-        <div class="card stats-panel">
-    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">
-         Parameters 參數
-    </div>
-    
-    <div class="stat-row">
-        <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
-        <span id="resGrind" class="stat-val">--</span>
-    </div>
-    <div class="stat-row">
-        <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
-        <span id="resTemp" class="stat-val">--</span>
-    </div>
-    <div class="stat-row">
-        <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
-        <span id="resWaterTotal" class="stat-val">--</span>
-    </div>
-    <div class="stat-row">
-        <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
-        <span id="resTotalTime" class="stat-val">--</span>
-    </div>
-
-    <div style="margin-top:24px; padding:20px 24px; background:#fff; border-left: 5px solid #d4a373; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-    <h3 style="margin:0 0 10px 0; font-size:14px; text-transform:uppercase; color:#d4a373; letter-spacing:1px; font-weight:bold;">
-        ✦ Strategy 沖煮策略
-    </h3>
-    <div id="resStrategy" style="font-size:16px; line-height:1.6; color:#2d2d2d; font-weight:500;">
-        Strategy will appear here...
-    </div>
-    </div>
-</div>
-
-        <div class="card timeline-panel">
-            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
-            <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;">
-            </div>
-        </div>
-
-        <div class="card chat-panel">
-            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin:0; color:var(--brand-primary);">AI Barista Chat</h3>
-            
-            <div id="chatWindow"></div>
-            
-            <div style="margin-top:10px; display:flex; gap:10px;">
-                <input type="text" id="chatInput" style="flex:1; border:1px solid #ddd; border-radius:20px; padding:12px 20px; outline:none;" placeholder="Ask AI about this brew...">
-                <button onclick="sendChat()" style="background:var(--brand-primary); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="arrow-up" size="20"></i>
-                </button>
-            </div>
-
-            <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
-                <span data-i18n="btn_restart">Start Over</span>
+        <div id="login-ui" style="display: flex; gap: 5px;">
+            <input type="email" id="email-input" placeholder="Email" 
+                   style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 140px;">
+            <button onclick="handleLogin()" 
+                    style="padding: 6px 12px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Login
             </button>
         </div>
 
-    </div>
-</div>
-
-    </main>
-
-    <div class="action-bar" id="actionBar">
-        <button id="btnNext" class="btn-fab" disabled onclick="goToUpload()">
-            <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
-        </button>
-        <button id="btnAnalyze" class="btn-fab hidden" disabled onclick="startAnalysis()">
-             <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
-        </button>
-    </div>
-
-    <div id="viewLoading" class="loading-screen hidden">
-        <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
-            <i data-lucide="loader-2" size="30" class="spin"></i>
+        <div id="user-ui" style="display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <span id="user-email" style="font-size: 13px; font-weight: bold; color: #333;"></span>
+            <button onclick="handleLogout()" 
+                    style="font-size: 12px; padding: 4px 8px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Logout
+            </button>
         </div>
-        <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);" id="loadingText" data-i18n="loading">AI PROCESSING</div>
-    </div>
-</div>
 
+    </div> 
+    <div id="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand-area">
+                <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu Coffee" style="height: 80px; vertical-align: middle;">
+                <h1 class="brand-title">Brew<br>Lab.</h1>
+            </div>
+            
+            <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
+    
+            <div class="step-nav">
+                <div class="nav-item active" id="navStep1">
+                    <span class="nav-num">01</span>
+                    <span class="nav-label">Config</span>
+                </div>
+                <div class="nav-item" id="navStep2">
+                    <span class="nav-num">02</span>
+                    <span class="nav-label">Scan</span>
+                </div>
+                <div class="nav-item" id="navStep3">
+                    <span class="nav-num">03</span>
+                    <span class="nav-label">Brew</span>
+                </div>
+            </div>
+    
+            <div class="sidebar-footer">
+                <button class="btn-lang" id="btnLangDesktop" onclick="toggleLanguage()">EN / 中</button>
+            </div>
+        </aside>
+    
+        <main class="main-stage">
+            
+            <div id="viewConfig">
+                <div class="radial-section">
+                    <div class="dose-dial">
+                        <span id="doseDisplay" class="dose-val">20</span>
+                        <span class="dose-unit">grams</span>
+                    </div>
+                    <div class="range-wrapper">
+                        <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                    </div>
+                </div>
+    
+                <div class="h-scroll-section">
+                    <div class="section-header">
+                        <i data-lucide="filter" size="20"></i> <span data-i18n="sec_dripper">Select Dripper</span>
+                    </div>
+                    <div class="horizontal-list">
+                        <div class="gear-card" onclick="selectGear(this, 'Hario V60')">
+                            <i data-lucide="filter" size="32"></i><span class="gear-name">V60</span>
+                        </div>
+                        <div class="gear-card" onclick="selectGear(this, 'Origami V')">
+                            <i data-lucide="star" size="32"></i><span class="gear-name">Origami</span>
+                        </div>
+                        <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')">
+                            <i data-lucide="align-center" size="32"></i><span class="gear-name">Kalita Wave</span>
+                        </div>
+                        <div class="gear-card" onclick="selectGear(this, 'Hario Switch')">
+                            <i data-lucide="toggle-right" size="32"></i><span class="gear-name">Hario Switch</span>
+                        </div>
+                        <div class="gear-card" onclick="selectGear(this, 'Chemex')">
+                            <i data-lucide="flask-conical" size="32"></i><span class="gear-name">Chemex</span>
+                        </div>
+                        <div class="gear-card" onclick="selectGear(this, 'Others')">
+                            <i data-lucide="more-horizontal" size="32"></i><span class="gear-name">Others</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="h-scroll-section">
+                    <div class="section-header">
+                         <i data-lucide="settings-2" size="20"></i> <span data-i18n="sec_grinder">Grinder</span>
+                    </div>
+                    <div class="controls-grid">
+                        <select id="inputGrinder" class="custom-select">
+                            <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
+                        <option value="Comandante C40">Comandante C40</option>
+                        <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                        <option value="Niche Zero">Niche Zero</option>
+                        <option value="Fellow Ode">Fellow Ode</option>
+                        <option value="EK43">Mahlkonig EK43</option>
+                        <option value="Fuji">Fuji Royal / Feima</option>
+                        <option value="Generic">Other / Generic</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="height: 100px;"></div> 
+            </div>
+    
+            <div id="viewUpload" class="overlay-view hidden">
+                <div class="upload-split">
+                    <div class="upload-left">
+                        <h2 class="brand-title" style="color:var(--text-main); font-size:42px; margin-bottom:20px;">AI Scan.</h2>
+                        <p style="color:#666; line-height:1.6; margin-bottom:30px;" data-i18n="scan_desc">
+                            Our Bulu AI analyzes roast level and origin to calibrate the perfect recipe.
+                        </p>
+                        <button class="btn-lang" style="width:auto; border:none; padding-left:0;" onclick="backToConfig()">
+                            ← <span data-i18n="btn_back">Go Back</span>
+                        </button>
+                        <div id="errorMsg" style="color:red; margin-top:20px; display:none;"></div>
+                    </div>
+                    
+                    <div class="upload-right">
+                        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                            <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
+                            <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px;"></i>
+                            <span style="font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Upload Coffee Bag</span>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div id="viewResult" class="hidden">
+                <div class="result-dashboard">
+                    
+                <div class="card origin-card">
+                    <div>
+                    <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
+                    <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
+                    <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+                    </div>
+                
+                    <div style="text-align:right;">
+                    <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
+                    </div>
+                </div>
+            
+                <div class="card stats-panel">
+                    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">
+                        Parameters 參數
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
+                        <span id="resGrind" class="stat-val">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
+                        <span id="resTemp" class="stat-val">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
+                        <span id="resWaterTotal" class="stat-val">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
+                        <span id="resTotalTime" class="stat-val">--</span>
+                    </div>
+                
+                    <div style="margin-top:24px; padding:20px 24px; background:#fff; border-left: 5px solid #d4a373; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                        <h3 style="margin:0 0 10px 0; font-size:14px; text-transform:uppercase; color:#d4a373; letter-spacing:1px; font-weight:bold;">
+                            ✦ Strategy 沖煮策略
+                        </h3>
+                        <div id="resStrategy" style="font-size:16px; line-height:1.6; color:#2d2d2d; font-weight:500;">
+                            Strategy will appear here...
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="card timeline-panel">
+                    <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
+                    <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;"></div>
+                </div>
+            
+                <div class="card chat-panel">
+                    <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin:0; color:var(--brand-primary);">AI Barista Chat</h3>
+                    
+                    <div id="chatWindow"></div>
+                    
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <input type="text" id="chatInput" style="flex:1; border:1px solid #ddd; border-radius:20px; padding:12px 20px; outline:none;" placeholder="Ask AI about this brew...">
+                        <button onclick="sendChat()" style="background:var(--brand-primary); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                            <i data-lucide="arrow-up" size="20"></i>
+                        </button>
+                    </div>
+            
+                    <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
+                        <span data-i18n="btn_restart">Start Over</span>
+                    </button>
+                </div>
+            
+                </div>
+            </div>
+    
+        </main>
+    
+        <div class="action-bar" id="actionBar">
+            <button id="btnNext" class="btn-fab" disabled onclick="goToUpload()">
+                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
+            </button>
+            <button id="btnAnalyze" class="btn-fab hidden" disabled onclick="startAnalysis()">
+                 <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
+            </button>
+        </div>
+    
+        <div id="viewLoading" class="loading-screen hidden">
+            <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
+                <i data-lucide="loader-2" size="30" class="spin"></i>
+            </div>
+            <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);" id="loadingText" data-i18n="loading">AI PROCESSING</div>
+        </div>
+
+    </div>
 <script>
     // --- 1. CONFIGURATION ---
     const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
