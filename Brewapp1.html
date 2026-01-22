@@ -326,11 +326,43 @@
                  border-radius: 12px;
                  overflow-y: auto;
         }
+        
+    /* --- Mobile Fixes (手機版救星) --- */
+    @media (max-width: 768px) {
+        
+        /* 1. 調整登入框位置與大小 */
+        #auth-container {
+            top: 10px !important;
+            right: 10px !important;
+            width: auto;
+        }
+        
+        /* 2. 讓輸入框變小，不要擋住 Logo */
+        #email-input {
+            width: 100px !important; /* 縮小寬度 */
+            padding: 4px !important;
+        }
+        
+        #login-ui button {
+            padding: 4px 8px !important;
+        }
+
+        /* 3. 防止畫面左右晃動 (20g 被切掉的問題) */
+        body, html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
+        /* 4. 確保主畫面不會被登入框蓋住 */
+        .sidebar {
+            padding-top: 60px; /* 增加頂部空間給登入框 */
+        }
+    }
     </style>
 </head>
 <body>
 <div id="auth-container" style="position: absolute; top: 20px; right: 20px; z-index: 1000; font-family: sans-serif;">
-    
+    </div> <div id="app-container">
     <div id="login-ui">
         <input type="email" id="email-input" placeholder="Enter email to login" 
                style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
