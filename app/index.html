@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BrewLab.</title>
     <link rel="icon" type="image/png" href="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Bulu-modified.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">  
+    
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,50 +26,93 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
             margin: 0; padding: 0;
             font-family: "SF Pro Text", 'Noto Sans TC', sans-serif;
             background: var(--bg-color);
             color: var(--text-main);
-            height: 100vh; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- Auth & UI --- */
-        .auth-wrapper { position: absolute; top: 30px; right: 40px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
-        #btn-open-login { padding: 8px 20px; background: #333; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        #user-ui { display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); padding: 6px 16px; border-radius: 20px; border: 1px solid #eee; }
+        /* --- Auth Button --- */
+        .auth-wrapper {
+            position: absolute; top: 30px; right: 40px; z-index: 1000;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        #btn-open-login {
+            padding: 8px 20px; background: #333; color: white; border: none;
+            border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+
+        #user-ui {
+            display: none; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.95); padding: 6px 16px;
+            border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #eee;
+        }
 
         /* --- Layout --- */
         #app-container { display: flex; width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto; background: var(--bg-color); }
-        .sidebar { width: 280px; padding: 40px 30px; background: #fff; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.04); z-index: 10; }
-        .main-stage { flex: 1; position: relative; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 120px; }
 
-        /* --- Sidebar & Branding --- */
-        .brand-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--brand-accent); line-height: 1; }
-        .nav-item-step { display: flex; align-items: center; gap: 15px; color: var(--text-light); opacity: 0.5; transition: 0.3s; margin-bottom: 20px; }
+        .sidebar {
+            width: 280px; padding: 40px 30px; background: #fff;
+            display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.04); z-index: 10;
+        }
+
+        .main-stage {
+            flex: 1; position: relative; padding: 40px;
+            overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
+            padding-bottom: 120px;
+        }
+
+        .nav-item-step { display: flex; align-items: center; gap: 15px; color: var(--text-light); opacity: 0.5; transition: 0.3s; margin-bottom: 25px;}
         .nav-item-step.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
         .nav-num { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; }
 
         /* --- Components --- */
-        .dose-dial { width: 220px; height: 220px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 10px var(--brand-secondary), var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 40px; }
-        .dose-val { font-family: 'Cormorant Garamond', serif; font-size: 80px; font-weight: 700; color: var(--brand-primary); }
-        .gear-card { min-width: 140px; height: 160px; background: #fff; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .dose-dial {
+            width: 220px; height: 220px; border-radius: 50%; background: #fff;
+            box-shadow: 0 0 0 10px var(--brand-secondary), var(--shadow);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 40px;
+        }
+        .dose-val { font-family: 'Cormorant Garamond', serif; font-size: 80px; font-weight: 700; color: var(--brand-primary); line-height: 1; }
+
+        .gear-card {
+            min-width: 140px; height: 160px; background: #fff; border-radius: var(--radius);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 2px solid transparent; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
         .gear-card.selected { border-color: var(--brand-primary); background: var(--brand-secondary); }
 
-        .overlay-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 20; padding: 40px; }
+        .custom-select { width: 100%; padding: 20px; border: none; background: #fff; border-radius: var(--radius); box-shadow: 0 4px 15px rgba(0,0,0,0.03); appearance: none; cursor: pointer; }
+
+        /* --- Overlays --- */
+        .overlay-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 20; padding: 40px; animation: fadeIn 0.3s; }
         .upload-zone { width: 100%; height: 100%; background: #fff; border: 3px dashed #DDE1E8; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; }
 
-        /* --- Result Card --- */
+        /* --- Results --- */
+        .result-dashboard { display: grid; grid-template-columns: 1fr; gap: 25px; }
         .origin-card { background: linear-gradient(135deg, var(--brand-primary) 0%, #3a4b8a 100%); color: #fff; border-radius: var(--radius); padding: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .card { background: #fff; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .card { background: #fff; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
 
-        /* --- Bottom Nav (Mobile/Web) --- */
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #9ca3af; font-size: 0.75rem; text-decoration: none; }
-        .nav-item.active { color: #d97706; }
+        /* --- Navbar --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
+        .nav-link { display: flex; flex-direction: column; align-items: center; color: #9ca3af; font-size: 0.7rem; text-decoration: none; }
+        .nav-link.active { color: #d97706; }
 
         .hidden { display: none !important; }
-        @media (max-width: 768px) { .sidebar { display: none; } .main-stage { padding: 20px; } .auth-wrapper { top: 18px; right: 15px; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .auth-wrapper { top: 18px; right: 15px; }
+            .main-stage { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -75,68 +120,75 @@
     <div class="auth-wrapper">
         <button id="btn-open-login" onclick="openAuthModal()" data-i18n="btn_login">Login</button>
         <div id="user-ui">
-            <span id="user-email" style="font-size: 12px; font-weight: bold;"></span>
+            <span id="user-email" style="font-size: 12px; font-weight: bold; color: #333;"></span>
         </div>
     </div>
 
     <div id="auth-modal" class="modal-overlay hidden fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center backdrop-blur-sm">
-        <div class="modal-box bg-white p-8 rounded-2xl w-80 relative shadow-2xl">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 text-xl">✕</button>
-            <h2 id="auth-title" class="text-xl font-bold mb-4 text-center text-blue-800">Welcome</h2>
-            <input type="email" id="modal-email" placeholder="Email" class="w-full border p-3 mb-2 rounded-xl outline-none focus:border-blue-500">
-            <input type="password" id="modal-password" placeholder="Password" class="w-full border p-3 mb-4 rounded-xl outline-none focus:border-blue-500">
-            <button onclick="handleAuthAction()" id="btn-auth-action" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition">Log In</button>
+        <div class="modal-box bg-white p-8 rounded-3xl w-80 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400">✕</button>
+            <h2 id="auth-title" class="text-xl font-bold mb-4 text-center text-blue-900">Welcome Back</h2>
+            <div class="space-y-3">
+                <input type="email" id="modal-email" placeholder="Email" class="w-full border p-3 rounded-xl outline-none focus:border-blue-400">
+                <input type="password" id="modal-password" placeholder="Password" class="w-full border p-3 rounded-xl outline-none focus:border-blue-400">
+                <button onclick="handleAuthAction()" id="btn-auth-action" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold">Log In</button>
+            </div>
             <p class="text-center text-sm mt-4 text-gray-500">
                 <span id="auth-toggle-msg">New here?</span>
-                <span class="text-blue-600 cursor-pointer font-bold ml-1 underline" onclick="toggleAuthMode()" id="auth-toggle-btn">Create account</span>
+                <span class="text-blue-600 font-bold cursor-pointer underline ml-1" onclick="toggleAuthMode()" id="auth-toggle-btn">Create account</span>
             </p>
         </div>
     </div>
 
     <div id="viewLoading" class="loading-screen hidden fixed inset-0 bg-white/90 z-[2000] flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-        <div class="font-bold tracking-widest text-blue-800">AI ANALYZING...</div>
+        <div class="font-bold tracking-widest text-blue-800" data-i18n="loading">AI ANALYZING...</div>
     </div>
 
     <div id="app-container">
         <aside class="sidebar">
             <div class="mb-12">
-                <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu Coffee" class="h-16 mb-2">
+                <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/labels/Brewapp/Original%20Logo.png" alt="Bulu" class="h-16 mb-2">
                 <h1 class="brand-title">BrewLab.</h1>
             </div>
             <nav class="flex-1">
-                <div class="nav-item-step active" id="navStep1"><span class="nav-num">01</span><span class="ml-3 font-bold uppercase text-xs tracking-widest">Config</span></div>
-                <div class="nav-item-step" id="navStep2"><span class="nav-num">02</span><span class="ml-3 font-bold uppercase text-xs tracking-widest">Scan</span></div>
-                <div class="nav-item-step" id="navStep3"><span class="nav-num">03</span><span class="ml-3 font-bold uppercase text-xs tracking-widest">Brew</span></div>
+                <div class="nav-item-step active" id="navStep1"><span class="nav-num">01</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Config</span></div>
+                <div class="nav-item-step" id="navStep2"><span class="nav-num">02</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Scan</span></div>
+                <div class="nav-item-step" id="navStep3"><span class="nav-num">03</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Brew</span></div>
             </nav>
             <button class="w-full border border-blue-600 text-blue-600 py-2 rounded-full text-xs font-bold" onclick="toggleLanguage()">EN / 中</button>
         </aside>
 
         <main class="main-stage">
+            
             <div id="viewConfig">
                 <div class="radial-section">
-                    <div class="dose-dial mx-auto">
+                    <div class="dose-dial">
                         <span id="doseDisplay" class="dose-val">20</span>
-                        <span class="text-gray-400">grams</span>
+                        <span class="text-gray-400 text-sm">grams</span>
                     </div>
-                    <div class="w-64 mx-auto"><input type="range" id="inputDose" min="10" max="30" value="20" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-400" oninput="updateDose(this.value)"></div>
+                    <div class="w-64 mx-auto"><input type="range" id="inputDose" min="10" max="30" value="20" class="w-full h-1 bg-gray-200 rounded-lg appearance-none accent-orange-400" oninput="updateDose(this.value)"></div>
                 </div>
 
                 <div class="mt-12">
                     <h3 class="font-bold text-xl mb-4 flex items-center gap-2"><i data-lucide="filter" class="text-orange-400"></i> <span data-i18n="sec_dripper">Select Dripper</span></h3>
                     <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        <div class="gear-card" onclick="selectGear(this, 'V60')"><i data-lucide="filter" size="32"></i><span class="mt-2 text-sm font-bold">V60</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Origami')"><i data-lucide="star" size="32"></i><span class="mt-2 text-sm font-bold">Origami</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Switch')"><i data-lucide="toggle-right" size="32"></i><span class="mt-2 text-sm font-bold">Switch</span></div>
+                        <div class="gear-card selected" onclick="selectGear(this, 'Hario V60')"><i data-lucide="filter" size="32"></i><span class="mt-2 text-sm font-bold">V60</span></div>
+                        <div class="gear-card" onclick="selectGear(this, 'Origami V')"><i data-lucide="star" size="32"></i><span class="mt-2 text-sm font-bold">Origami</span></div>
+                        <div class="gear-card" onclick="selectGear(this, 'Hario Switch')"><i data-lucide="toggle-right" size="32"></i><span class="mt-2 text-sm font-bold">Switch</span></div>
+                        <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')"><i data-lucide="align-center" size="32"></i><span class="mt-2 text-sm font-bold">Kalita</span></div>
                     </div>
                 </div>
 
                 <div class="mt-8">
                     <h3 class="font-bold text-xl mb-4 flex items-center gap-2"><i data-lucide="settings-2" class="text-orange-400"></i> <span data-i18n="sec_grinder">Grinder</span></h3>
-                    <select id="inputGrinder" class="w-full p-5 rounded-2xl bg-white shadow-sm border-none outline-none text-gray-700">
+                    <select id="inputGrinder" class="custom-select outline-none">
                         <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
-                        <option value="C40">Comandante C40</option>
-                        <option value="K-Ultra">1Zpresso K-Ultra</option>
+                        <option value="Comandante C40">Comandante C40</option>
+                        <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                        <option value="Niche Zero">Niche Zero</option>
+                        <option value="Fellow Ode">Fellow Ode</option>
+                        <option value="EK43">Mahlkonig EK43</option>
                         <option value="Generic">Other / Generic</option>
                     </select>
                 </div>
@@ -146,14 +198,14 @@
                 <div class="flex flex-col md:flex-row gap-10 h-full items-center">
                     <div class="flex-1">
                         <h2 class="text-5xl font-bold mb-4 text-blue-900">AI Scan.</h2>
-                        <p class="text-gray-500 mb-8" data-i18n="scan_desc">AI analyzes your coffee bag for the perfect extraction.</p>
+                        <p class="text-gray-500 mb-8" data-i18n="scan_desc">Bulu AI analyzes roast level to calibrate your recipe.</p>
                         <button onclick="backToConfig()" class="text-blue-600 font-bold">← <span data-i18n="btn_back">Go Back</span></button>
                     </div>
                     <div class="flex-1 w-full h-80">
                         <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-                            <img id="imgPreview" class="absolute inset-0 w-full h-full object-cover opacity-0">
+                            <img id="imgPreview" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity">
                             <i data-lucide="scan-line" size="48" class="text-blue-600 mb-4"></i>
-                            <span class="font-bold text-blue-800" data-i18n="tap_upload">Upload Coffee Bag</span>
+                            <span class="font-bold text-blue-800" data-i18n="tap_upload">Upload Bag</span>
                             <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImage(event)">
                         </div>
                     </div>
@@ -172,88 +224,78 @@
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="card">
-                        <h3 class="font-bold text-gray-400 text-xs mb-4 tracking-widest">PARAMETERS</h3>
+                        <h3 class="font-bold text-gray-400 text-xs mb-4 tracking-widest uppercase">Parameters 參數</h3>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_grind">GRIND</span><span id="resGrind" class="font-bold text-blue-700">--</span></div>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_temp">TEMP</span><span id="resTemp" class="font-bold text-blue-700">--</span></div>
                         <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_water">WATER</span><span id="resWaterTotal" class="font-bold text-blue-700">--</span></div>
                         
                         <div class="mt-6 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-xl">
                             <h4 class="text-[10px] font-bold text-orange-400 mb-1">STRATEGY 策略</h4>
-                            <p id="resStrategy" class="text-xs leading-relaxed text-gray-700"></p>
+                            <p id="resStrategy" class="text-xs leading-relaxed text-gray-700 font-medium"></p>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card overflow-y-auto max-h-96">
                         <h3 class="font-bold text-blue-800 mb-4" data-i18n="steps_title">Brewing Steps</h3>
                         <div id="resTimeline" class="space-y-6 border-l-2 border-gray-100 pl-4"></div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-col items-center">
-                    <button id="btnSave" onclick="saveBrew()" class="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-2 transform transition hover:scale-105">
+                <div class="mt-10 flex flex-col items-center">
+                    <button id="btnSave" onclick="saveBrew()" class="w-full max-w-sm bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-3 transform transition hover:scale-105">
                         <svg xmlns="http://www.w3.org/2000/svg" style="width:20px; height:20px;" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                         </svg>
                         <span>儲存到沖煮日記 (Save to Journal)</span>
                     </button>
-                    <button onclick="location.reload()" class="mt-4 text-gray-400 text-sm font-medium" data-i18n="btn_restart">Start Over</button>
+                    <button onclick="location.reload()" class="mt-4 text-gray-400 text-sm font-medium hover:text-gray-600" data-i18n="btn_restart">Start Over</button>
                 </div>
             </div>
         </main>
 
-        <div class="fixed bottom-24 right-8 z-40">
-            <button id="btnNext" onclick="goToUpload()" class="bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2">
+        <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end">
+            <button id="btnNext" onclick="goToUpload()" class="bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-blue-800 transition-all">
                 <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
             </button>
-            <button id="btnAnalyze" onclick="startAnalysis()" class="hidden bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2">
+            <button id="btnAnalyze" onclick="startAnalysis()" class="hidden bg-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-blue-800 transition-all">
                 <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
             </button>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around py-3 z-50">
-        <a href="index.html" class="nav-item active">
-            <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
-            掃描 (Scan)
-        </a>
-        <a href="history.html" class="nav-item">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            日記 (Journal)
-        </a>
-        <a href="#" onclick="handleLogout()" class="nav-item">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            登出 (Exit)
-        </a>
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-link active"><i data-lucide="scan" size="20"></i><span class="mt-1">Scan</span></a>
+        <a href="history.html" class="nav-link"><i data-lucide="book-open" size="20"></i><span class="mt-1">Journal</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-link"><i data-lucide="log-out" size="20"></i><span class="mt-1">Exit</span></a>
     </nav>
 
 <script>
-    // --- 全域變數定義 ---
+    // --- 1. CONFIG & RE-NAMED CLIENT (TO AVOID ERROR) ---
     let currentBrewData = null; 
-    let sb = null; // 統一使用 sb 名稱，避免衝突
-
+    let sb = null; // We use 'sb' instead of 'supabase' variable name
+    
     const SB_URL = "https://yinylgixpfekynvpnkxw.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM";
 
-    let config = { dose: 20, gear: '', grinder: '' };
-    let currentLang = 'en';
+    let config = { dose: 20, gear: 'Hario V60', grinder: '' };
     let imageBase64 = null;
+    let currentLang = 'en';
     let isLoginMode = true;
 
     const translations = {
-        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Model", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes coffee bags...", tap_upload: "Upload Bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", lbl_grind: "GRIND", lbl_temp: "TEMP", lbl_water: "WATER", btn_login: "Login" },
-        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 分析咖啡豆包裝...", tap_upload: "上傳咖啡袋", btn_brew: "生成方案", steps_title: "沖煮步驟", btn_restart: "重新開始", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "注水量", btn_login: "登入" }
+        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Model", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", lbl_grind: "GRIND", lbl_temp: "TEMP", lbl_water: "WATER", btn_login: "Login" },
+        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 正在分析烘焙度...", tap_upload: "上傳咖啡袋", btn_brew: "生成方案", steps_title: "沖煮步驟", btn_restart: "重新開始", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "注水量", btn_login: "登入" }
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        // 初始化 Supabase
-        if (typeof supabase !== 'undefined') {
-            sb = supabase.createClient(SB_URL, SB_KEY);
+        if (typeof window.supabase !== 'undefined') {
+            sb = window.supabase.createClient(SB_URL, SB_KEY);
             setupAuthListener();
         }
         if (typeof lucide !== 'undefined') lucide.createIcons();
         updateUIText();
     });
 
-    // --- 認證邏輯 ---
+    // --- AUTH ---
     function setupAuthListener() {
         sb.auth.onAuthStateChange((_event, session) => {
             const btnLogin = document.getElementById('btn-open-login');
@@ -273,25 +315,21 @@
     async function handleAuthAction() {
         const email = document.getElementById('modal-email').value;
         const password = document.getElementById('modal-password').value;
-        if (!email || !password) return alert("Please fill info");
-        
+        if (!email || !password) return alert("Fill details");
         if (isLoginMode) {
             const { error } = await sb.auth.signInWithPassword({ email, password });
             if (error) alert(error.message);
         } else {
-            alert("Signup usually involves payment flow.");
+            alert("Signup uses the payment flow. Check Bulu main page.");
         }
     }
 
     async function handleLogout() { await sb.auth.signOut(); window.location.reload(); }
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
     function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-    function toggleAuthMode() { 
-        isLoginMode = !isLoginMode; 
-        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "Join Pro";
-    }
+    function toggleAuthMode() { isLoginMode = !isLoginMode; document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "Join BrewLab"; }
 
-    // --- UI 邏輯 ---
+    // --- LOGIC ---
     function toggleLanguage() { currentLang = currentLang === 'en' ? 'zh' : 'en'; updateUIText(); }
     function updateUIText() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -301,19 +339,16 @@
     }
 
     function updateDose(val) { config.dose = val; document.getElementById('doseDisplay').innerText = val; document.getElementById('resDoseRef').innerText = val; }
-    function selectGear(el, name) { 
-        document.querySelectorAll('.gear-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected'); config.gear = name; 
-    }
-
+    function selectGear(el, name) { document.querySelectorAll('.gear-card').forEach(c => c.classList.remove('selected')); el.classList.add('selected'); config.gear = name; }
+    
     function goToUpload() {
         config.grinder = document.getElementById('inputGrinder').value;
-        if (!config.gear || !config.grinder) return alert("Select Gear First");
+        if (!config.gear || !config.grinder) return alert("Please select gear & grinder first.");
         document.getElementById('viewConfig').classList.add('hidden');
         document.getElementById('viewUpload').classList.remove('hidden');
         document.getElementById('btnNext').classList.add('hidden');
         document.getElementById('btnAnalyze').classList.remove('hidden');
-        updateSidebarNav(2);
+        updateSidebarStep(2);
     }
 
     function backToConfig() {
@@ -321,12 +356,12 @@
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('btnNext').classList.remove('hidden');
         document.getElementById('btnAnalyze').classList.add('hidden');
-        updateSidebarNav(1);
+        updateSidebarStep(1);
     }
 
-    function updateSidebarNav(step) {
-        document.querySelectorAll('.nav-item-step').forEach(el => el.classList.remove('active'));
-        document.getElementById('navStep' + step).classList.add('active');
+    function updateSidebarStep(s) {
+        document.querySelectorAll('.nav-item-step').forEach(n => n.classList.remove('active'));
+        document.getElementById('navStep' + s).classList.add('active');
     }
 
     function handleImage(e) {
@@ -342,10 +377,9 @@
         reader.readAsDataURL(file);
     }
 
-    // --- 分析與儲存邏輯 ---
     async function startAnalysis() {
         document.getElementById('viewLoading').classList.remove('hidden');
-        updateSidebarNav(3);
+        updateSidebarStep(3);
         try {
             const res = await fetch(`${SB_URL}/functions/v1/brew`, {
                 method: 'POST',
@@ -353,67 +387,71 @@
                 body: JSON.stringify({ image: imageBase64, dose: config.dose, gear: config.gear, grinder: config.grinder, lang: currentLang })
             });
             const data = await res.json();
-            
-            // 重要：數據存入暫存區
             currentBrewData = data; 
-            
             renderResult(data);
             document.getElementById('viewLoading').classList.add('hidden');
             document.getElementById('viewUpload').classList.add('hidden');
             document.getElementById('viewResult').classList.remove('hidden');
             document.getElementById('btnAnalyze').classList.add('hidden');
         } catch (err) {
-            alert("Analysis failed");
+            alert("Analysis failed. Check your connection.");
             document.getElementById('viewLoading').classList.add('hidden');
         }
     }
 
     function renderResult(data) {
-        document.getElementById('resOrigin').innerText = data.bean.origin || "Unknown Bean";
+        document.getElementById('resOrigin').innerText = data.bean.origin || "Specialty Bean";
         document.getElementById('resStrategy').innerText = data.strategy;
         document.getElementById('resGrind').innerText = data.prep.grind;
         document.getElementById('resTemp').innerText = data.prep.temp;
         document.getElementById('resWaterTotal').innerText = data.prep.water_total;
+        
         const tl = document.getElementById('resTimeline');
         tl.innerHTML = data.steps.map(s => `
-            <div class="mb-6">
-                <span class="text-orange-400 font-bold">${s.time}</span>
-                <p class="font-bold text-blue-900">${s.action} - ${s.weight}</p>
-                <p class="text-xs text-gray-500">${s.detail}</p>
+            <div class="relative pb-6">
+                <div class="absolute left-[-21px] top-1 w-3 h-3 bg-orange-400 rounded-full border-2 border-white"></div>
+                <div class="font-bold text-orange-400 text-sm">${s.time}</div>
+                <div class="font-bold text-blue-900">${s.action} - ${s.weight}</div>
+                <div class="text-xs text-gray-500 mt-1">${s.detail}</div>
+                <div class="mt-2 text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded inline-block font-bold">💡 ${s.tip}</div>
             </div>
         `).join('');
     }
 
+    // --- SAVE TO JOURNAL ---
     async function saveBrew() {
         const btn = document.getElementById('btnSave');
         const { data: { user } } = await sb.auth.getUser();
-        if (!user) return alert("Login required");
+        if (!user) return alert("Please Login to save brews.");
 
-        btn.innerText = "Checking Status...";
+        const originalText = btn.innerHTML;
+        btn.innerText = "Saving...";
         btn.disabled = true;
 
         try {
-            // 檢查是否付費
             const { data: profile } = await sb.from('profiles').select('subscription_status').eq('id', user.id).single();
             if (!profile || profile.subscription_status !== 'active') {
-                if (confirm("Pro Feature! Upgrade now?")) { /* Redirect to payment */ }
-                btn.innerText = "Save to Journal"; btn.disabled = false; return;
+                if (confirm("🔒 Pro Feature! Upgrade to save unlimited brews. Upgrade now?")) {
+                    alert("Redirecting to payment...");
+                }
+                btn.innerHTML = originalText; btn.disabled = false;
+                return;
             }
 
-            // 執行儲存
             const { error } = await sb.from('brews').insert({
                 user_id: user.id,
-                bean_name: currentBrewData.bean.name,
-                roast_level: currentBrewData.bean.roast,
-                notes: currentBrewData.bean.origin,
+                bean_name: currentBrewData.bean.name || "Unknown",
+                roast_level: currentBrewData.bean.roast || "Unknown",
+                notes: currentBrewData.bean.origin || "",
                 recipe: document.getElementById('resTimeline').innerText
             });
+
             if (error) throw error;
-            btn.innerHTML = "✅ Saved to Journal!";
+            btn.innerHTML = "✅ Saved Successfully!";
             btn.classList.replace('bg-green-600', 'bg-gray-400');
         } catch (err) {
             alert("Save Error: " + err.message);
-            btn.innerText = "Save to Journal"; btn.disabled = false;
+            btn.innerHTML = originalText; btn.disabled = false;
         }
     }
 </script>
