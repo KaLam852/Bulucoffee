@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BrewLab.</title>
     <link rel="icon" type="image/png" href="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/logopic/Bulu-modified.png">
-    
+    <link rel="apple-touch-icon" href="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/logopic/Original%20Logo.png">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">  
     
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <style>
         :root {
+            /* --- Bulu Coffee Branding --- */
             --brand-primary: #5468AA;
             --brand-secondary: #F0F2F9;
             --brand-accent: #FFA07A;
+            
+            /* --- UI Basics --- */
             --bg-color: #FAFAFC;
             --text-main: #2D3436;
             --text-light: #636E72;
@@ -39,86 +40,90 @@
             align-items: center;
         }
 
-        /* --- Auth Wrapper --- */
-        .auth-wrapper {
-            position: absolute; top: 30px; right: 40px; z-index: 1000;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        #btn-open-login {
-            padding: 8px 24px; 
-            background: #333; 
-            color: white; border: none;
-            border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        #btn-open-login:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
-
-        #user-ui {
-            display: none; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.95); padding: 6px 16px;
-            border-radius: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #eee;
-        }
-
         /* --- Layout --- */
-        #app-container { display: flex; width: 100%; height: 100vh; max-width: 1400px; margin: 0 auto; background: var(--bg-color); }
+        #app-container {
+            display: flex;
+            width: 100%; height: 100%;
+            max-width: 1400px;
+            background: var(--bg-color);
+        }
 
+        /* --- Sidebar --- */
         .sidebar {
-            width: 280px; padding: 40px 30px; background: #fff;
-            display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.04); z-index: 10;
+            width: 280px; padding: 40px 30px;
+            background: #fff;
+            display: flex; flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.04);
+            z-index: 10;
         }
 
-        .main-stage {
-            flex: 1; position: relative; padding: 40px;
-            overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
-            padding-bottom: 120px;
+        .brand-area { margin-bottom: 60px; }
+        .brand-logo {
+            font-size: 12px; font-weight: 800; letter-spacing: 2px;
+            color: var(--brand-primary); text-transform: uppercase;
+            margin-bottom: 10px; display: block;
+        }
+        .brand-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px; font-weight: 700;
+            color: var(--brand-accent);
+            line-height: 1; margin: 0;
         }
 
-        .brand-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--brand-accent); line-height: 1; margin: 0; }
-        .nav-item-step { display: flex; align-items: center; gap: 15px; color: var(--text-light); opacity: 0.5; transition: 0.3s; margin-bottom: 25px; cursor: default; }
-        .nav-item-step.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
+        .step-nav { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px;
+            color: var(--text-light); opacity: 0.5; transition: 0.3s;
+        }
+        .nav-item.active { opacity: 1; color: var(--brand-primary); transform: translateX(10px); }
         .nav-num { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; }
+        .nav-label { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- Components --- */
+        .sidebar-footer { margin-top: auto; }
+        .btn-lang {
+            background: transparent; border: 1px solid var(--brand-primary);
+            color: var(--brand-primary); padding: 8px 16px;
+            border-radius: 20px; font-size: 12px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; width: 100%;
+        }
+
+        /* --- Mobile Lang Button (Hidden on Desktop) --- */
+        .btn-mobile-lang { display: none; }
+
+        /* --- Main Content --- */
+        .main-stage {
+            flex: 1; position: relative;
+            padding: 40px;
+            overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- Radial Section (Dose) --- */
+        .radial-section {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px 0;
+        }
         .dose-dial {
-            width: 220px; height: 220px; border-radius: 50%; background: #fff;
+            width: 220px; height: 220px; border-radius: 50%;
+            background: #fff;
             box-shadow: 0 0 0 10px var(--brand-secondary), var(--shadow);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 40px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; margin-bottom: 40px;
             transition: transform 0.2s;
         }
-        .dose-val { font-family: 'Cormorant Garamond', serif; font-size: 80px; font-weight: 700; color: var(--brand-primary); line-height: 1; }
-
-        .gear-card {
-            min-width: 140px; height: 160px; background: #fff; border-radius: var(--radius);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 2px solid transparent; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        .dose-dial:active { transform: scale(0.98); }
+        .dose-val {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 80px; font-weight: 700;
+            color: var(--brand-primary); line-height: 1;
         }
-        .gear-card:hover { transform: translateY(-5px); }
-        .gear-card.selected { border-color: var(--brand-primary); background: var(--brand-secondary); box-shadow: 0 8px 20px rgba(84, 104, 170, 0.2); }
-        .gear-card i { color: #999; transition: 0.3s; }
-        .gear-card.selected i { color: var(--brand-primary); }
+        .dose-unit { font-size: 18px; color: #999; font-weight: 300; margin-top: -5px; }
 
-        .origin-card { background: linear-gradient(135deg, var(--brand-primary) 0%, #3a4b8a 100%); color: #fff; border-radius: var(--radius); padding: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .card { background: #fff; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
-
-        .upload-zone {
-            width: 100%; height: 100%; background: #fff; border: 3px dashed #DDE1E8; border-radius: var(--radius);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; cursor: pointer; transition: 0.3s;
-        }
-        .upload-zone:hover { border-color: var(--brand-primary); background: var(--brand-secondary); }
-
-        /* --- Buttons & Inputs --- */
-        .btn-action {
-            background-color: var(--brand-primary); color: white;
-            padding: 12px 30px; border-radius: 30px; font-weight: bold;
-            box-shadow: 0 10px 20px rgba(84, 104, 170, 0.3); transition: 0.3s;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .btn-action:hover { transform: scale(1.05); background-color: #43538A; }
-        
+        .range-wrapper { width: 300px; max-width: 100%; text-align: center; }
         input[type=range] {
-            width: 100%; height: 6px; background: #E0E4EB; border-radius: 5px; outline: none; appearance: none;
+            width: 100%; height: 6px; background: #E0E4EB;
+            border-radius: 5px; outline: none; appearance: none;
         }
         input[type=range]::-webkit-slider-thumb {
             appearance: none; width: 24px; height: 24px;
@@ -126,439 +131,708 @@
             border-radius: 50%; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
-        /* --- Mobile Nav --- */
-        .bottom-nav { display: none; }
+        /* --- Horizontal Flow (Dripper) --- */
+        .h-scroll-section { margin-bottom: 40px; }
+        .section-header {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px; color: var(--text-main); margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-header i { color: var(--brand-accent); }
 
-        .hidden { display: none !important; }
+        .horizontal-list {
+            display: flex; gap: 20px; overflow-x: auto;
+            padding-bottom: 20px; scroll-behavior: smooth;
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .horizontal-list::-webkit-scrollbar { display: none; }
+
+        .gear-card {
+            min-width: 140px; height: 160px;
+            background: #fff; border-radius: var(--radius);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            border: 2px solid transparent;
+            transition: 0.3s; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .gear-card:hover { transform: translateY(-5px); }
+        .gear-card.selected {
+            border-color: var(--brand-primary);
+            background: var(--brand-secondary);
+            box-shadow: 0 8px 20px rgba(84, 104, 170, 0.2);
+        }
+        .gear-card i { color: var(--text-light); transition: 0.3s; }
+        .gear-card.selected i { color: var(--brand-primary); transform: scale(1.2); }
+        .gear-name { margin-top: 15px; font-weight: 500; font-size: 14px; }
+
+        /* --- Controls --- */
+        .controls-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            max-width: 800px;
+        }
+        .custom-select {
+            width: 100%; padding: 20px; border: none; background: #fff;
+            border-radius: var(--radius); font-size: 15px; color: var(--text-main);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); appearance: none;
+            cursor: pointer;
+        }
+
+        /* --- Action Bar --- */
+        .action-bar {
+            position: fixed; bottom: 30px; right: 40px;
+            display: flex; gap: 15px; align-items: center; z-index: 50;
+        }
+        .btn-fab {
+            height: 60px; padding: 0 30px;
+            background: var(--brand-primary); color: #fff;
+            border: none; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(84, 104, 170, 0.4);
+            display: flex; align-items: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .btn-fab:hover { transform: scale(1.05); }
+        .btn-fab:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* --- Upload Overlay --- */
+        .overlay-view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 20;
+            padding: 40px;
+            display: flex; flex-direction: column;
+            animation: slideInRight 0.4s ease-out;
+        }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         
+        .upload-split { display: flex; height: 100%; gap: 40px; align-items: center; }
+        .upload-left { flex: 1; }
+        .upload-right { flex: 1; height: 100%; }
+        
+        .upload-zone {
+            width: 100%; height: 100%; background: #fff;
+            border: 3px dashed #DDE1E8; border-radius: var(--radius);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; overflow: hidden; cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--brand-primary); background: var(--brand-secondary); }
+
+        /* --- Result Dashboard --- */
+        .result-dashboard {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 25px; height: 100%;
+            padding-bottom: 80px;
+        }
+        .card { background: #fff; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
+        .origin-card {
+            grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(135deg, var(--brand-primary) 0%, #3a4b8a 100%);
+            color: #fff;
+        }
+        .res-origin { font-family: 'Cormorant Garamond', serif; font-size: 36px; margin: 0; }
+        .stats-panel { grid-row: 2; display: flex; flex-direction: column; gap: 15px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .stat-label { font-size: 12px; color: #999; letter-spacing: 1px; font-weight: 700; }
+        .stat-val { font-weight: 700; color: var(--brand-primary); font-size: 16px; }
+        .timeline-panel { grid-row: 2; overflow-y: auto; }
+        
+        .recipe-step { margin-bottom: 25px; display: flex; gap: 15px; }
+        .step-time { font-family: 'Cormorant Garamond'; font-weight: bold; color: var(--brand-accent); width: 50px; flex-shrink: 0; }
+        .step-title { font-weight: 700; margin-bottom: 5px; }
+        .step-desc { font-size: 14px; color: #555; line-height: 1.5; }
+        .step-tip { margin-top: 5px; font-size: 12px; background: #FFF8F0; padding: 5px 10px; border-radius: 8px; color: #E67E22; display: inline-block;}
+
+        /* --- Chat/Rating --- */
+        #chatWindow { max-height: 200px; overflow-y: auto; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+        .chat-msg { margin-bottom: 10px; font-size: 14px; padding: 10px 15px; border-radius: 12px; max-width: 90%; }
+        .msg-ai { background: #f0f2f9; color: var(--text-main); margin-right: auto; }
+        .msg-user { background: var(--brand-primary); color: #fff; margin-left: auto; text-align: right; }
+        .rating-container { display: flex; gap: 5px; margin-top: 10px; cursor: pointer; }
+        .star-icon { color: #ddd; font-size: 20px; transition: 0.2s; }
+        .star-icon.filled { color: var(--brand-accent); }
+        .feedback-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .feedback-chip { background: #fff; border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; font-size: 12px; cursor: pointer; }
+        .feedback-chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+        /* --- Loading & Utils --- */
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .hidden { display: none !important; }
+
+        /* Animation Keyframes defined in CSS now */
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+        .spin { animation: spin 2s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- RWD: Mobile Adaption --- */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .auth-wrapper { top: 18px; right: 15px; }
-            .main-stage { padding: 20px; padding-bottom: 100px; }
-            .bottom-nav {
-                display: flex; position: fixed; bottom: 0; width: 100%; background: white;
-                border-top: 1px solid #eee; justify-content: space-around; padding: 12px 0; z-index: 100;
+            #app-container { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: auto; padding: 15px 20px;
+                flex-direction: row; justify-content: space-between; align-items: center;
+                border-bottom: 1px solid #eee; border-right: none;
             }
-            .nav-link { display: flex; flex-direction: column; align-items: center; color: #9ca3af; font-size: 0.7rem; text-decoration: none; }
-            .nav-link.active { color: var(--brand-accent); } 
+            .brand-area { margin: 0; display: flex; align-items: center; }
+            .brand-title { display: inline-block; font-size: 24px; margin: 0; } 
+            .brand-title br { display: none; }
+            .brand-logo { display: none; }
+            
+            /* Show Language Toggle on Mobile Header */
+            .btn-mobile-lang {
+                display: block; 
+                background: #fff; border: 1px solid #ddd; color: var(--text-main);
+                padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;
+            }
+
+            .step-nav, .sidebar-footer { display: none; }
+            
+            .main-stage { padding: 20px; padding-bottom: 100px; }
+            .dose-dial { width: 160px; height: 160px; margin-bottom: 20px; }
+            .dose-val { font-size: 50px; }
+            
+            .upload-split { flex-direction: column-reverse; }
+            .result-dashboard { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+            
+            .action-bar { 
+                width: 100%; bottom: 0; right: 0; padding: 15px; 
+                background: rgba(255,255,255,0.95); 
+                backdrop-filter: blur(5px); justify-content: center; 
+                border-top: 1px solid #eee;
+            }
+            .btn-fab { width: 100%; justify-content: center; }
+        }
+                /* --- 在 style 標籤內加入這個 class --- */
+            .chat-panel {
+                 grid-column: 1 / -1; /* 讓它橫跨兩欄，置於底部 */
+                 display: flex;
+                 flex-direction: column;
+                 gap: 15px;
+            }
+
+                 /* 為了讓聊天視窗更好看，可以稍微調整高度 */
+            #chatWindow {
+                 max-height: 300px; /* 增加一點高度 */
+                 background: #FAFAFC; /* 给聊天背景一點顏色區分 */
+                 padding: 15px;
+                 border-radius: 12px;
         }
     </style>
 </head>
 <body>
 
-    <div class="auth-wrapper">
-        <button id="btn-open-login" onclick="openAuthModal()" data-i18n="btn_login">Login</button>
-        <div id="user-ui">
-            <span id="user-email" style="font-size: 12px; font-weight: bold; color: #333;"></span>
+<div id="app-container">
+    
+    <aside class="sidebar">
+        <div class="brand-area">
+            <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/logopic/Original%20Logo.png" alt="Bulu Coffee" style="height: 80px; vertical-align: middle;">
+            <h1 class="brand-title">Brew<br>Lab.</h1>
         </div>
-    </div>
+        
+        <button class="btn-mobile-lang" id="btnLangMobile" onclick="toggleLanguage()">EN / 中</button>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden z-[9999] flex items-center justify-center backdrop-blur-sm transition-opacity duration-300">
-        <div class="bg-white p-8 rounded-3xl w-full max-w-sm shadow-2xl relative mx-4 animate-fade-in-up">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-            <h2 id="auth-title" class="text-2xl font-bold mb-2 text-center" style="color: var(--brand-primary);">Welcome Back</h2>
-            <p id="auth-desc" class="text-center text-gray-400 text-xs mb-6">Sign in to sync your coffee journal.</p>
-            <div class="space-y-4">
-                <input type="email" id="modal-email" placeholder="Email Address" class="w-full border border-gray-200 p-3 rounded-xl outline-none focus:border-[#5468AA] transition">
-                <input type="password" id="modal-password" placeholder="Password" class="w-full border border-gray-200 p-3 rounded-xl outline-none focus:border-[#5468AA] transition">
-                <button onclick="handleAuthAction()" id="btn-auth-action" class="w-full text-white py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg" style="background-color: var(--brand-primary);">Log In</button>
+        <div class="step-nav">
+            <div class="nav-item active" id="navStep1">
+                <span class="nav-num">01</span>
+                <span class="nav-label">Config</span>
             </div>
-            <div class="mt-6 text-center text-xs text-gray-500">
-                <span id="auth-toggle-msg">New here?</span>
-                <span class="font-bold underline ml-1 cursor-pointer" style="color: var(--brand-primary);" onclick="toggleAuthMode()" id="auth-toggle-btn">Create account</span>
+            <div class="nav-item" id="navStep2">
+                <span class="nav-num">02</span>
+                <span class="nav-label">Scan</span>
+            </div>
+            <div class="nav-item" id="navStep3">
+                <span class="nav-num">03</span>
+                <span class="nav-label">Brew</span>
             </div>
         </div>
-    </div>
 
-    <div id="viewLoading" class="loading-screen hidden fixed inset-0 bg-white/95 z-[2000] flex flex-col items-center justify-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 mb-4" style="border-color: var(--brand-primary);"></div>
-        <div class="font-bold tracking-widest" style="color: var(--brand-primary);" data-i18n="loading">AI PROCESSING</div>
-    </div>
+        <div class="sidebar-footer">
+            <button class="btn-lang" id="btnLangDesktop" onclick="toggleLanguage()">EN / 中</button>
+        </div>
+    </aside>
 
-    <div id="app-container">
-        <aside class="sidebar">
-            <div class="mb-12">
-                <img src="https://yinylgixpfekynvpnkxw.supabase.co/storage/v1/object/public/coffee-images/logopic/Original%20Logo.png" alt="Bulu" class="h-16 mb-2">
-                <h1 class="brand-title">BrewLab.</h1>
+    <main class="main-stage">
+        
+        <div id="viewConfig">
+            <div class="radial-section">
+                <div class="dose-dial">
+                    <span id="doseDisplay" class="dose-val">20</span>
+                    <span class="dose-unit">grams</span>
+                </div>
+                <div class="range-wrapper">
+                    <input type="range" id="inputDose" min="10" max="30" value="20" step="1" oninput="updateDose(this.value)">
+                </div>
             </div>
-            <nav class="flex-1">
-                <div class="nav-item-step active" id="navStep1"><span class="nav-num">01</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Config</span></div>
-                <div class="nav-item-step" id="navStep2"><span class="nav-num">02</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Scan</span></div>
-                <div class="nav-item-step" id="navStep3"><span class="nav-num">03</span><span class="font-bold uppercase text-xs tracking-widest ml-3">Brew</span></div>
-            </nav>
-            <button class="w-full border py-2 rounded-full text-xs font-bold hover:bg-blue-50 transition" style="border-color: var(--brand-primary); color: var(--brand-primary);" onclick="toggleLanguage()">EN / 中</button>
-        </aside>
 
-        <main class="main-stage">
-            
-            <div id="viewConfig">
-                <div class="radial-section">
-                    <div class="dose-dial">
-                        <span id="doseDisplay" class="dose-val">20</span>
-                        <span class="text-gray-400 text-sm">grams</span>
-                    </div>
-                    <div class="w-64 mx-auto"><input type="range" id="inputDose" min="10" max="30" value="20" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateDose(this.value)"></div>
+            <div class="h-scroll-section">
+                <div class="section-header">
+                    <i data-lucide="filter" size="20"></i> <span data-i18n="sec_dripper">Select Dripper</span>
                 </div>
-
-                <div class="mt-12">
-                    <h3 class="font-bold text-xl mb-4 flex items-center gap-2" style="color: var(--text-main);"><i data-lucide="filter" style="color: var(--brand-accent);"></i> <span data-i18n="sec_dripper">Select Dripper</span></h3>
-                    <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        <div class="gear-card" onclick="selectGear(this, 'Hario V60')"><i data-lucide="filter" size="32"></i><span class="mt-2 text-sm font-bold">V60</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Origami')"><i data-lucide="star" size="32"></i><span class="mt-2 text-sm font-bold">Origami</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')"><i data-lucide="align-center" size="32"></i><span class="mt-2 text-sm font-bold">Kalita</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Switch')"><i data-lucide="toggle-right" size="32"></i><span class="mt-2 text-sm font-bold">Switch</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Chemex')"><i data-lucide="flask-conical" size="32"></i><span class="mt-2 text-sm font-bold">Chemex</span></div>
-                        <div class="gear-card" onclick="selectGear(this, 'Others')"><i data-lucide="more-horizontal" size="32"></i><span class="mt-2 text-sm font-bold">Others</span></div>
+                <div class="horizontal-list">
+                    <div class="gear-card" onclick="selectGear(this, 'Hario V60')">
+                        <i data-lucide="filter" size="32"></i><span class="gear-name">V60</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Origami V')">
+                        <i data-lucide="star" size="32"></i><span class="gear-name">Origami</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Kalita Wave')">
+                        <i data-lucide="align-center" size="32"></i><span class="gear-name">Kalita Wave</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Hario Switch')">
+                        <i data-lucide="toggle-right" size="32"></i><span class="gear-name">Hario Switch</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Chemex')">
+                        <i data-lucide="flask-conical" size="32"></i><span class="gear-name">Chemex</span>
+                    </div>
+                    <div class="gear-card" onclick="selectGear(this, 'Others')">
+                        <i data-lucide="more-horizontal" size="32"></i><span class="gear-name">Others</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-8">
-                    <h3 class="font-bold text-xl mb-4 flex items-center gap-2" style="color: var(--text-main);"><i data-lucide="settings-2" style="color: var(--brand-accent);"></i> <span data-i18n="sec_grinder">Grinder</span></h3>
-                    <select id="inputGrinder" class="w-full p-5 rounded-2xl bg-white shadow-sm border-none outline-none text-gray-700 appearance-none cursor-pointer">
+            <div class="h-scroll-section">
+                <div class="section-header">
+                     <i data-lucide="settings-2" size="20"></i> <span data-i18n="sec_grinder">Grinder</span>
+                </div>
+                <div class="controls-grid">
+                    <select id="inputGrinder" class="custom-select">
                         <option value="" disabled selected data-i18n="sel_grinder">Select Grinder Model</option>
-                        <option value="C40">Comandante C40</option>
-                        <option value="K-Ultra">1Zpresso K-Ultra</option>
-                        <option value="Niche Zero">Niche Zero</option>
-                        <option value="Ode">Fellow Ode</option>
-                        <option value="EK43">Mahlkonig EK43</option>
-                        <option value="Fuji">Fuji Royal / Feima</option>
-                        <option value="Generic">Other / Generic</option>
+                    <option value="Comandante C40">Comandante C40</option>
+                    <option value="1Zpresso K-Ultra">1Zpresso K-Ultra</option>
+                    <option value="Niche Zero">Niche Zero</option>
+                    <option value="Fellow Ode">Fellow Ode</option>
+                    <option value="EK43">Mahlkonig EK43</option>
+                    <option value="Fuji">Fuji Royal / Feima</option>
+                    <option value="Generic">Other / Generic</option>
                     </select>
+               
                 </div>
             </div>
+            <div style="height: 100px;"></div> 
+        </div>
 
-            <div id="viewUpload" class="overlay-view hidden h-full">
-                <div class="flex flex-col md:flex-row gap-10 h-full items-center">
-                    <div class="flex-1">
-                        <h2 class="text-5xl font-bold mb-4" style="color: #2D3436;">AI Scan.</h2>
-                        <p class="text-gray-500 mb-8" data-i18n="scan_desc">Our AI analyzes roast level and origin.</p>
-                        <button onclick="backToConfig()" class="font-bold hover:underline" style="color: var(--brand-primary);">← <span data-i18n="btn_back">Go Back</span></button>
-                    </div>
-                    <div class="flex-1 w-full h-80">
-                        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-                            <img id="imgPreview" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity">
-                            <i data-lucide="scan-line" size="48" style="color: var(--brand-primary);" class="mb-4"></i>
-                            <span class="font-bold" style="color: var(--brand-primary);" data-i18n="tap_upload">Upload Coffee Bag</span>
-                            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImage(event)">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="viewResult" class="hidden">
-                <div class="origin-card mb-6">
-                    <div>
-                        <p class="text-[10px] opacity-70 tracking-widest font-bold">OPTIMIZED FOR</p>
-                        <h2 id="resOrigin" class="text-3xl font-bold italic">Analysis Ready</h2>
-                        <div id="resTags" class="flex gap-2 mt-2"></div>
-                    </div>
-                    <div class="text-3xl font-bold"><span id="resDoseRef">20</span>g</div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="font-bold text-gray-400 text-xs mb-4 tracking-widest uppercase" data-i18n="lbl_parameter">PARAMETERS</h3>
-                        <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_grind">GRIND</span><span id="resGrind" class="font-bold" style="color: var(--brand-primary);">--</span></div>
-                        <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_temp">TEMP</span><span id="resTemp" class="font-bold" style="color: var(--brand-primary);">--</span></div>
-                        <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_water">WATER</span><span id="resWaterTotal" class="font-bold" style="color: var(--brand-primary);">--</span></div>
-                        <div class="flex justify-between border-b py-3 text-sm"><span class="text-gray-400 font-bold" data-i18n="lbl_time">TIME</span><span id="resTotalTime" class="font-bold" style="color: var(--brand-primary);">--</span></div>
-                        
-                        <div class="mt-6 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-xl">
-                            <h3 class="text-[15px] font-bold text-orange-400 mb-1" data-i18n="lbl_strategy">STRATEGY</h3>
-                            <p id="resStrategy" class="text-xs leading-relaxed text-gray-700 font-medium"></p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-bold mb-4" style="color: var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
-                        <div id="resTimeline" class="space-y-6 border-l-2 border-gray-100 pl-4"></div>
-                    </div>
-                </div>
-
-                <div class="card mt-6">
-                    <h3 class="font-bold mb-4" style="color: var(--brand-primary);">AI Barista Chat</h3>
-                    <div id="chatWindow" class="h-32 overflow-y-auto mb-4 bg-gray-50 p-4 rounded-xl text-sm"></div>
-                    <div class="flex gap-2">
-                        <input type="text" id="chatInput" class="flex-1 border p-3 rounded-full outline-none text-sm" placeholder="Ask about this recipe...">
-                        <button onclick="sendChat()" class="p-3 rounded-full text-white shadow-lg transition transform active:scale-95" style="background-color: var(--brand-primary);">
-                            <i data-lucide="arrow-up" size="18"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex flex-col items-center gap-4">
-                    <button id="btnSave" onclick="saveBrew()" class="btn-action w-full max-w-sm justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" style="width:20px; height:20px;" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                        </svg>
-                        <span>Save to Journal</span>
+        <div id="viewUpload" class="overlay-view hidden">
+            <div class="upload-split">
+                <div class="upload-left">
+                    <h2 class="brand-title" style="color:var(--text-main); font-size:42px; margin-bottom:20px;">AI Scan.</h2>
+                    <p style="color:#666; line-height:1.6; margin-bottom:30px;" data-i18n="scan_desc">
+                        Our Bulu AI analyzes roast level and origin to calibrate the perfect recipe.
+                    </p>
+                    <button class="btn-lang" style="width:auto; border:none; padding-left:0;" onclick="backToConfig()">
+                        ← <span data-i18n="btn_back">Go Back</span>
                     </button>
-                    <button onclick="location.reload()" class="text-gray-400 text-sm font-medium hover:text-gray-600 underline" data-i18n="btn_restart">Start Over</button>
+                    <div id="errorMsg" style="color:red; margin-top:20px; display:none;"></div>
+                </div>
+                
+                <div class="upload-right">
+                    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <img id="imgPreview" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s;">
+                        <i data-lucide="scan-line" size="48" color="#5468AA" style="margin-bottom:15px;"></i>
+                        <span style="font-weight:bold; color:var(--brand-primary);" data-i18n="tap_upload">Upload Coffee Bag</span>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImage(event)">
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
 
-        <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end gap-3">
-            <button id="btnNext" onclick="goToUpload()" class="btn-action">
-                <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right" size="18"></i>
-            </button>
-            <button id="btnAnalyze" onclick="startAnalysis()" class="btn-action hidden">
-                <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles" size="18"></i>
-            </button>
+<div id="viewResult" class="hidden">
+    <div class="result-dashboard">
+        
+    <div class="card origin-card">
+        <div>
+        <div style="font-size:12px; opacity:0.8; letter-spacing:1px; margin-bottom:5px;">OPTIMIZED FOR</div>
+        <h2 id="resOrigin" class="res-origin">Analysis Ready</h2>
+        <div id="resTags" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+        </div>
+    
+        <div style="text-align:right;">
+        <span id="resDoseRef" style="font-size:24px; font-weight:bold;">20</span>g
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-link active"><i data-lucide="scan" size="20"></i><span class="mt-1">Scan</span></a>
-        <a href="history.html" class="nav-link"><i data-lucide="book-open" size="20"></i><span class="mt-1">Journal</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-link"><i data-lucide="log-out" size="20"></i><span class="mt-1">Exit</span></a>
-    </nav>
+        <div class="card stats-panel">
+    <div style="font-family:'Cormorant Garamond'; font-size:22px; font-weight:700; color:var(--text-main); margin-bottom:10px;">
+         Parameters 參數
+    </div>
+    
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_grind">GRIND SIZE</span>
+        <span id="resGrind" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_temp">TEMPERATURE</span>
+        <span id="resTemp" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_water">TOTAL WATER</span>
+        <span id="resWaterTotal" class="stat-val">--</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label" data-i18n="lbl_time">EST. TIME</span>
+        <span id="resTotalTime" class="stat-val">--</span>
+    </div>
+
+    <div style="margin-top:24px; padding:20px 24px; background:#fff; border-left: 5px solid #d4a373; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h3 style="margin:0 0 10px 0; font-size:14px; text-transform:uppercase; color:#d4a373; letter-spacing:1px; font-weight:bold;">
+        ✦ Strategy 沖煮策略
+    </h3>
+    <div id="resStrategy" style="font-size:16px; line-height:1.6; color:#2d2d2d; font-weight:500;">
+        Strategy will appear here...
+    </div>
+    </div>
+</div>
+
+        <div class="card timeline-panel">
+            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin-top:0; color:var(--brand-primary);" data-i18n="steps_title">Brewing Steps</h3>
+            <div id="resTimeline" style="border-left: 2px solid #F0F2F9; padding-left: 25px;">
+            </div>
+        </div>
+
+        <div class="card chat-panel">
+            <h3 style="font-family: 'Cormorant Garamond'; font-size:24px; margin:0; color:var(--brand-primary);">AI Barista Chat</h3>
+            
+            <div id="chatWindow"></div>
+            
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <input type="text" id="chatInput" style="flex:1; border:1px solid #ddd; border-radius:20px; padding:12px 20px; outline:none;" placeholder="Ask AI about this brew...">
+                <button onclick="sendChat()" style="background:var(--brand-primary); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="arrow-up" size="20"></i>
+                </button>
+            </div>
+
+            <button onclick="location.reload()" class="btn-lang" style="margin-top:10px; align-self: center; width: auto; padding-left: 30px; padding-right: 30px;">
+                <span data-i18n="btn_restart">Start Over</span>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+    </main>
+
+    <div class="action-bar" id="actionBar">
+        <button id="btnNext" class="btn-fab" disabled onclick="goToUpload()">
+            <span data-i18n="btn_next">Next Step</span> <i data-lucide="arrow-right"></i>
+        </button>
+        <button id="btnAnalyze" class="btn-fab hidden" disabled onclick="startAnalysis()">
+             <span data-i18n="btn_brew">Generate Recipe</span> <i data-lucide="sparkles"></i>
+        </button>
+    </div>
+
+    <div id="viewLoading" class="loading-screen hidden">
+        <div class="dose-dial" style="width:100px; height:100px; animation: pulse 1s infinite;">
+            <i data-lucide="loader-2" size="30" class="spin"></i>
+        </div>
+        <div style="margin-top:20px; font-weight:bold; letter-spacing:2px; color:var(--brand-primary);" id="loadingText" data-i18n="loading">AI PROCESSING</div>
+    </div>
+</div>
 
 <script>
-    // 1. Config & Global Vars
-    let currentBrewData = null; 
-    let sb = null; 
+    // --- 1. CONFIGURATION ---
+    const SUPABASE_PROJECT_URL = "https://yinylgixpfekynvpnkxw.supabase.co"; 
+    let currentRecipeContext = null; // 用來暫存食譜給 Chat 用
     
-    const SB_URL = "https://yinylgixpfekynvpnkxw.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM";
-
-    let config = { dose: 20, gear: '', grinder: '' }; 
+    // Supabase Config
+    const _supabaseUrl = 'https://yinylgixpfekynvpnkxw.supabase.co';
+    const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpbnlsZ2l4cGZla3ludnBua3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MTAzNDIsImV4cCI6MjA4NDI4NjM0Mn0.nP675NMyX1w2UzOrsKWoiVIbG5CEawew_Y1NdMqf7LM';
+    
+    let _supabase = null;
+    let config = { dose: 20, gear: '', grinder: '' };
+    let selectedGear = null;
     let imageBase64 = null;
-    let currentLang = 'en';
-    let isLoginMode = true;
-    let currentRecipeContext = null;
+    let chatHistory = [];
+    let currentLang = 'en'; 
 
+    // --- TRANSLATIONS ---
     const translations = {
-        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder Model", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload Bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", lbl_grind: "GRIND", lbl_time: "TIME", lbl_temp: "TEMP", lbl_water: "WATER", btn_login: "Login", lbl_strategy:"STRATEGY", lbl_parameter:"Parameters", chat_placeholder: "Ask AI..." },
-        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 正在分析包裝...", tap_upload: "上傳咖啡袋", btn_brew: "生成方案", steps_title: "沖煮步驟", btn_restart: "重新開始", lbl_grind: "研磨度", lbl_time: "預計時間", lbl_temp: "水溫", lbl_water: "注水量", btn_login: "登入", lbl_strategy:"策略", lbl_parameter:"參數", chat_placeholder: "問問 AI..." }
+        en: { sec_dripper: "2. Select Dripper", sec_grinder: "3. Grinder", sel_grinder: "Select Grinder", btn_next: "Next Step", btn_back: "Go Back", scan_desc: "AI analyzes roast level...", tap_upload: "Upload coffee bag", btn_brew: "Generate Recipe", steps_title: "Brewing Steps", btn_restart: "Start Over", loading: "AI ANALYZING...", chat_placeholder: "Ask AI...", lbl_grind: "GRIND SIZE", lbl_temp: "TEMPERATURE", lbl_water: "TOTAL WATER", lbl_time: "EST. TIME", alert_incomplete: "Please select Dripper and Grinder first!" },
+        zh: { sec_dripper: "2. 選擇濾杯", sec_grinder: "3. 磨豆機", sel_grinder: "選擇磨豆機型號", btn_next: "下一步", btn_back: "返回", scan_desc: "AI 分析烘焙度...", tap_upload: "點擊上傳咖啡包裝", btn_brew: "生成沖煮方案", steps_title: "沖煮步驟", btn_restart: "重新開始", loading: "AI 正在分析...", chat_placeholder: "問問 AI...", lbl_grind: "研磨度", lbl_temp: "水溫", lbl_water: "總注水量", lbl_time: "預估時間", alert_incomplete: "請先選擇濾杯與磨豆機！" }
     };
 
+    // --- INIT ---
     document.addEventListener("DOMContentLoaded", () => {
-        // Init Supabase
-        if (typeof window.supabase !== 'undefined') {
-            sb = window.supabase.createClient(SB_URL, SB_KEY);
-            setupAuthListener();
+        try {
+            if (typeof supabase !== 'undefined') _supabase = supabase.createClient(_supabaseUrl, _supabaseKey);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            updateUIText();
+            
+            // 綁定事件
+            document.getElementById('inputGrinder').addEventListener('change', (e) => { config.grinder = e.target.value; checkConfig(); });
+            
+            // 移除 HTML 預設的 disabled
+            document.getElementById('btnNext').disabled = false;
+        } catch (e) {
+            console.error("Init Error:", e);
+            alert("系統載入錯誤，請檢查 Console");
         }
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-        updateUIText();
-
-        // 2. 核心修復：強制重置 UI 狀態 (Dose 20g, Grinder Reset)
-        updateDose(20); 
-        const grinderInput = document.getElementById('inputGrinder');
-        if(grinderInput) grinderInput.selectedIndex = 0; 
-        config.grinder = ''; 
     });
 
-    // --- AUTH ---
-    function setupAuthListener() {
-        sb.auth.onAuthStateChange((_event, session) => {
-            const btnLogin = document.getElementById('btn-open-login');
-            const userUI = document.getElementById('user-ui');
-            const userEmail = document.getElementById('user-email');
-            if (session) {
-                btnLogin.classList.add('hidden');
-                userUI.style.display = 'flex';
-                userEmail.innerText = session.user.email;
-                closeAuthModal();
-            } else {
-                btnLogin.classList.remove('hidden');
-                userUI.style.display = 'none';
-            }
-        });
+    // --- UI LOGIC ---
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'zh' : 'en';
+        document.getElementById('btnLangDesktop').innerText = currentLang === 'en' ? 'EN / 中' : '中 / EN';
+        updateUIText();
     }
 
-    async function handleAuthAction() {
-        const email = document.getElementById('modal-email').value;
-        const password = document.getElementById('modal-password').value;
-        if (!email || !password) return alert("Please fill in email and password");
-        
-        const btn = document.getElementById('btn-auth-action');
-        btn.innerText = "Processing..."; btn.disabled = true;
-
-        if (isLoginMode) {
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-        } else {
-            alert("For demo: Please use 'info@bulumedia.com' to login. Signup requires payment.");
-        }
-        btn.innerText = isLoginMode ? "Log In" : "Sign Up"; btn.disabled = false;
-    }
-
-    async function handleLogout() { await sb.auth.signOut(); window.location.reload(); }
-    
-    // Modal Control
-    function openAuthModal() { 
-        const modal = document.getElementById('auth-modal');
-        modal.classList.remove('hidden'); 
-        // 確保 z-index 最高
-        modal.style.zIndex = "9999";
-    }
-    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-    function toggleAuthMode() { 
-        isLoginMode = !isLoginMode; 
-        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "Join BrewLab";
-        document.getElementById('btn-auth-action').innerText = isLoginMode ? "Log In" : "Sign Up";
-    }
-
-    // --- LOGIC ---
-    function toggleLanguage() { currentLang = currentLang === 'en' ? 'zh' : 'en'; updateUIText(); }
     function updateUIText() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
         });
-        const chatIn = document.getElementById('chatInput');
-        if(chatIn) chatIn.placeholder = translations[currentLang]['chat_placeholder'];
+        document.getElementById('chatInput').placeholder = translations[currentLang]['chat_placeholder'];
     }
 
-    function updateDose(val) { 
-        config.dose = val; 
-        document.getElementById('doseDisplay').innerText = val; 
-        document.getElementById('resDoseRef').innerText = val; 
-        document.getElementById('inputDose').value = val;
+    function updateDose(val) {
+        document.getElementById('doseDisplay').innerText = val;
+        document.getElementById('resDoseRef').innerText = val;
+        config.dose = val;
     }
-    
-    function selectGear(el, name) { 
-        document.querySelectorAll('.gear-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected'); config.gear = name; 
+
+    function selectGear(el, gearName) {
+        document.querySelectorAll('.gear-card').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+        config.gear = gearName;
+        selectedGear = gearName;
+        checkConfig();
     }
-    
+
+    function checkConfig() {
+        const isValid = config.gear && config.grinder;
+        const btn = document.getElementById('btnNext');
+        btn.style.opacity = isValid ? '1' : '0.5';
+    }
+
     function goToUpload() {
-        config.grinder = document.getElementById('inputGrinder').value;
-        if (!config.gear || !config.grinder) return alert("Please select a Dripper and a Grinder model first!");
-        
+        if (!config.gear || !config.grinder) {
+            alert(translations[currentLang].alert_incomplete);
+            return;
+        }
         document.getElementById('viewConfig').classList.add('hidden');
         document.getElementById('viewUpload').classList.remove('hidden');
         document.getElementById('btnNext').classList.add('hidden');
         document.getElementById('btnAnalyze').classList.remove('hidden');
-        updateSidebarStep(2);
+        updateNav(2);
     }
-
+    
     function backToConfig() {
         document.getElementById('viewConfig').classList.remove('hidden');
         document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('btnNext').classList.remove('hidden');
         document.getElementById('btnAnalyze').classList.add('hidden');
-        updateSidebarStep(1);
+        updateNav(1);
     }
 
-    function updateSidebarStep(s) {
-        document.querySelectorAll('.nav-item-step').forEach(n => n.classList.remove('active'));
-        document.getElementById('navStep' + s).classList.add('active');
+    function updateNav(step) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('navStep' + step).classList.add('active');
     }
 
     function handleImage(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
-            imageBase64 = ev.target.result;
-            document.getElementById('imgPreview').src = imageBase64;
-            document.getElementById('imgPreview').style.opacity = '1';
-            document.getElementById('btnAnalyze').disabled = false;
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                let width = img.width; let height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                imageBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                document.getElementById('imgPreview').src = imageBase64;
+                document.getElementById('imgPreview').style.opacity = '1';
+                document.getElementById('btnAnalyze').disabled = false;
+            };
         };
         reader.readAsDataURL(file);
     }
 
-    async function startAnalysis() {
+    // --- AI ANALYSIS ---
+    // !!! FIXED: Added the missing { below !!!
+    // --- AI ANALYSIS (已改為呼叫 Supabase Edge Function) ---
+    // --- CHAT FUNCTION (修正版：已補上 Authorization) ---
+// --- AI ANALYSIS (完整修復版) ---
+    async function startAnalysis() { 
+        // 1. 基本檢查
+        if (!imageBase64) { alert("Please upload an image first."); return; }
+
+        // 2. 準備參數
+        const dose = config.dose;
+        const gear = selectedGear; 
+        const grinder = config.grinder;     
+        
+        // 3. 切換 UI
+        document.getElementById('viewUpload').classList.add('hidden');
         document.getElementById('viewLoading').classList.remove('hidden');
-        updateSidebarStep(3);
+        updateNav(3);
+    
         try {
-            const res = await fetch(`${SB_URL}/functions/v1/brew`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
-                body: JSON.stringify({ image: imageBase64, dose: config.dose, gear: config.gear, grinder: config.grinder, lang: currentLang })
+            // 上傳圖片
+            let hostedImageUrl = imageBase64;
+            if(_supabase) {
+                try {
+                    hostedImageUrl = await uploadImgToSupabase(imageBase64, 'labels') || imageBase64;
+                } catch(err) { console.log("Upload skip"); }
+            }
+
+            // 【呼叫 Supabase 後端】
+            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/brew`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + _supabaseKey // 這裡已包含修正的通行證
+                },
+                body: JSON.stringify({
+                    "image": hostedImageUrl,
+                    "dose": dose,
+                    "gear": gear,
+                    "grinder": grinder,
+                    "lang": currentLang
+                })
             });
-            const data = await res.json();
-            currentBrewData = data; 
-            currentRecipeContext = data;
-            renderResult(data);
-            initChat();
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || "Edge Function Error");
+            }
+            
+            const result = await res.json();
+            currentRecipeContext = result;
+            
+            renderResult(result);
+            initChat(result);
+            if(_supabase) saveToSupabase(result);
+
             document.getElementById('viewLoading').classList.add('hidden');
-            document.getElementById('viewUpload').classList.add('hidden');
             document.getElementById('viewResult').classList.remove('hidden');
             document.getElementById('btnAnalyze').classList.add('hidden');
-        } catch (err) {
-            alert("Analysis failed. Please try again.");
+
+        } catch (e) {
+            console.error(e);
+            alert("AI Error: " + e.message);
             document.getElementById('viewLoading').classList.add('hidden');
+            document.getElementById('viewUpload').classList.remove('hidden');
         }
     }
 
+    // --- RENDER & UTILS ---
     function renderResult(data) {
-        document.getElementById('resOrigin').innerText = data.bean.origin || "Specialty Bean";
-        document.getElementById('resStrategy').innerText = data.strategy;
-        document.getElementById('resGrind').innerText = data.prep.grind;
-        document.getElementById('resTemp').innerText = data.prep.temp;
-        document.getElementById('resWaterTotal').innerText = data.prep.water_total;
-        document.getElementById('resTotalTime').innerText = data.prep.time_total;
-        
-        const tl = document.getElementById('resTimeline');
-        tl.innerHTML = data.steps.map(s => `
-            <div class="relative pb-6 border-l-2 border-gray-100 pl-4 ml-2">
-                <div class="absolute -left-[9px] top-0 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
-                <div class="font-bold text-orange-400 text-sm mb-1">${s.time}</div>
-                <div class="font-bold text-blue-900 text-lg">${s.action} - ${s.weight}</div>
-                <div class="text-sm text-gray-500 mt-1">${s.detail}</div>
-                <div class="mt-2 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded inline-block font-bold">💡 ${s.tip}</div>
-            </div>
-        `).join('');
+    // 建立一個安全填寫的小工具 helper
+    const safeSetText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text; // 只有當元素存在時才寫入，避免報錯
+    };
+
+    // 使用安全填寫
+    safeSetText('resOrigin', data.bean.origin || "Unknown");
+    safeSetText('resStrategy', data.strategy);
+    safeSetText('resGrind', data.prep.grind);
+    safeSetText('resTemp', data.prep.temp);
+    safeSetText('resWaterTotal', data.prep.water_total);
+    safeSetText('resTotalTime', data.prep.time_total);
+    
+    // 處理 Tags
+    const tags = document.getElementById('resTags');
+    if (tags) {
+        tags.innerHTML = '';
+        if (data.bean.tags) {
+            data.bean.tags.forEach(t => {
+                tags.innerHTML += `<span style="background:var(--brand-secondary); color:var(--brand-primary); padding:4px 10px; font-size:11px; border-radius:12px; font-weight:bold;">${t}</span>`;
+            });
+        }
     }
 
-    function initChat() {
-        document.getElementById('chatWindow').innerHTML = `<div class="text-gray-500 italic text-center mt-4">Ask AI Barista about this coffee...</div>`;
+    // 處理 Timeline
+    const tl = document.getElementById('resTimeline');
+    if (tl) {
+        tl.innerHTML = '';
+        if (data.steps) {
+            data.steps.forEach(s => {
+                tl.innerHTML += `<div class="recipe-step"><span class="step-time">${s.time}</span><div><div class="step-title">${s.action} <span>➔ ${s.weight}</span></div><div class="step-desc">${s.detail}</div><div class="step-tip">💡 ${s.tip}</div></div></div>`;
+            });
+        }
+    }
+}
+
+    // --- HELPER FUNCTIONS ---
+    function getAnonId() { return localStorage.getItem('bulu_anon_id') || 'u_' + Math.random().toString(36).substr(2, 9); }
+    
+    async function uploadImgToSupabase(base64, folder) {
+        const res = await fetch(base64);
+        const blob = await res.blob();
+        const fileName = `${folder}/${getAnonId()}_${Date.now()}.jpg`;
+        await _supabase.storage.from('coffee-images').upload(fileName, blob);
+        const { data } = _supabase.storage.from('coffee-images').getPublicUrl(fileName);
+        return data.publicUrl;
     }
 
+    async function saveToSupabase(result) {
+        if(!_supabase) return;
+        try {
+            await _supabase.from('coffee_brewing_logs').insert([{ user_id: getAnonId(), bean_origin: result.bean.origin, ai_strategy: result.strategy, dose_grams: config.dose, full_chat_history: result }]);
+        } catch(e) { console.error("Supabase Save Error", e); }
+    }
+
+    function initChat(recipe) {
+        chatHistory = [{ "role": "system", "content": `Context: ${JSON.stringify(recipe)}. Lang: ${currentLang}` }];
+        document.getElementById('chatWindow').innerHTML = `<div class="chat-msg msg-ai">Feel free to ask questions about the brew!</div>`; 
+    }
+    
+    // !!! ADDED: Basic Chat function to prevent errors when clicking send !!!
+    // --- CHAT FUNCTION (已改為呼叫 Supabase Edge Function) ---
+    // --- CHAT FUNCTION (修正版：已補上 Authorization) ---
     async function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value;
         if(!text) return;
         
         const win = document.getElementById('chatWindow');
-        win.innerHTML += `<div class="bg-blue-100 p-2 rounded-lg mb-2 text-right ml-auto max-w-[80%]">${text}</div>`;
+        win.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
         input.value = "";
+        win.scrollTop = win.scrollHeight;
+        
+        const loadingId = 'loading-' + Date.now();
+        win.innerHTML += `<div id="${loadingId}" class="chat-msg msg-ai">Thinking...</div>`;
+        win.scrollTop = win.scrollHeight;
         
         try {
-            const res = await fetch(`${SB_URL}/functions/v1/chat`, {
+            // 【呼叫 Supabase 後端】
+            const res = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SB_KEY },
-                body: JSON.stringify({ message: text, context: currentRecipeContext, lang: currentLang })
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + _supabaseKey // 關鍵修改：補上這行通行證
+                },
+                body: JSON.stringify({
+                    "message": text,
+                    "context": currentRecipeContext,
+                    "lang": currentLang
+                })
             });
+
+            if (!res.ok) throw new Error("Chat API Error");
+
             const data = await res.json();
-            win.innerHTML += `<div class="bg-gray-100 p-2 rounded-lg mb-2 mr-auto max-w-[90%]">${data.reply}</div>`;
+            
+            const loadingMsg = document.getElementById(loadingId);
+            if(loadingMsg) loadingMsg.remove();
+            
+            win.innerHTML += `<div class="chat-msg msg-ai">${data.reply}</div>`;
             win.scrollTop = win.scrollHeight;
-        } catch(e) { console.error(e); }
-    }
 
-    async function saveBrew() {
-        const btn = document.getElementById('btnSave');
-        const { data: { user } } = await sb.auth.getUser();
-        
-        if (!user) {
-            openAuthModal(); 
-            return;
-        }
-
-        const originalText = btn.innerHTML;
-        btn.innerText = "Saving...";
-        btn.disabled = true;
-
-        try {
-            const { data: profile } = await sb.from('profiles').select('subscription_status').eq('id', user.id).single();
-            // Optional: Check active status here
-
-            const { error } = await sb.from('brews').insert({
-                user_id: user.id,
-                bean_name: currentBrewData.bean.name || "Unknown",
-                roast_level: currentBrewData.bean.roast || "Unknown",
-                notes: currentBrewData.bean.origin || "",
-                recipe: document.getElementById('resTimeline').innerText
-            });
-
-            if (error) throw error;
-            btn.innerHTML = "✅ Saved!";
-            btn.classList.add('bg-gray-400'); // Disable color
-        } catch (err) {
-            alert("Save Error: " + err.message);
-            btn.innerHTML = originalText; btn.disabled = false;
+        } catch (e) {
+            console.error(e);
+            const loadingMsg = document.getElementById(loadingId);
+            if(loadingMsg) loadingMsg.innerText = "Error: Unable to connect to AI.";
         }
     }
 </script>
