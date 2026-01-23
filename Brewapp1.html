@@ -1130,8 +1130,13 @@
         const userId = getCurrentUserId();
         try {
             await _supabase.from('coffee_brewing_logs').insert([{ 
-                user_id: userId, 
+                user_id: userId,
+                bean_name: result.bean.brand, 
                 bean_origin: result.bean.origin, 
+                roast_level: result.bean.roast,
+                roast_date: result.bean.date,
+                day_old:result.bean.days_old,
+                flav_tags:result.bean.tags,
                 ai_strategy: result.strategy, 
                 dose_grams: config.dose, 
                 full_chat_history: result 
