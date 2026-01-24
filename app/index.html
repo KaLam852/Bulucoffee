@@ -775,12 +775,27 @@
         return data.publicUrl;
     }
 
-    async function saveToSupabase(result) {
+ async function saveToSupabase(result) {
         if(!_supabase) return;
+        
+        const userId = getCurrentUserId();
         try {
-            await _supabase.from('coffee_brewing_logs').insert([{ user_id: getAnonId(), bean_origin: result.bean.origin, ai_strategy: result.strategy, dose_grams: config.dose, full_chat_history: result }]);
+            await _supabase.from('coffee_brewing_logs').insert([{ 
+                user_id: userId,
+                bean_name: result.bean.brand, 
+                bean_origin: result.bean.origin, 
+                roast_level: result.bean.roast,
+                roast_date: result.bean.date,
+                day_old:result.bean.days_old,
+                flav_tags:result.bean.tags,
+                ai_strategy: result.strategy, 
+                dose_grams: config.dose, 
+                full_chat_history: result 
+            }]);
+            console.log("Saved log for user:", userId);
         } catch(e) { console.error("Supabase Save Error", e); }
     }
+
 
     function initChat(recipe) {
         chatHistory = [{ "role": "system", "content": `Context: ${JSON.stringify(recipe)}. Lang: ${currentLang}` }];
